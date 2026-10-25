@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "62f4d268290871bce825863d2b184735cba3801f"
+    "commit": "c17fb8c6c1e10f9871f10dd5c55e586c0192a16a"
   },
   "sdk": {
     "version": "1.1.0",
@@ -17,7 +17,7 @@
   },
   "files": {
     "godot/addons/seorilabs_game/README.md": "2ce602f3589121852640b4e4a14f2d43d92a0d796f5e70aa05c3774025ed97fb",
-    "godot/addons/seorilabs_game/flow/outgame_main.gd": "56863613523149a2af126e6658ef5c190f8769002318c7d367c9c308b93191ce",
+    "godot/addons/seorilabs_game/flow/outgame_main.gd": "bcecab64276ee4da7f7aabf2637f97f77c9b2489ad0c32a9a91af259ad72650c",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
     "godot/addons/seorilabs_game/flow/state.gd": "c4f37aff8775ce5799f4f3d31f785e4f8a9bdc64b3619df6d652c52b4c933e5f",
     "godot/addons/seorilabs_game/fonts/Fredoka-OFL.txt": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab",
@@ -34,7 +34,7 @@
     "godot/addons/seorilabs_game/services/analytics_preference.gd": "fc3fbb09f4f8a941054f6cc32c0f0a75f468104f5bfb5f080d7806a2e12deadc",
     "godot/addons/seorilabs_game/services/commerce.gd": "2af6548ab8068d74c32004f0bc1e23496951936e726d1aea8b6fabe36a5aecc6",
     "godot/addons/seorilabs_game/services/leaderboard.gd": "e972484046175be8b7de09913e1b578fd293aeb2d8c6fa858606442b2375bf41",
-    "godot/addons/seorilabs_game/services/services.gd": "ab64e04e7c43082c9b94b91a32d458583d5a8e6d163edd3155a45891610f4709",
+    "godot/addons/seorilabs_game/services/services.gd": "969eef1546df214a374e39c1d8a14924902dcff327563e7407eabecff472a922",
     "godot/addons/seorilabs_game/services/support_identity.gd": "a8b5a99e620daf542f703cd11ec997f2b2aaf340f9ac01b145a3df1df8758899",
     "godot/addons/seorilabs_game/skins/soft_adventure/camp.svg": "1c93bc354a124feae39f7534b06b5753fa1a6d92cbbf84f9ada97f77d2a6a8e4",
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_account.svg": "db6cc4c5f66f160b4729a67f312f0cdc6b580585c7049dfdf7b6967a20f07e20",
@@ -45,7 +45,7 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_shop.svg": "c07406e8ce6e7fd31a68f10cd809fc6cb283e0e59c792a5f70dd011f9d345f3c",
     "godot/addons/seorilabs_game/skins/soft_adventure/skin.json": "3425c821818f22af960dcdf8b7be4d882cdeb53b22aa34858402705c3af2277f",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
-    "godot/addons/seorilabs_game/ui/camp_home.gd": "e3140460d178612e0648781383d48aa10ef1544f13f48a28c09e1a06aeb8f070",
+    "godot/addons/seorilabs_game/ui/camp_home.gd": "18ada256b07353a143fa20f14ad18d622b24a5890fc0a3a10644b9a8a38c71cf",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
     "godot/addons/seorilabs_platform/CHECKSUM": "31d5273efd257f7fed416fb80c072542527e4912dd7584ffb65500c97d54c03e",
     "godot/addons/seorilabs_platform/LICENSE": "44a6be16b60cab758678f098d2e1a9964305ce870ab39f338c9d7a397ad2d7fc",
@@ -61,7 +61,7 @@
     "godot/addons/seorilabs_platform/core/presence_client.gd": "3803aac9043f95cfd035df471be79e0a58529cd873511a35834d0231ae1eabcf",
     "godot/addons/seorilabs_platform/core/update_gate.gd": "960bab68100038a628aa2321ba006bf7b7c747f10601320d525d6f37dad6e5de",
     "godot/addons/seorilabs_platform/platform_client.gd": "493e5f3803f3e84bfa10dbde47e5df4c169068b7522fe9ac03ff4942c2f869e0",
-    "godot/tests/common/account_services_probe.gd": "e0604d955b0d9429dfbf1923da6a9f4970591f729c60b95ddfe701c018d7f704",
+    "godot/tests/common/account_services_probe.gd": "159cf4622f47226ef6321aeda9e5e5464fa7ad3994692d90f3b86042f9acd18f",
     "godot/tests/common/accounts_probe.gd": "1236852f716dfecccce68db13bb0637361c1efe264b5a91d3ff72de310b99a2a",
     "godot/tests/common/e2e_driver.gd": "c0c201ca85bfbf28798d25777b9193e139ea64306cce6e30d43314962f079b33",
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
