@@ -936,7 +936,9 @@ func _render_mail() -> void:
 		_button(tr_text("More messages", "더 보기"), func() -> void: _inbox(true), box)
 	var all := _button(tr_text("Claim all available", "받을 수 있는 우편 모두 받기"), _claim_all, box)
 	all.disabled = pending or _unclaimed() == 0
-	_button(tr_text("Grant history", "지급 내역"), _history, box)
+	box.move_child(all, 0)
+	var history := _button(tr_text("Grant history", "지급 내역"), _history, box)
+	box.move_child(history, 1)
 
 func _read(id: String) -> void:
 	if services.mode == "server":
