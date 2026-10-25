@@ -39,6 +39,8 @@ def verify(root, lock):
     files = lock['files']
     actual = set()
     for folder in ROOTS:
+        if (root / folder).is_symlink():
+            raise ValueError('symbolic link in common bundle root')
         for path in (root / folder).rglob('*'):
             if path.is_symlink():
                 raise ValueError('symbolic link in common bundle: ' + str(path))
@@ -92,6 +94,10 @@ def install(root, bundle):
     old = json.loads(old_path.read_text()) if old_path.exists() else None
     if old:
         verify(root, old)
+    else:
+        for folder in ROOTS:
+            if (root / folder).exists() and any((root / folder).iterdir()):
+                raise ValueError('unmanaged common directory: ' + folder)
     for folder in ROOTS:
         for part in [root, *list((root / folder).parents)[:-1], root / folder]:
             if part.is_symlink():

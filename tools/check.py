@@ -33,6 +33,7 @@ def main():
     root = a.root.resolve(); project = (root / a.project).resolve()
     if not project.is_relative_to(root): p.error('project must be inside repository')
     out = a.out.resolve() if a.out.is_absolute() else (root / a.out).resolve()
+    if not out.is_relative_to(root / 'build'): p.error('output must be under repository build/')
     if out.exists() and any(out.iterdir()): p.error('output must be new or empty')
     out.mkdir(parents=True, exist_ok=True)
     before = snapshot(root)
@@ -48,6 +49,8 @@ def main():
                     [godot, '--headless', '--path', str(project), '--script', 'res://tests/common/outgame_contract_probe.gd'],
                     [godot, '--headless', '--path', str(project), '--script', 'res://tests/common/ui_standard_contract_probe.gd', '--', '--out', str(out / 'ui-contract.json')],
                     [godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', script, '--', '--out', str(out), '--size', a.size, *(['--capture'] if a.capture else [])]]
+        if (project / 'tests/game/core_probe.gd').is_file():
+            commands.append([godot, '--headless', '--path', str(project), '--script', 'res://tests/game/core_probe.gd'])
         if kind == 'reference':
             commands.append([godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', 'res://tests/reference/ui_navigation_probe.gd', '--', '--out', str(out / 'navigation'), *(['--capture'] if a.capture else [])])
         head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
@@ -70,7 +73,6 @@ def main():
                   'recordedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   'implementationFingerprint': gate.fingerprint(root, profile), 'checks': checks,
                   'artifacts': [{'path': str((out / 'journey.json').relative_to(root)), 'sha256': digest(out / 'journey.json'), 'type': 'report'}]}
-        # Evidence can live outside the repository for independent review, but gate paths remain local.
         report_path = out / 'automated.json'
         report_path.write_text(json.dumps(report, indent=2) + '\n')
         profile['evidence']['automated'] = {'status': 'passed', 'path': str(report_path.relative_to(root)),
