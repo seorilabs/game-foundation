@@ -863,6 +863,7 @@ func _show_error(code: String) -> void:
 
 func _error_text(code: String) -> String:
 	match code:
+		"service_unconnected": return tr_text("Account services are unavailable in this build.", "이 빌드에서는 계정 서비스를 지원하지 않습니다.")
 		"expected_uid_required": return tr_text("Enter the UID of the account you want to recover.", "복구할 이전 계정의 UID를 입력해 주세요.")
 		"cloud_save_not_ready", "cloud_save_pending": return tr_text("Wait for cloud saving, then refresh your account.", "클라우드 저장을 기다린 뒤 계정을 다시 확인해 주세요.")
 		"copied": return tr_text("Code copied", "코드를 복사했어요")

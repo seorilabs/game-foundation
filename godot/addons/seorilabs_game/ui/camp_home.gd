@@ -30,7 +30,7 @@ func _ready() -> void:
 	_text(headline, Rect2(464, 178, 740, 68), 44, Color("244c53"))
 	var action: String = controller.tr_text("Begin adventure", "모험 시작")
 	if controller.services.mode == "server" and not connected:
-		action = controller.tr_text("Create account and start", "계정 만들고 시작")
+		action = controller.tr_text("Create account", "계정 만들기")
 	elif not title_screen:
 		action = controller.tr_text(controller.home_text.action[0], controller.home_text.action[1])
 	var play := _button(action, "start" if title_screen else "play", Rect2(426, 400, 428, 128), controller._camp_action, "", true)

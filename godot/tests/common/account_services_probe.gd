@@ -5,6 +5,9 @@ class Client extends Node:
 	var sign_in_calls := 0
 	var maintenance := false
 	var blocked := false
+	var claim_ok := true
+	func claim_inbox(_id: String, callback: Callable) -> void: callback.call({"ok": claim_ok})
+	func claim_inbox_batch(_ids: Array, callback: Callable) -> void: callback.call({"ok": claim_ok})
 	func is_under_maintenance() -> bool: return maintenance
 	func is_sdk_blocked() -> bool: return blocked
 	func update_gate_state() -> Dictionary: return {"kind": "ok"}
@@ -36,6 +39,16 @@ func _run() -> void:
 			push_error("Signed-out startup must preserve cached maintenance and update gates")
 			quit(1)
 			return
+	var notices: Array[bool] = []
+	services.server_inventory_changed.connect(func() -> void: notices.append(true))
+	for accepted in [true, false]:
+		client.claim_ok = accepted
+		services.claim("isolated-mail", func(_result: Dictionary) -> void: pass)
+		services.claim_batch(["isolated-mail"], func(_result: Dictionary) -> void: pass)
+	if notices.size() != 2:
+		push_error("Inventory refresh is emitted only after confirmed mailbox claims")
+		quit(1)
+		return
 	services.queue_free()
 	client.queue_free()
 	print("Account-required startup passed")

@@ -1,6 +1,7 @@
 extends Node
 ## 실제 공통 SDK만 받는다. 서버 오류를 로컬 지급으로 바꾸지 않는다.
 signal error_observed(code: String)
+signal server_inventory_changed
 var sdk: Node
 var credential_provider: Callable
 var async_credentials := false
@@ -92,13 +93,17 @@ func claim(id: String, callback: Callable) -> void:
 	if mode != "server" or sdk == null:
 		callback.call({"ok": false, "code": "service_unconnected"})
 		return
-	sdk.claim_inbox(id, callback)
+	sdk.claim_inbox(id, func(response: Dictionary) -> void:
+		if response.get("ok", false): server_inventory_changed.emit()
+		callback.call(response))
 
 func claim_batch(ids: Array, callback: Callable) -> void:
 	if mode != "server" or sdk == null:
 		callback.call({"ok": false, "code": "service_unconnected"})
 		return
-	sdk.claim_inbox_batch(ids, callback)
+	sdk.claim_inbox_batch(ids, func(response: Dictionary) -> void:
+		if response.get("ok", false): server_inventory_changed.emit()
+		callback.call(response))
 
 func read(id: String, callback: Callable) -> void:
 	if mode != "server" or sdk == null:
