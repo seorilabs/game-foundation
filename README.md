@@ -20,3 +20,5 @@ python3 /path/to/new-game/tools/bundle.py --root /path/to/new-game install --bun
 묶음은 계약 1.0.0, 원본 커밋, 파일 목록과 SHA-256, SDK v1.0.0 출처를 기록한다. 검수 결과는 [설계](docs/design/2026-10-25-game-foundation/design.md)와 QA 요약을 참조한다. 파일이 바뀌거나 추가된 기존 묶음은 갱신을 거부한다. 별도 버전 태그는 만들지 않는다. 생성용 저장소는 비공개 starter-template-game이다.
 
 현재 범위는 개발 환경 검수와 PR 병합까지다. 기기, 실제 결제, 운영 서버, 마켓 출시 검증을 포함하지 않는다.
+
+첫 실행은 `python3 tools/run.py`로도 할 수 있습니다. `npm start`와 `npm test` 명령에는 Node.js 24가 필요합니다. 자원 준비는 네트워크를 사용하지 않으며 생성 캐시는 Git에 넣지 않습니다.
