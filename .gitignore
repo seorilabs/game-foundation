@@ -1,0 +1,8 @@
+.DS_Store
+**/.godot/
+**/*.uid
+**/*.import
+**/__pycache__/
+build/
+node_modules/
+godot/build/
