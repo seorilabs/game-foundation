@@ -36,6 +36,10 @@ static func show_account(c: Control) -> void:
 		var action := str(item[0])
 		if c.accounts.capabilities().get(action, false):
 			c._button(str(item[1]), func() -> void: c.accounts.perform(action), grid).name = "account_" + action
+	for item in [["keep_cloud", c.tr_text("Load server progress", "서버 진행 불러오기")], ["keep_local", c.tr_text("Use this device's progress", "이 기기 진행 사용")]]:
+		var action := str(item[0])
+		if c.accounts.capabilities().get(action, false):
+			c._button(str(item[1]), func() -> void: confirmation(c, action), grid).name = "account_" + action
 	if c.accounts.port == null:
 		box.add_child(c._label(c.tr_text("Account services are unavailable in this build.", "이 빌드에서는 계정 서비스를 지원하지 않습니다.")))
 
@@ -87,6 +91,10 @@ static func confirm(c: Control) -> void:
 	var description: String = c.tr_text("Your current account will be signed out. Save its UID and link it before continuing.", "현재 계정에서 로그아웃합니다. 계속하기 전에 UID를 보관하고 계정을 연결해 주세요.")
 	if action == "delete":
 		description = c.tr_text("This requests permanent deletion of this account and its saved data. It cannot be undone.", "이 계정과 저장 데이터의 영구 삭제를 요청합니다. 되돌릴 수 없습니다.")
+	elif action == "keep_cloud":
+		description = c.tr_text("Replace this device's progress with the server save? Unsynced progress will be backed up on this device.", "서버 저장으로 이 기기의 진행을 바꿀까요? 아직 보내지 못한 진행은 이 기기에 백업합니다.")
+	elif action == "keep_local":
+		description = c.tr_text("Replace the server save with this device's progress? The other device's progress may be replaced.", "이 기기의 진행을 서버에 보낼까요? 다른 기기에서 진행한 내용이 바뀔 수 있습니다.")
 	box.add_child(c._label(description, 20))
 	var proceed: Button = c._button(c.tr_text("Confirm and continue", "확인하고 계속"), func() -> void: c.accounts.perform(action), box, true)
 	proceed.name = "account_confirm"
