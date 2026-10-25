@@ -217,6 +217,8 @@ func _apply_settings() -> void:
 				material.shadow_size = 2
 				material.shadow_offset = Vector2(0, 3 if state_name != "pressed" else 1)
 				theme.set_stylebox(state_name, cls, material)
+	theme.set_color("font_uneditable_color", "LineEdit", Color(palette.text))
+	theme.set_stylebox("read_only", "LineEdit", _skin(Color("fff8e5"), Color("94b3a6")))
 	for pair in [["Music", "music"], ["SFX", "sfx"]]:
 		var index := AudioServer.get_bus_index(pair[0])
 		if index == -1:
