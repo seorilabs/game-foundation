@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "level": "L3",
+  "baseline": "2a066414569b5e93683bb9b3cb9ac185db031c25",
+  "changedFeatures": [
+    "startup",
+    "tutorial",
+    "account_save",
+    "settings_support",
+    "inbox",
+    "commerce",
+    "observability",
+    "operations",
+    "ui_support_entry",
+    "ui_analytics_opt_out",
+    "ui_locale_offline",
+    "ui_navigation",
+    "ui_leaderboard"
+  ],
+  "environments": [
+    "dev"
+  ],
+  "redesign": true,
+  "foundationRerun": true,
+  "floorOverrides": [],
+  "release": null
+}

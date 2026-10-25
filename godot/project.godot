@@ -1,0 +1,19 @@
+config_version=5
+
+[application]
+config/name="Game Foundation Reference"
+config/version="1.0.0"
+run/main_scene="res://reference/bootstrap/main.tscn"
+
+[display]
+window/size/viewport_width=390
+window/size/viewport_height=844
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+
+[gui]
+theme/default_font_multichannel_signed_distance_field=true
