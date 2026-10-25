@@ -44,7 +44,12 @@ func _initialize_credential(credential: Dictionary, callback: Callable, generati
 	if credential.is_empty():
 		mails.clear()
 		cursor = ""
-		callback.call({"ok": true, "status": "account_required"})
+		if sdk.is_under_maintenance():
+			callback.call({"ok": false, "code": "maintenance"})
+		elif sdk.is_sdk_blocked() or sdk.update_gate_state().get("kind", "ok") == "required":
+			callback.call({"ok": false, "code": "update_required"})
+		else:
+			callback.call({"ok": true, "status": "account_required"})
 		return
 	sdk.sign_in(credential, func(response: Dictionary) -> void:
 		if generation != _authentication_generation:

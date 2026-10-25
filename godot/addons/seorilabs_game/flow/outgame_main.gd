@@ -665,7 +665,10 @@ func _camp_action() -> void:
 	if not startup_error.is_empty():
 		_initialize()
 	elif services.mode == "server" and not accounts.connected():
-		accounts.perform("create")
+		if accounts.port == null or not accounts.capabilities().get("create", false):
+			_show_error("service_unconnected")
+		else:
+			accounts.perform("create")
 	elif gameplay_ready.is_valid() and not gameplay_ready.call():
 		_show_error("cloud_save_not_ready")
 	elif screen == "title":

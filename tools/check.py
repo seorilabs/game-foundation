@@ -53,7 +53,10 @@ def main():
                     [godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', script, '--', '--out', str(out), '--size', a.size, *(['--capture'] if a.capture else [])]]
         if (project / 'tests/game/core_probe.gd').is_file():
             commands.append([godot, '--headless', '--path', str(project), '--script', 'res://tests/game/core_probe.gd'])
+        for probe in ['accounts_probe.gd', 'account_services_probe.gd']:
+            commands.append([godot, '--headless', '--path', str(project), '--script', 'res://tests/common/' + probe])
         if kind == 'reference':
+            commands.append([godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', 'res://tests/reference/camp_probe.gd', '--', '--out', str(out / 'camp'), '--size', '568x320', *(['--capture'] if a.capture else [])])
             commands.append([godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', 'res://tests/reference/ui_navigation_probe.gd', '--', '--out', str(out / 'navigation'), *(['--capture'] if a.capture else [])])
         head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
         env = {**os.environ, 'GITHUB_SHA': head}

@@ -17,6 +17,7 @@ func _ready() -> void:
 	_text(controller.game_title, Rect2(32, 80, 490, 92), 36, Color("fff8e5"))
 	var connected: bool = controller.accounts.connected()
 	var status: String = controller.tr_text("Account connected", "계정 연결됨") if connected else controller.tr_text("Connect your account", "계정을 연결해 주세요")
+	if not controller.accounts.error.is_empty(): status = controller._error_text(controller.accounts.error)
 	_text(status, Rect2(32, 182, 480, 44), 22, Color("244c53"))
 	var resources: String = str(controller.resource_provider.call()) if controller.resource_provider.is_valid() else "★  %d" % int(controller.state.data.get("coins", 0))
 	_text(resources, Rect2(32, 244, 370, 76), 32, Color("fff8e5"))
