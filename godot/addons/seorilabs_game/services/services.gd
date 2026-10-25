@@ -3,13 +3,16 @@ extends Node
 signal error_observed(code: String)
 var sdk: Node
 var credential_provider: Callable
+var async_credentials := false
+var _authentication_generation := 0
 var mode := "local"
 var mails: Array = []
 var cursor := ""
 
-func configure(client: Node, provider: Callable) -> void:
+func configure(client: Node, provider: Callable, asynchronous: bool = false) -> void:
 	sdk = client
 	credential_provider = provider
+	async_credentials = asynchronous
 	mode = "server"
 
 func initialize(callback: Callable) -> void:
@@ -19,24 +22,50 @@ func initialize(callback: Callable) -> void:
 	if sdk == null or not credential_provider.is_valid():
 		callback.call({"ok": false, "code": "service_unconnected"})
 		return
-	var credential: Dictionary = credential_provider.call()
+	_authentication_generation += 1
+	var generation := _authentication_generation
+	if async_credentials:
+		credential_provider.call(func(result: Dictionary) -> void:
+			if generation != _authentication_generation:
+				return
+			if not result.get("ok", false):
+				callback.call(result)
+				return
+			if result.get("session_ready", false):
+				_initialize_session(callback, generation)
+				return
+			_initialize_credential(result.get("credential", {}), callback, generation)
+		)
+	else:
+		_initialize_credential(credential_provider.call(), callback, generation)
+
+func _initialize_credential(credential: Dictionary, callback: Callable, generation: int) -> void:
+	# An empty credential is a signed-out user, not a failed sign-in or a request to create an account.
+	if credential.is_empty():
+		mails.clear()
+		cursor = ""
+		callback.call({"ok": true, "status": "account_required"})
+		return
 	sdk.sign_in(credential, func(response: Dictionary) -> void:
+		if generation != _authentication_generation:
+			return
 		if not response.get("ok", false):
 			callback.call(response)
 			return
-		var config: Dictionary = sdk.current_config()
-		if sdk.is_under_maintenance():
-			callback.call({"ok": false, "code": "maintenance"})
-		elif str(sdk.update_gate_state().get("kind", "ok")) == "required" or sdk.is_sdk_blocked():
-			callback.call({"ok": false, "code": "update_required"})
-		else:
-			list_mail(func(mail_response: Dictionary) -> void:
-				if mail_response.get("ok", false):
-					callback.call({"ok": true, "status": "server", "config": config})
-				else:
-					callback.call(mail_response)
-			)
+		_initialize_session(callback, generation)
 	)
+
+func _initialize_session(callback: Callable, generation: int) -> void:
+	var config: Dictionary = sdk.current_config()
+	if sdk.is_under_maintenance():
+		callback.call({"ok": false, "code": "maintenance"})
+	elif str(sdk.update_gate_state().get("kind", "ok")) == "required" or sdk.is_sdk_blocked():
+		callback.call({"ok": false, "code": "update_required"})
+	else:
+		list_mail(func(response: Dictionary) -> void:
+			if generation != _authentication_generation: return
+			callback.call({"ok": true, "status": "server", "config": config} if response.get("ok", false) else response)
+		)
 
 func list_mail(callback: Callable, more: bool = false) -> void:
 	if mode != "server" or sdk == null:
