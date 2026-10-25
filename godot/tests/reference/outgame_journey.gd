@@ -267,7 +267,7 @@ func _homes() -> void:
 				e2e.step("locked stage cannot activate", not await e2e.tap(_button(main, "locked_stage")))
 			e2e.step("map target opens play", await e2e.tap(_button(main, "map_stage")) and main.screen == "play")
 		await e2e.unmount(main)
-	for product in ["skyway", "windharbor"]:
+	for product in ["skyway", "map", "windharbor"]:
 		var hook: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://reference/config/" + product + ".json"))
 		var main: Control = await _mount(dir + "/hook-" + product + ".json", null, true, hook.homeProfile, hook)
 		e2e.step("own product title", _has_text(main, hook.title))

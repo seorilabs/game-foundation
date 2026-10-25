@@ -11,10 +11,17 @@ func _init() -> void:
  home_actions = _home_actions
  feature_routes.building = _building
  launch_game = _launch_round
- var product := "skyway"
+ var runtime: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://config/runtime.json"))
+ var product := str(runtime.get("product", "skyway"))
  var args := OS.get_cmdline_user_args()
  if args.has("--product"):
-  product = args[args.find("--product") + 1]
+  var index := args.find("--product") + 1
+  if index < args.size() and args[index] in ["skyway", "map", "windharbor"]:
+   product = args[index]
+  else:
+   push_warning("Use --product skyway, map or windharbor; using skyway")
+   product = "skyway"
+ if product not in ["skyway", "map", "windharbor"]: product = "skyway"
  var file := FileAccess.open("res://reference/config/" + product + ".json", FileAccess.READ)
  if file != null:
   var hook: Dictionary = JSON.parse_string(file.get_as_text())
@@ -109,3 +116,11 @@ func _building() -> void:
  upgrade.name = "upgrade"
  upgrade.disabled = state.data.coins < 20
 
+
+func _ready() -> void:
+ var runtime: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://config/runtime.json"))
+ if runtime.get("mode") != "local" or runtime.get("networkRequired", true):
+  push_error("Reference runtime requires offline local mode")
+  get_tree().quit(1)
+  return
+ super._ready()
