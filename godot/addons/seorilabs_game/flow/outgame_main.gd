@@ -669,6 +669,10 @@ func _camp_action() -> void:
 			_show_error("service_unconnected")
 		else:
 			accounts.perform("create")
+	elif services.mode == "server" and services.sdk != null and services.sdk.is_under_maintenance():
+		_show_error("maintenance")
+	elif services.mode == "server" and services.sdk != null and (services.sdk.is_sdk_blocked() or services.sdk.update_gate_state().get("kind", "ok") == "required"):
+		_show_error("update_required")
 	elif gameplay_ready.is_valid() and not gameplay_ready.call():
 		_show_error("cloud_save_not_ready")
 	elif screen == "title":
@@ -868,7 +872,7 @@ func _error_text(code: String) -> String:
 		"expected_uid_required": return tr_text("Enter the UID of the account you want to recover.", "복구할 이전 계정의 UID를 입력해 주세요.")
 		"cloud_save_not_ready", "cloud_save_pending": return tr_text("Wait for cloud saving, then refresh your account.", "클라우드 저장을 기다린 뒤 계정을 다시 확인해 주세요.")
 		"copied": return tr_text("Code copied", "코드를 복사했어요")
-		"copy_failed": return tr_text("Copy failed. Select the code to copy it.", "복사하지 못했습니다. 코드를 선택해 복사해 주세요.")
+		"copy_failed": return tr_text("Copy failed. Select the code to copy it.", "복사하지 못했습니다. 복사 버튼을 다시 눌러 주세요.")
 		"save_failed": return tr_text("Could not save. Try again.", "저장하지 못했습니다. 다시 시도해 주세요.")
 		"save_corrupt", "save_schema_invalid": return tr_text("The save could not be read. Your data was preserved.", "저장을 읽지 못했습니다. 기존 데이터는 보존했습니다.")
 		"save_newer_version": return tr_text("Update the game to open this save.", "이 저장을 열려면 게임을 업데이트해 주세요.")
