@@ -213,7 +213,11 @@ func _axis_move(view_start: float, view_size: float, start: float, size: float) 
 	var center := start + size / 2.0
 	var hidden: bool
 	if size <= view_size:
-		hidden = start < view_start or start + size > view_start + view_size
+		# Global Rect2 edges can differ after their float32 coordinates are added
+		# as GDScript floats. Treat approximately equal edges as visible.
+		var above := start < view_start and not is_equal_approx(start, view_start)
+		var below := start + size > view_start + view_size and not is_equal_approx(start + size, view_start + view_size)
+		hidden = above or below
 	else:
 		# 끝 경계는 입력 영역에 들지 않는다(Rect2.has_point). 중심이 끝 경계에 있으면 아직 가려진 것으로 본다.
 		hidden = center < view_start or center >= view_start + view_size

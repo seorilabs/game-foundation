@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "level": "L1",
+  "baseline": "c8f47a09ca34cd5aa65bb4db30cd97110bc9c18d",
+  "changedFeatures": [
+    "ui_navigation"
+  ],
+  "environments": [
+    "dev"
+  ],
+  "redesign": false,
+  "foundationRerun": false,
+  "floorOverrides": [],
+  "release": null
+}

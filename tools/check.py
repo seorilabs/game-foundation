@@ -56,6 +56,7 @@ def main():
         for probe in ['accounts_probe.gd', 'account_services_probe.gd']:
             commands.append([godot, '--headless', '--path', str(project), '--script', 'res://tests/common/' + probe])
         if kind == 'reference':
+            commands.append([godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', 'res://tests/reference/e2e_scroll_probe.gd', '--', '--out', str(out / 'scroll-boundary'), *(['--capture'] if a.capture else [])])
             commands.append([godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', 'res://tests/reference/camp_probe.gd', '--', '--out', str(out / 'camp'), '--size', '568x320', *(['--capture'] if a.capture else [])])
             commands.append([godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', 'res://tests/reference/ui_navigation_probe.gd', '--', '--out', str(out / 'navigation'), *(['--capture'] if a.capture else [])])
         head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
