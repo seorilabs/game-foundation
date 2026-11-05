@@ -154,9 +154,12 @@ func scroll_into_view(control: Control, max_drags := 30) -> bool:
 
 
 # 렌더링 모드에서만 장면을 PNG로 남긴다. headless에서는 아무것도 하지 않는다.
-func shot(name: String) -> void:
+## settle가 참이면 진입 모션이 끝난 뒤(약 0.3초) 찍는다. 모션 중간 프레임이 필요하면 false로 바로 찍는다.
+func shot(name: String, settle := true) -> void:
 	if not capture:
 		return
+	if settle:
+		await frames(20)
 	# Draw this offscreen viewport even when macOS pauses an occluded window.
 	RenderingServer.force_draw(false)
 	var path := out_dir.path_join("%s.png" % name)
