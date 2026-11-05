@@ -157,7 +157,9 @@ func _check_layers() -> void:
 		indexes.append((layers.get_node(name) as CanvasLayer).layer)
 	check(indexes == [0, 10, 20, 30, 40, 50], "layers: six canvas layers in ascending order")
 	var toast = layers.toast("Saved", 0.05)
-	check(toast.get_parent() == layers.layer("Toast") and toast.mouse_filter == Control.MOUSE_FILTER_IGNORE, "layers: toast lives in Toast layer and ignores input")
+	check(toast.get_parent().get_parent() == layers.layer("Toast") and toast.mouse_filter == Control.MOUSE_FILTER_IGNORE, "layers: toast lives in Toast layer stack and ignores input")
+	await process_frame
+	check(absf(toast.get_global_rect().get_center().x - layers.layer("Toast").size.x / 2.0) < 2.0, "layers: toast is centered horizontally (%s)" % str(toast.get_global_rect()))
 	for i in 40: await process_frame
 	check(not is_instance_valid(toast) or toast.is_queued_for_deletion() or toast.modulate.a < 0.05, "layers: toast leaves after its time")
 	layers.queue_free()

@@ -23,6 +23,10 @@ func set_value(next: int, animate := true) -> void:
 	else:
 		$Row/Value.text = format_amount(next)
 
+## 제품이 "★ 12"처럼 조합한 표시 문자열을 그대로 쓴다. 카운트업은 하지 않는다.
+func set_text(text: String) -> void:
+	$Row/Value.text = text
+
 ## 보상이 날아올 목표 좌표(아이콘 중심).
 func fly_target() -> Vector2:
 	return $Row/Icon.get_global_rect().get_center()

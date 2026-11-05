@@ -69,6 +69,8 @@ var _font_body: Font
 var sfx: Node
 var layers: Node
 var ceremony: Control
+var _reward_serial := 0
+var _reward_presented := 0
 var _skin_data: Dictionary = {}
 var palette: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://addons/seorilabs_game/skins/soft_adventure/skin.json"))
 
@@ -263,7 +265,8 @@ func _notification(what: int) -> void:
 
 func _clear(title: String) -> void:
 	_view += 1
-	if ceremony != null:
+	# 결과 화면을 같은 보상으로 다시 그릴 때는 진행 중인 연출을 유지하고, 다른 화면으로 가면 멈춘다.
+	if ceremony != null and screen != "result":
 		ceremony.skip()
 	for child in content.get_children():
 		content.remove_child(child)
@@ -331,7 +334,7 @@ func _button(text: String, action: Callable, parent: Node = null, primary: bool 
 	(parent if parent != null else content).add_child(button)
 	return button
 
-## 홈 재화 칩. 제품은 resource_provider로 표시 값을, icon_provider 없이 skin.json의 coin 아이콘을 쓴다.
+## 홈 재화 칩. resource_provider가 정수를 주면 카운트업 값으로, 문자열을 주면 그대로 표시하고, 없으면 코인 수를 쓴다.
 func _currency_chip(parent: Node) -> Control:
 	var chip := CurrencyChip.instantiate()
 	chip.name = "coins"
@@ -340,7 +343,11 @@ func _currency_chip(parent: Node) -> Control:
 	var icon: String = str(_skin_data.get("icons", {}).get("coin", ""))
 	if not icon.is_empty():
 		chip.set_icon(load(ThemeBuilder.DEFAULT_SKIN.path_join(icon)))
-	chip.set_value(int(state.data.coins), false)
+	var shown: Variant = resource_provider.call() if resource_provider.is_valid() else state.data.coins
+	if shown is int or shown is float:
+		chip.set_value(int(shown), false)
+	else:
+		chip.set_text(str(shown))
 	chip.add_pressed.connect(func() -> void: _open("shop"))
 	return chip
 
@@ -794,15 +801,20 @@ func _draw_result() -> void:
 	var headline := _label(reward_text, 28)
 	headline.name = "reward_text"
 	content.add_child(headline)
-	var item: Dictionary = popups.current.get("payload", {})
-	var reward := {"label": reward_text}
-	if item.has("amount"):
-		reward.amount = int(item.amount)
-		reward.label = tr_text("coins", "코인")
-		var icon: String = str(_skin_data.get("icons", {}).get("coin", ""))
-		if not icon.is_empty():
-			reward.icon = load(ThemeBuilder.DEFAULT_SKIN.path_join(icon))
-	ceremony.present([reward], tr_text("Reward", "보상"))
+	# 같은 보상을 순위 갱신 등으로 다시 그릴 때는 연출을 반복하지 않는다.
+	if _reward_presented != _reward_serial:
+		_reward_presented = _reward_serial
+		var item: Dictionary = popups.current.get("payload", {})
+		var reward := {"label": reward_text}
+		if int(item.get("amount", 0)) > 0:
+			reward.amount = int(item.amount)
+			reward.label = tr_text("coins", "코인")
+			var icon: String = str(_skin_data.get("icons", {}).get("coin", ""))
+			if not icon.is_empty():
+				reward.icon = load(ThemeBuilder.DEFAULT_SKIN.path_join(icon))
+		# 넓은 화면은 결과 버튼이 중앙을 차지하므로 제목 없이 아래 빈 띠에, 세로는 버튼 아래 넓은 영역에 연출한다.
+		var wide := size.x > size.y
+		ceremony.present([reward], "" if wide else tr_text("Reward", "보상"), null, null, 0, 0, Vector2(0.5, 0.86 if wide else 0.62))
 	if ranking.status == "submitting": content.add_child(_label(tr_text("Your score is being checked", "점수를 확인하고 있어요")))
 	if ranking.status == "submitted": content.add_child(_label(tr_text("Score accepted, rankings may update shortly", "점수를 접수했어요. 순위 반영까지 잠시 걸릴 수 있어요.")))
 	if ranking.status == "failed": _button(tr_text("Retry score submission", "점수 다시 보내기"), _submit_result).name = "submit_retry"
@@ -1080,6 +1092,7 @@ func _history() -> void:
 func _show_next_popup() -> void:
 	var item: Dictionary = popups.next()
 	if item.is_empty(): return
+	_reward_serial += 1
 	reward_text = str(item.payload.get("text", ""))
 	screen = "result"
 	_submit_result()

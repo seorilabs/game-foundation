@@ -13,9 +13,12 @@ func _ready() -> void:
 	visible = false
 
 ## items: [{"icon": Texture2D, "amount": int, "label": String}]. target은 재화 칩 같은 정착 지점, counter는 카운트업 라벨.
-func present(items: Array, headline := "", target: Control = null, counter: Label = null, counter_from := 0, counter_to := 0) -> void:
+## focus는 연출 중심의 화면 비율 좌표다. 주 버튼을 가리지 않는 빈 영역을 고른다.
+func present(items: Array, headline := "", target: Control = null, counter: Label = null, counter_from := 0, counter_to := 0, focus := Vector2(0.5, 0.5)) -> void:
 	_run += 1
 	var run := _run
+	$Stage.offset_top = (focus.y - 0.5) * 2.0 * size.y
+	$Stage.offset_left = (focus.x - 0.5) * 2.0 * size.x
 	# 직전 skip()의 퇴장 페이드가 새 연출을 지우지 않게 먼저 멈춘다.
 	if _out != null and _out.is_valid():
 		_out.kill()

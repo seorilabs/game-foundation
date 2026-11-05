@@ -277,7 +277,7 @@ func _homes() -> void:
 		var hook: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://reference/config/" + product + ".json"))
 		var main: Control = await _mount(dir + "/hook-" + product + ".json", null, true, hook.homeProfile, hook)
 		e2e.step("own product title", _has_text(main, hook.title))
-		e2e.step("same common version for " + product, hook.commonVersion == "1.0.0" and hook.runtime == "res://addons/seorilabs_game/flow/outgame_main.gd")
+		e2e.step("same common version for " + product, hook.commonVersion == "1.1.0" and hook.runtime == "res://addons/seorilabs_game/flow/outgame_main.gd")
 		await e2e.wait_for(func(): return main.initialized)
 		e2e.step("product title settings", await e2e.tap(_button(main, "settings")))
 		e2e.step("product support", await e2e.tap(_button(main, "support")) and main.support.status == "ready")
