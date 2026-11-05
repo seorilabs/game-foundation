@@ -121,6 +121,16 @@
         "godot/addons/seorilabs_game/**",
         "godot/reference/**"
       ]
+    },
+    {
+      "id": "ui_kit",
+      "core": true,
+      "foundation": false,
+      "paths": [
+        "godot/addons/seorilabs_game/ui_kit/**",
+        "godot/addons/seorilabs_game/skins/**",
+        "godot/tests/common/ui_kit_probe.gd"
+      ]
     }
   ]
 }
