@@ -82,20 +82,20 @@
     "popup_frame": {
       "normal": "ui_popup_frame.png",
       "margins": [
-        64,
-        64,
-        64,
-        64
-      ],
-      "content": [
-        32,
         48,
-        32,
+        48,
+        48,
         48
       ],
+      "content": [
+        24,
+        36,
+        24,
+        36
+      ],
       "minimum": [
-        136,
-        136
+        104,
+        104
       ],
       "axis": [
         "stretch",

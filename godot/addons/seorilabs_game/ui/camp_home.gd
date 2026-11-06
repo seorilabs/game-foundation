@@ -120,7 +120,8 @@ func _layout() -> void:
 			caption.size = Vector2(node.size.x - 6, node.size.y * 0.38)
 			caption.add_theme_font_size_override("font_size", maxi(14, roundi(28 * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))
 			var icon: TextureRect = node.get_meta("nav_icon")
-			icon.size = Vector2(44, 44) * scale_factor
+			# 그린 아이콘은 20px에서 덩어리로 보여 56 설계 px(568 폭에서 25px)로 키운다.
+			icon.size = Vector2(56, 56) * scale_factor
 			icon.position = Vector2((node.size.x - icon.size.x) / 2, node.size.y * 0.06)
 		var primary: bool = entry.primary
 		node.theme_type_variation = "PrimaryButton" if primary else ""
