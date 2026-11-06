@@ -102,6 +102,9 @@ static func shake(node: Control, amplitude := 6.0, seconds := 0.3) -> Tween:
 ## 상시 모션: 주 버튼이 숨 쉬듯 1.0~scale 사이를 오간다. 노드에 묶인 Tween이라 노드가 사라지면 함께 끝난다.
 static func idle_pulse(node: Control, amount := 1.03, period := 1.6) -> Tween:
 	center_pivot(node)
+	# 레이아웃 전(size 0)에 불려도 크기가 정해지면 축을 가운데로 다시 잡는다.
+	if not node.resized.is_connected(center_pivot.bind(node)):
+		node.resized.connect(center_pivot.bind(node))
 	if reduced_motion:
 		node.scale = Vector2.ONE
 		return _instant(node)

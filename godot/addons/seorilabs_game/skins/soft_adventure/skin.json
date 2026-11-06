@@ -11,20 +11,20 @@
       "pressed": "ui_button_primary_pressed.png",
       "disabled": "ui_button_primary_disabled.png",
       "margins": [
-        24,
-        20,
-        24,
-        22
+        18,
+        14,
+        18,
+        16
       ],
       "content": [
-        20,
-        8,
-        20,
-        10
+        16,
+        6,
+        16,
+        8
       ],
       "minimum": [
-        64,
-        48
+        56,
+        44
       ],
       "axis": [
         "stretch",
@@ -36,20 +36,20 @@
       "pressed": "ui_button_secondary_pressed.png",
       "disabled": "ui_button_primary_disabled.png",
       "margins": [
-        24,
-        20,
-        24,
-        22
+        18,
+        14,
+        18,
+        16
       ],
       "content": [
-        18,
-        8,
-        18,
-        10
+        14,
+        6,
+        14,
+        8
       ],
       "minimum": [
-        56,
-        44
+        48,
+        40
       ],
       "axis": [
         "stretch",
@@ -59,16 +59,16 @@
     "panel": {
       "normal": "ui_panel.png",
       "margins": [
-        21,
-        21,
-        21,
-        23
+        20,
+        20,
+        20,
+        22
       ],
       "content": [
-        16,
-        12,
-        16,
-        13
+        14,
+        10,
+        14,
+        12
       ],
       "minimum": [
         44,
@@ -82,43 +82,43 @@
     "popup_frame": {
       "normal": "ui_popup_frame.png",
       "margins": [
-        48,
-        48,
-        48,
-        48
+        44,
+        44,
+        44,
+        46
       ],
       "content": [
-        24,
-        36,
-        24,
+        22,
+        34,
+        22,
         36
       ],
       "minimum": [
-        104,
-        104
+        96,
+        96
       ],
       "axis": [
-        "stretch",
+        "tile",
         "tile"
       ]
     },
     "chip": {
       "normal": "ui_chip.png",
       "margins": [
-        28,
-        10,
-        28,
-        10
+        24,
+        8,
+        24,
+        8
       ],
       "content": [
-        22,
-        4,
-        22,
-        4
+        20,
+        2,
+        20,
+        2
       ],
       "minimum": [
-        64,
-        40
+        56,
+        36
       ],
       "axis": [
         "tile",
