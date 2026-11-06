@@ -67,7 +67,7 @@ static func build(dir: String = DEFAULT_SKIN, language: String = "en") -> Theme:
 		theme.set_stylebox("hover", cls, texture_box(dir, spec, "normal"))
 		theme.set_stylebox("pressed", cls, texture_box(dir, spec, "pressed"))
 		theme.set_stylebox("disabled", cls, texture_box(dir, spec, "disabled"))
-		theme.set_stylebox("focus", cls, focus_overlay(Color("286778")))
+		theme.set_stylebox("focus", cls, focus_overlay(Color(str(skin.get("focus", "#286778")))))
 	theme.set_stylebox("panel", "PanelContainer", texture_box(dir, textures.get("panel", {})))
 	theme.set_stylebox("panel", "Panel", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "PopupFrame", texture_box(dir, textures.get("popup_frame", {})))

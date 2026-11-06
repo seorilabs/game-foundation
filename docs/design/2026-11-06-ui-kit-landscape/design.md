@@ -1,6 +1,6 @@
 # 설계: ui_kit 가로 화면 보정과 제품 스킨 폴더 hook
 
-- 설계 ID·버전·원본 커밋: 2026-11-06-ui-kit-landscape v2, 기준 main `8c9a309b7cb090ad7c03595e7737dd27c81c2bbd`(v1 #13 병합 `bc21978`, v2는 main `f7cc20f` 위)
+- 설계 ID·버전·원본 커밋: 2026-11-06-ui-kit-landscape v3(v2 #15 병합 `17984c9`, v3는 main `c25effb` 위), 기준 main `8c9a309b7cb090ad7c03595e7737dd27c81c2bbd`(v1 #13 병합 `bc21978`, v2는 main `f7cc20f` 위)
 - 상태: 승인(2026-11-06 사용자, starter-template-game 검수 추가 회차 승인에 "skin_dir hook도 같은 foundation PR에 포함"으로 범위를 정함)
 - 관련: starter-template-game 설계 `2026-11-06-ui-kit-1-1-0`의 독립 검수 1·2회차(후보 `9217328`, fail), slot-defense #15, [ui_kit 설계](../2026-11-05-ui-kit/design.md)
 
@@ -28,6 +28,17 @@ starter-template-game에 #13 묶음을 설치해 돌린 독립 검수 4회차(56
 | 플랫폼 캠프 홈에서 긴 재화 문자열("★ 10  🎟 2")로 넓어진 칩이 두 줄 헤드라인과 겹침 | 칩이 내용 크기라 설계 자리 370px(배율 적용)를 넘는다 | `camp_home._layout`이 다음 프레임에 칩 최소 폭을 재서 자리 폭에 맞게 `scale`을 줄인다 |
 
 검사: 참조 여정이 가로일 때 연출 열이 `reward_continue`와 겹치지 않고 프레임 안쪽 사각형 안인지, `camp_probe`가 긴 재화 문자열을 주고 칩 폭이 자리 폭 이하인지 본다. 테스트 계획은 v1과 같다(L3 dev, redesign false).
+
+## v3 추가(2026-11-06, slot-defense 검수 1~3회차 fail에 따른 보정)
+
+slot-defense가 #15 묶음과 제품 스킨(`skin_dir`)으로 공통 화면을 전환하자 독립 검수 3회가 모두 같은 차단 결함으로 fail했다. 사용자가 "foundation에서 고치고(#17) 검수 3회 재실행"을 승인했다.
+
+| 결함 | 원인 | 보정 |
+|---|---|---|
+| 어두운 제품 스킨에서 지원코드 입력란이 크림 판(#fffdf3)에 밝은 글자라 코드가 안 보임 | `_draw_support`가 `_skin(Color("fffdf3"), …)`와 `palette.text`를 노드에 직접 덮어써 테마의 `LineEdit/read_only`(panel 텍스처)와 `font_uneditable_color`(skin.text)를 가린다 | 덮어쓰기 제거. 순위 카드의 `_skin(...)` 덮어쓰기도 `ChipPanel`(내 줄)·기본 판 변형으로 바꾼다 |
+| 키보드 초점 테두리가 고정 #286778이라 어두운 스킨에서 대비 3:1 | `theme_builder.focus_overlay` 고정 색 | `skin.json`의 `focus` 색(없으면 #286778)을 쓴다 |
+
+검사: 참조 여정이 지원 화면에서 `support_code`의 `read_only`가 테마 텍스처이고 덮어쓰기가 없는지, `ui_kit_probe`가 기본 스킨 초점 색을 유지하는지 본다. 테스트 계획은 v1과 같다.
 
 ## 사용자 흐름·화면 상태
 
