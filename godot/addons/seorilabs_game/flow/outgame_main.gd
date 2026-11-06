@@ -921,7 +921,7 @@ func _rank_row(row: Dictionary, self_row: bool = false) -> PanelContainer:
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.custom_minimum_size.y = 48
 	# 내 줄은 칩 판, 나머지는 기본 판으로 스킨 테마가 그린다.
-	card.theme_type_variation = &"ChipPanel" if self_row or row.get("isSelf", false) else &""
+	card.theme_type_variation = &"ChipPanel" if self_row or row.get("isSelf", false) else &"RowPanel"
 	var line := HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_PASS
 	line.add_theme_constant_override("separation", 7)

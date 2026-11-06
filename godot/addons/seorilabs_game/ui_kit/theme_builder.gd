@@ -1,7 +1,7 @@
 extends RefCounted
 ## skin.json v2로 Theme를 조립한다. 제품은 skin.json과 svg, 서체만 바꾸고 조립 규칙은 공통이다.
 const DEFAULT_SKIN := "res://addons/seorilabs_game/skins/soft_adventure"
-const VARIATIONS := {"PrimaryButton": "Button", "ChipPanel": "PanelContainer", "PopupFrame": "PanelContainer", "DisplayLabel": "Label", "TitleLabel": "Label", "NumberLabel": "Label", "CaptionLabel": "Label"}
+const VARIATIONS := {"PrimaryButton": "Button", "ChipPanel": "PanelContainer", "PopupFrame": "PanelContainer", "RowPanel": "PanelContainer", "DisplayLabel": "Label", "TitleLabel": "Label", "NumberLabel": "Label", "CaptionLabel": "Label"}
 
 static func load_skin(dir: String = DEFAULT_SKIN) -> Dictionary:
 	var parsed = JSON.parse_string(FileAccess.get_file_as_string(dir.path_join("skin.json")))
@@ -76,6 +76,8 @@ static func build(dir: String = DEFAULT_SKIN, language: String = "en") -> Theme:
 	theme.set_stylebox("panel", "Panel", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "PopupFrame", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "ChipPanel", texture_box(dir, textures.get("chip", {})))
+	# 한 줄 높이의 목록 행(순위, 짧은 카드)은 두꺼운 패널 대신 보조 버튼의 얇은 판을 쓴다.
+	theme.set_stylebox("panel", "RowPanel", texture_box(dir, textures.get("button_secondary", {})))
 	theme.set_stylebox("read_only", "LineEdit", texture_box(dir, textures.get("panel", {})))
 	theme.set_color("font_uneditable_color", "LineEdit", text)
 	theme.set_color("font_color", "Label", text)
