@@ -64,7 +64,7 @@ func _check_theme() -> void:
 
 func _check_focus() -> void:
 	# 초점 테두리 색은 skin.json의 focus(없으면 #286778)다. 어두운 스킨은 밝은 초점 색을 지정한다.
-	var theme: Theme = ThemeBuilder.build(ThemeBuilder.DEFAULT_SKIN, "en")
+	var theme: Theme = Builder.build(Builder.DEFAULT_SKIN, "en")
 	var focus: StyleBox = theme.get_stylebox("focus", "Button")
 	check(focus is StyleBoxFlat and (focus as StyleBoxFlat).border_color.is_equal_approx(Color("286778")), "focus: default skin keeps the soft-adventure focus color")
 
