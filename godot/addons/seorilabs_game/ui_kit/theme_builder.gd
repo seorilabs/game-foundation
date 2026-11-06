@@ -35,10 +35,17 @@ static func texture_box(dir: String, spec: Dictionary, state: String = "normal")
 	box.content_margin_right = float(content[2])
 	box.content_margin_bottom = float(content[3])
 	# 늘어나는 구역에 결(나뭇결, 바느질)이 있는 그린 스킨은 tile로 반복해 줄무늬가 생기지 않게 한다.
+	# tile_fit은 반복 횟수를 정수로 맞춰 마지막 타일이 잘리지 않게 한다(타일 끝 → 모서리 조각이 원래 이웃 픽셀로 이어진다).
 	var axis: Array = spec.get("axis", ["stretch", "stretch"])
-	box.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE if str(axis[0]) == "tile" else StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
-	box.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE if str(axis[1]) == "tile" else StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	box.axis_stretch_horizontal = _axis_mode(str(axis[0]))
+	box.axis_stretch_vertical = _axis_mode(str(axis[1]))
 	return box
+
+static func _axis_mode(name: String) -> StyleBoxTexture.AxisStretchMode:
+	match name:
+		"tile": return StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+		"tile_fit": return StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
+	return StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
 
 static func focus_overlay(color: Color) -> StyleBoxFlat:
 	var focus := StyleBoxFlat.new()
@@ -76,6 +83,9 @@ static func build(dir: String = DEFAULT_SKIN, language: String = "en") -> Theme:
 	theme.set_stylebox("panel", "Panel", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "PopupFrame", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "ChipPanel", texture_box(dir, textures.get("chip", {})))
+	# 툴팁(잘린 재화 칩 원문 등)은 어두운 칩 판에 밝은 글자로 띄운다. 기본 Label 색은 반투명 회색 바탕에서 대비가 1.6:1 아래였다.
+	theme.set_stylebox("panel", "TooltipPanel", texture_box(dir, textures.get("chip", {})))
+	theme.set_color("font_color", "TooltipLabel", Color("fff7df"))
 	# 한 줄 높이의 목록 행(순위, 짧은 카드)은 두꺼운 패널 대신 보조 버튼의 얇은 판을 쓴다.
 	theme.set_stylebox("panel", "RowPanel", texture_box(dir, textures.get("button_secondary", {})))
 	theme.set_stylebox("read_only", "LineEdit", texture_box(dir, textures.get("panel", {})))

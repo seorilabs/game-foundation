@@ -47,6 +47,27 @@ class UiKitTests(unittest.TestCase):
         for wav in (KIT / 'sfx').glob('*.wav'):
             self.assertLess(wav.stat().st_size, 200_000, wav.name)
 
+    def test_painted_skin_record_matches_skin_json(self):
+        # 생성 기록(manifest)의 후처리 margins가 skin.json과 같아야 재생성한 PNG가 같은 9분할로 맞는다.
+        manifest = json.loads((ROOT / 'art/skins/soft_adventure/asset-manifest.json').read_text())
+        skin = json.loads((SKIN / 'skin.json').read_text())
+        by_file = {}
+        for key, spec in skin['textures'].items():
+            for state in ('normal', 'pressed', 'disabled'):
+                if state in spec:
+                    by_file[spec[state]] = spec
+        for asset in manifest['assets']:
+            name = asset['name'] + '.png'
+            self.assertTrue((SKIN / name).is_file(), name)
+            # 기대 최종 크기가 기록돼 있어 재생성한 PNG의 크기가 달라지면 후처리 도구가 멈춘다.
+            head = (SKIN / name).read_bytes()[16:24]
+            self.assertEqual(asset['postprocess'].get('expect_size'), [int.from_bytes(head[:4], 'big'), int.from_bytes(head[4:], 'big')], name)
+            tile = asset.get('postprocess', {}).get('tileable')
+            if tile:
+                self.assertEqual(tile['margins'], by_file[name]['margins'], name)
+                self.assertTrue(all(a.startswith('tile') for a, axis in zip(by_file[name]['axis'], 'hv') if axis in tile['axes']), name)
+        self.assertFalse((SKIN / 'art').exists(), 'generation records stay outside the shared bundle')
+
     def test_motion_defaults_match_skin_table(self):
         skin = json.loads((SKIN / 'skin.json').read_text())['motion']
         juice = (KIT / 'juice.gd').read_text()

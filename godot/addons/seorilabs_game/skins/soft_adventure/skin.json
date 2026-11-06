@@ -82,10 +82,10 @@
     "popup_frame": {
       "normal": "ui_popup_frame.png",
       "margins": [
-        44,
-        44,
-        44,
-        46
+        62,
+        62,
+        62,
+        62
       ],
       "content": [
         22,
@@ -94,12 +94,12 @@
         36
       ],
       "minimum": [
-        96,
-        96
+        128,
+        128
       ],
       "axis": [
-        "tile",
-        "tile"
+        "tile_fit",
+        "tile_fit"
       ]
     },
     "chip": {
@@ -121,7 +121,7 @@
         36
       ],
       "axis": [
-        "tile",
+        "tile_fit",
         "stretch"
       ]
     }
