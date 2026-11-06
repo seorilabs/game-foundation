@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "9ed57790ef268a250acfcb681fc5ed306a4ce9af"
+    "commit": "c6480493caeaf88187eed8e8fcb2d5bdac66f713"
   },
   "sdk": {
     "version": "1.1.0",
@@ -55,7 +55,7 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_panel.png": "edbaee32fd650aba8c3e86593c96872f142795234ebe6a2391a54095857c48c5",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_popup_frame.png": "95dfd2d47c17c899ad48f3641d9377fc93c6a7c2d78127abb0a55c4781019bc8",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
-    "godot/addons/seorilabs_game/ui/camp_home.gd": "5811e117322923317bc484cb09c8bfaf5d88ecd40c8ea03db419df522e7169de",
+    "godot/addons/seorilabs_game/ui/camp_home.gd": "6d436cf61324f41c03c539053cede80ea546fd4fd0e706721fd1182873265472",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
     "godot/addons/seorilabs_game/ui_kit/build_theme.gd": "ed4ca8e1a6ea0cb82e31c52b4bb2d7750f2ede316a2d07ed0639ec90088e0b6e",
     "godot/addons/seorilabs_game/ui_kit/currency_chip.gd": "fb00d037e2409e3c5d5096b0372052df625d1babfbb784eefbc9fcd8bbb232cb",
@@ -93,7 +93,7 @@
     "godot/addons/seorilabs_platform/platform_client.gd": "493e5f3803f3e84bfa10dbde47e5df4c169068b7522fe9ac03ff4942c2f869e0",
     "godot/tests/common/account_services_probe.gd": "159cf4622f47226ef6321aeda9e5e5464fa7ad3994692d90f3b86042f9acd18f",
     "godot/tests/common/accounts_probe.gd": "1236852f716dfecccce68db13bb0637361c1efe264b5a91d3ff72de310b99a2a",
-    "godot/tests/common/e2e_driver.gd": "64c694105c89714a3fddfdab14dc7e27c5bb5e9e702c4763d2b58d098b9f63f0",
+    "godot/tests/common/e2e_driver.gd": "4f64e861497e7243c7a57dff7958edf67528b7a084f532784a92ccaeaa278f41",
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
     "godot/tests/common/outgame_contract_probe.gd": "cbdfa89fd89426a363ff1c1928bdf4ffd9c47fbbf95c99f7bc6f4495c7ddbaeb",
     "godot/tests/common/ui_kit_probe.gd": "f98ac6a1fde7f0689ef640e0f8510d97cdc1a75f914f1b5828defc4f9dc94ee7",
