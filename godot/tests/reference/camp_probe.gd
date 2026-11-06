@@ -37,6 +37,18 @@ func run() -> void:
 	await d.shot("camp-title")
 	for button in main.find_children("*", "Button", true, false):
 		d.step("large target " + str(button.name), button.size.y >= 55.9)
+	var chip := node(main, "coins")
+	d.step("currency chip replaces the plain label", chip != null and chip.get_node_or_null("Row/Value") != null and chip.get_node_or_null("Row/Icon") != null)
+	d.step("settings menu", await d.tap(node(main, "settings")) and main.screen == "settings")
+	# 프레임 pop_in(0.22초)이 끝난 뒤 잰다. 모션 중에는 backing이 0.94배라 안쪽 사각형이 작다.
+	await d.frames(40)
+	var backing: Control = main.backing
+	var content: Control = main.content
+	var frame: StyleBox = backing.get_theme_stylebox("panel")
+	var inner: Rect2 = backing.get_global_rect().grow_individual(-frame.get_content_margin(SIDE_LEFT), -frame.get_content_margin(SIDE_TOP), -frame.get_content_margin(SIDE_RIGHT), -frame.get_content_margin(SIDE_BOTTOM))
+	d.step("modal content stays inside the frame art", inner.encloses(content.get_global_rect()))
+	await d.shot("camp-settings")
+	d.step("settings close", await d.tap(node(main, "close")) and main.screen in ["home", "title"])
 	d.step("account menu", await d.tap(node(main, "account")) and main.screen == "account")
 	await d.shot("account-signed-out")
 	d.step("button creates account", await d.tap(node(main, "account_create")) and main.accounts.connected())
