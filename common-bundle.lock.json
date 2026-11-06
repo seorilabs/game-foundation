@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "4606f27bd74e0605dedd9f19397df9b2c09f56cf"
+    "commit": "45472a409c07cff8560ce609c8464fc8368407e7"
   },
   "sdk": {
     "version": "1.1.0",
@@ -45,7 +45,7 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_settings.png": "36db0bfe1c62095bc945f328d1b4644a6d2a63e02ab8bcae6f1454af9384befc",
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_shop.png": "d0e59c1ca7ad3612518ca023414650bdf81c91fdd30a528dcd1d8320cd764ec0",
     "godot/addons/seorilabs_game/skins/soft_adventure/skin.json": "5e65d8250db1a6869f7618abf5fcdef80170e5ed64e0b6dcf494838a6242e956",
-    "godot/addons/seorilabs_game/skins/soft_adventure/theme.tres": "210a8af3a13b201084f0d8251e285fa17f26fbec892a0aeeddedd8e7a809d534",
+    "godot/addons/seorilabs_game/skins/soft_adventure/theme.tres": "8389c6a9d18421bbfeaeff9142324206959338297c92e755ce92ada81468c6e5",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_button_primary_disabled.png": "6711063c1e8e71994131b1f082409741e8e1f47eb12f59a7d8de614b082c5b98",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_button_primary_normal.png": "127d9f402c995c0af5e2e9d6d7a243348a69232fc6a38c4b28c31ffc92d94c9d",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_button_primary_pressed.png": "95342c7356387b117a96befea98575f7d84b4305f5267f7bdc52a114727bfa18",
@@ -55,7 +55,7 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_panel.png": "edbaee32fd650aba8c3e86593c96872f142795234ebe6a2391a54095857c48c5",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_popup_frame.png": "95dfd2d47c17c899ad48f3641d9377fc93c6a7c2d78127abb0a55c4781019bc8",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
-    "godot/addons/seorilabs_game/ui/camp_home.gd": "4f8fffd9303669589140fe979cefefcfe770409e4584b79908627a7c0b0fed60",
+    "godot/addons/seorilabs_game/ui/camp_home.gd": "3e9d187d0f66b746446fcc3e67157f35819b88f00ae066c130f4cee3cb012a52",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
     "godot/addons/seorilabs_game/ui_kit/build_theme.gd": "ed4ca8e1a6ea0cb82e31c52b4bb2d7750f2ede316a2d07ed0639ec90088e0b6e",
     "godot/addons/seorilabs_game/ui_kit/currency_chip.gd": "77796f313069b572ce4d41f53d76519e5a64c9cfcab4dff0ef3f630671567963",
@@ -75,7 +75,7 @@
     "godot/addons/seorilabs_game/ui_kit/sfx/error.wav": "507d8d354bdabf94fa11580e41b4ca0b0826520c43b8f63ba0cb2e0fa2b5ab89",
     "godot/addons/seorilabs_game/ui_kit/sfx/reward_sting.wav": "8c8eaf3f7fa00dfc11902667cb4c9fd0a5c2da2e25bfaf8cc94b959fd68b5b9a",
     "godot/addons/seorilabs_game/ui_kit/sfx/tap.wav": "e816691c3953ad444e3c926e65dc7f51cc1e6470c7831071fe33051666d516c0",
-    "godot/addons/seorilabs_game/ui_kit/theme_builder.gd": "6decaed989d0b5d8fb2b606575ec990ef51e1c4f5a75e15819209bc9e02b411e",
+    "godot/addons/seorilabs_game/ui_kit/theme_builder.gd": "df811f065dd4d801d601a558837d241f9ec3dd1eee246c09f3175b629caeed6f",
     "godot/addons/seorilabs_game/ui_kit/ui_sfx.gd": "8f4a77f193daa3fe9487568bb82484e34726e4975579b107547cecb514367bcd",
     "godot/addons/seorilabs_platform/CHECKSUM": "31d5273efd257f7fed416fb80c072542527e4912dd7584ffb65500c97d54c03e",
     "godot/addons/seorilabs_platform/LICENSE": "44a6be16b60cab758678f098d2e1a9964305ce870ab39f338c9d7a397ad2d7fc",
@@ -96,7 +96,7 @@
     "godot/tests/common/e2e_driver.gd": "4f64e861497e7243c7a57dff7958edf67528b7a084f532784a92ccaeaa278f41",
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
     "godot/tests/common/outgame_contract_probe.gd": "cbdfa89fd89426a363ff1c1928bdf4ffd9c47fbbf95c99f7bc6f4495c7ddbaeb",
-    "godot/tests/common/ui_kit_probe.gd": "f98ac6a1fde7f0689ef640e0f8510d97cdc1a75f914f1b5828defc4f9dc94ee7",
+    "godot/tests/common/ui_kit_probe.gd": "8c2360804f4bec3b95b8e2cfa78c1ffed0f8d646d788b9e21bef00a30d4d4aff",
     "godot/tests/common/ui_standard_contract_probe.gd": "119b131183484c5178d73771166c79bb9910a6bab334d16cee1a47c5be0d43ca"
   }
 }
