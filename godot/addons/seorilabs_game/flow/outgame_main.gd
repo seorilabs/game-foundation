@@ -349,7 +349,7 @@ func _currency_chip(parent: Node) -> Control:
 	var icon: String = str(_skin_data.get("icons", {}).get("coin", ""))
 	if not icon.is_empty():
 		chip.set_icon(load(skin_dir.path_join(icon)))
-	var shown: Variant = resource_provider.call() if resource_provider.is_valid() else state.data.coins
+	var shown: Variant = resource_provider.call() if resource_provider.is_valid() else int(state.data.get("coins", 0))
 	if shown is int or shown is float:
 		chip.set_value(int(shown), false)
 	else:

@@ -98,6 +98,8 @@ func _layout() -> void:
 		if entry.has("chip"):
 			# 칩은 내용 크기로 두고 숫자 글자만 배율에 맞춘다.
 			node.size = Vector2.ZERO
+			# 캠프의 모든 버튼은 56px 이상의 터치 영역을 가진다. (+)는 상점이 있을 때만 보인다.
+			node.get_node("Row/Add").custom_minimum_size = Vector2(56, 56)
 			node.get_node("Row/Value").add_theme_font_size_override("font_size", maxi(16, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))
 			continue
 		node.size = rect.size * scale_factor
