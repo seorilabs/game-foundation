@@ -40,6 +40,8 @@ func run() -> void:
 	var chip := node(main, "coins")
 	d.step("currency chip replaces the plain label", chip != null and chip.get_node_or_null("Row/Value") != null and chip.get_node_or_null("Row/Icon") != null)
 	d.step("settings menu", await d.tap(node(main, "settings")) and main.screen == "settings")
+	# 프레임 pop_in(0.22초)이 끝난 뒤 잰다. 모션 중에는 backing이 0.94배라 안쪽 사각형이 작다.
+	await d.frames(40)
 	var backing: Control = main.backing
 	var content: Control = main.content
 	var frame: StyleBox = backing.get_theme_stylebox("panel")
