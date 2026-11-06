@@ -143,15 +143,15 @@ variation_opentype = {
 }
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lk5nx"]
-content_margin_left = 26.0
-content_margin_top = 22.0
-content_margin_right = 26.0
-content_margin_bottom = 24.0
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 13.0
 texture = ExtResource("6_f1bor")
-texture_margin_left = 34.0
-texture_margin_top = 34.0
-texture_margin_right = 34.0
-texture_margin_bottom = 36.0
+texture_margin_left = 21.0
+texture_margin_top = 21.0
+texture_margin_right = 21.0
+texture_margin_bottom = 23.0
 
 [sub_resource type="FontVariation" id="FontVariation_xcbl8"]
 base_font = ExtResource("7_4thm1")
@@ -160,9 +160,9 @@ variation_opentype = {
 }
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ggo4v"]
-content_margin_left = 44.0
+content_margin_left = 32.0
 content_margin_top = 48.0
-content_margin_right = 44.0
+content_margin_right = 32.0
 content_margin_bottom = 48.0
 texture = ExtResource("8_4b4r8")
 texture_margin_left = 64.0
@@ -172,20 +172,20 @@ texture_margin_bottom = 64.0
 axis_stretch_vertical = 1
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_omsdp"]
-content_margin_left = 26.0
-content_margin_top = 22.0
-content_margin_right = 26.0
-content_margin_bottom = 24.0
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 13.0
 texture = ExtResource("6_f1bor")
-texture_margin_left = 34.0
-texture_margin_top = 34.0
-texture_margin_right = 34.0
-texture_margin_bottom = 36.0
+texture_margin_left = 21.0
+texture_margin_top = 21.0
+texture_margin_right = 21.0
+texture_margin_bottom = 23.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_srfl3"]
-content_margin_left = 44.0
+content_margin_left = 32.0
 content_margin_top = 48.0
-content_margin_right = 44.0
+content_margin_right = 32.0
 content_margin_bottom = 48.0
 texture = ExtResource("8_4b4r8")
 texture_margin_left = 64.0

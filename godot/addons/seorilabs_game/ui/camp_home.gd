@@ -115,12 +115,13 @@ func _layout() -> void:
 			continue
 		if node.has_meta("caption"):
 			var caption: Label = node.get_meta("caption")
-			caption.position = Vector2(3, node.size.y * 0.53)
-			caption.size = Vector2(node.size.x - 6, node.size.y * 0.4)
+			# 플랭크 아래 테두리(약 8px) 안에 글자가 들어오게 위로 당기고, 아이콘은 윗변에 붙인다.
+			caption.position = Vector2(3, node.size.y * 0.44)
+			caption.size = Vector2(node.size.x - 6, node.size.y * 0.38)
 			caption.add_theme_font_size_override("font_size", maxi(14, roundi(28 * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))
 			var icon: TextureRect = node.get_meta("nav_icon")
 			icon.size = Vector2(44, 44) * scale_factor
-			icon.position = Vector2((node.size.x - icon.size.x) / 2, node.size.y * 0.12)
+			icon.position = Vector2((node.size.x - icon.size.x) / 2, node.size.y * 0.06)
 		var primary: bool = entry.primary
 		node.theme_type_variation = "PrimaryButton" if primary else ""
 		node.add_theme_constant_override("icon_max_width", maxi(20, roundi(44 * scale_factor)))
