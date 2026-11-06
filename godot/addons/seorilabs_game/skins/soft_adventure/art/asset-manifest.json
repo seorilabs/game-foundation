@@ -1,0 +1,171 @@
+{
+  "style": "style/style-guide.md",
+  "anchor": {
+    "path": "../../../../../reference/assets/soft-adventure.png"
+  },
+  "model": "gemini-3-pro-image",
+  "out_dir": ".",
+  "assets": [
+    {
+      "name": "ui_button_primary_normal",
+      "prompt": "First image controls the painted art style; second image is the selected home screen whose UI surfaces this must match. Primary action button plate for a 16:9 canvas: a chunky golden wooden plank with rounded corners, bright top highlight band, darker bottom rim, thin dark leather edge, small brass rivets only in the four corners. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "16:9",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 160,
+        "height": 90
+      },
+      "refs": [
+        "style/ui-reference.png"
+      ]
+    },
+    {
+      "name": "ui_button_primary_pressed",
+      "prompt": "Pressed state of the exact plank in the second image: same canvas, same corner and rivet positions, same size; darker gold, highlight band dimmed, plate looks pushed in by 2px. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "16:9",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 160,
+        "height": 90
+      },
+      "refs": [
+        "raw/ui_button_primary_normal.png"
+      ]
+    },
+    {
+      "name": "ui_button_primary_disabled",
+      "prompt": "Disabled state of the exact plank in the second image: same canvas and geometry; desaturated grey-beige wood, no highlight, flat lighting, 60% contrast. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "16:9",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 160,
+        "height": 90
+      },
+      "refs": [
+        "raw/ui_button_primary_normal.png"
+      ]
+    },
+    {
+      "name": "ui_button_secondary_normal",
+      "prompt": "First image controls the painted art style; second image is the selected home screen whose UI surfaces this must match. Secondary button plate for a 16:9 canvas: light birch wood plank with cream face, rounded corners, thin leather strap edge, small brass rivets only in the corners, soft top highlight. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "16:9",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 160,
+        "height": 90
+      },
+      "refs": [
+        "style/ui-reference.png"
+      ]
+    },
+    {
+      "name": "ui_button_secondary_pressed",
+      "prompt": "Pressed state of the exact birch plank in the second image: same canvas and geometry; slightly darker face, highlight dimmed, pushed in by 2px. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "16:9",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 160,
+        "height": 90
+      },
+      "refs": [
+        "raw/ui_button_secondary_normal.png"
+      ]
+    },
+    {
+      "name": "ui_panel",
+      "prompt": "First image controls the painted art style; second image is the selected home screen whose UI surfaces this must match. Content panel surface for a square canvas: light birch wood board with rounded corners, leather strap frame around the edge, brass rivets only in the four corners, cream inner face suitable for text on top. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "1:1",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 256,
+        "height": 256
+      },
+      "refs": [
+        "style/ui-reference.png"
+      ]
+    },
+    {
+      "name": "ui_popup_frame",
+      "prompt": "First image controls the painted art style; second image is the selected home screen whose UI surfaces this must match. Popup dialog frame for a square canvas: a thick wooden frame with leather-wrapped border, brass corner caps, warm cream inner face, slightly larger corner ornaments than the panel, suitable for a modal window. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "1:1",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 320,
+        "height": 320
+      },
+      "refs": [
+        "style/ui-reference.png"
+      ]
+    },
+    {
+      "name": "ui_chip",
+      "prompt": "First image controls the painted art style; second image is the selected home screen whose UI surfaces this must match. Currency chip pill for a 16:9 canvas: a dark leather pouch-shaped rounded pill with brass stitching line, slightly lighter leather center band, small brass caps only at the left and right ends. The surface fills about 92% of the canvas, centered, with a uniform margin of magenta around it. Fixed decorative corners stay within the outer 18% of the width and height; the middle bands of every edge and the whole center are perfectly uniform so they can stretch (nine-slice). Text-free, no glyphs, no icons. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette.",
+      "aspect_ratio": "16:9",
+      "transparent": true,
+      "final_canvas": {
+        "mode": "preserve-layout",
+        "width": 96,
+        "height": 54
+      },
+      "refs": [
+        "style/ui-reference.png"
+      ]
+    },
+    {
+      "name": "icon_coin",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a gold coin with a star emblem.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    },
+    {
+      "name": "icon_account",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a cream round portrait badge with a fox face silhouette.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    },
+    {
+      "name": "icon_shop",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a small wooden market stall with a striped awning.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    },
+    {
+      "name": "icon_inbox",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a cream envelope with a wax seal.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    },
+    {
+      "name": "icon_ads",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a wooden film clapperboard with a play triangle.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    },
+    {
+      "name": "icon_operations",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a brass compass rose.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    },
+    {
+      "name": "icon_settings",
+      "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a brass cog wheel.",
+      "size": 128,
+      "transparent": true,
+      "aspect_ratio": "1:1"
+    }
+  ]
+}

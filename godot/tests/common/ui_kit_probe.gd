@@ -23,6 +23,8 @@ func _run() -> void:
 	host.theme = load(Builder.DEFAULT_SKIN.path_join("theme.tres"))
 	_check_theme()
 	_check_focus()
+	await _check_ambient(false)
+	await _check_ambient(true)
 	await _check_popup(false)
 	await _check_popup(true)
 	await _check_reward(false)
@@ -61,6 +63,23 @@ func _check_theme() -> void:
 	check(skin.get("contract") == "1.1.0" and skin.has("textures") and skin.has("fonts") and skin.has("motion"), "skin.json v2 records contract, textures, fonts, motion")
 	var built := Builder.build(Builder.DEFAULT_SKIN, "ko")
 	check(built.get_font("font", "TitleLabel") != theme.get_font("font", "TitleLabel"), "korean display font differs from english build")
+
+func _check_ambient(reduced: bool) -> void:
+	# 상시 모션: 주 버튼 숨쉬기와 하이라이트 스윕. reduced_motion이면 배율이 1에 머물고 띠를 만들지 않는다.
+	Juice.reduced_motion = reduced
+	var button := Button.new()
+	button.size = Vector2(160, 56)
+	host.add_child(button)
+	Juice.idle_pulse(button, 1.05, 0.4)
+	Juice.shine(button, 0.6)
+	var moved := false
+	for i in 30:
+		await process_frame
+		if not button.scale.is_equal_approx(Vector2.ONE): moved = true
+	check(moved != reduced, "ambient %s: idle pulse %s" % [_mode(reduced), "moves" if not reduced else "stays still"])
+	check((button.get_node_or_null("Shine") != null) != reduced, "ambient %s: shine band %s" % [_mode(reduced), "exists" if not reduced else "absent"])
+	button.queue_free()
+	await process_frame
 
 func _check_focus() -> void:
 	# 초점 테두리 색은 skin.json의 focus(없으면 #286778)다. 어두운 스킨은 밝은 초점 색을 지정한다.
@@ -130,7 +149,7 @@ func _check_reward(reduced: bool) -> void:
 	low.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	low.size = Vector2(568, 320)
 	# 실제 결과 화면처럼 아이콘(64px)이 있는 카드가 기준이다.
-	low.present([{"icon": load("res://addons/seorilabs_game/skins/soft_adventure/icon_coin.svg"), "amount": 10, "label": "coins"}], "", null, null, 0, 0, Vector2(0.5, 0.86))
+	low.present([{"icon": load("res://addons/seorilabs_game/skins/soft_adventure/icon_coin.png"), "amount": 10, "label": "coins"}], "", null, null, 0, 0, Vector2(0.5, 0.86))
 	await process_frame
 	await process_frame
 	var column: Control = low.get_node("Stage/Column")
