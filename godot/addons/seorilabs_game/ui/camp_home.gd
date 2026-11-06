@@ -3,6 +3,8 @@ extends Control
 var controller: Control
 var title_screen := false
 var _placements: Array[Dictionary] = []
+## 재화 칩이 쓸 수 있는 오른쪽 끝(설계 px). 헤드라인(464)과 12px 띄운다.
+const CHIP_LIMIT_X := 452.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -96,26 +98,44 @@ func _layout() -> void:
 		var rect: Rect2 = entry.rect
 		node.position = origin + rect.position * scale_factor
 		if entry.has("chip"):
-			# 칩은 내용 크기로 두고 숫자 글자만 배율에 맞춘다.
-			node.size = Vector2.ZERO
-			# 캠프의 모든 버튼은 56px 이상의 터치 영역을 가진다. (+)는 상점이 있을 때만 보인다.
-			node.get_node("Row/Add").custom_minimum_size = Vector2(56, 56)
-			node.get_node("Row/Value").add_theme_font_size_override("font_size", maxi(16, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))
-			# 내용이 자리 폭(370 설계 px)보다 넓으면(긴 재화 문자열) 먼저 숫자 글자를 12px까지 줄인다. 칩 전체를 줄이면 (+) 터치 영역도
-			# 함께 줄어 568x320에서 37px가 됐다. 그래도 넘칠 때만 칩을 줄이되 (+)가 44px 아래로 내려가지 않게 한다.
-			var slot := rect.size.x * scale_factor
+			# 재화 칩은 내용 크기로 두되 헤드라인 시작(464 설계 px) 앞까지만 쓴다. (+)는 캠프 터치 기준(높이 56)과 폭 44를 지킨다.
+			# 넘치면 숫자 글자를 12px까지 줄이고, 그래도 넘치면 두 줄로 감싼다. 칩 전체를 줄이면 (+)가 함께 줄어 쓰지 않는다.
+			var add: Button = node.get_node("Row/Add")
+			add.custom_minimum_size = Vector2(44, 56)
+			var value: Label = node.get_node("Row/Value")
+			var frame := node.get_theme_stylebox("panel").duplicate() as StyleBox
+			frame.content_margin_left = 10
+			frame.content_margin_right = 10
+			node.add_theme_stylebox_override("panel", frame)
+			value.autowrap_mode = TextServer.AUTOWRAP_OFF
+			value.custom_minimum_size = Vector2.ZERO
 			var start_size := maxi(16, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0)
+			value.add_theme_font_size_override("font_size", start_size)
+			var slot := (CHIP_LIMIT_X - rect.position.x) * scale_factor
 			node.scale = Vector2.ONE
-			(func() -> void:
-				if not is_instance_valid(node): return
-				var value: Label = node.get_node("Row/Value")
-				var font_size := start_size
-				while font_size > 12 and node.get_combined_minimum_size().x > slot:
-					font_size -= 2
-					value.add_theme_font_size_override("font_size", font_size)
-				node.size = Vector2.ZERO
-				var have := maxf(node.size.x, node.get_combined_minimum_size().x)
-				node.scale = Vector2.ONE * clampf(slot / maxf(have, 1.0), 44.0 / 56.0, 1.0)).call_deferred()
+			node.size = Vector2.ZERO
+			# 남는 폭은 서체로 직접 잰다(컨테이너 최소 크기 캐시는 글자·스타일 변경 직후 늦게 갱신된다).
+			var row: HBoxContainer = node.get_node("Row")
+			var icon: Control = node.get_node("Row/Icon")
+			var gap := float(row.get_theme_constant("separation"))
+			var other := frame.content_margin_left + frame.content_margin_right + icon.custom_minimum_size.x + gap
+			if add.visible:
+				other += add.custom_minimum_size.x + gap
+			var font: Font = value.get_theme_font("font")
+			var outline := float(value.get_theme_constant("outline_size")) * 2.0
+			var room := slot - other
+			var font_size := start_size
+			while font_size > 12 and font.get_string_size(value.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline > room:
+				font_size = maxi(12, font_size - 2)
+			value.add_theme_font_size_override("font_size", font_size)
+			if font.get_string_size(value.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline > room:
+				# 한 줄에 안 들어가면 낱말 사이에서 두 줄로 감싼다. 폭은 가장 긴 낱말보다 좁게 잡지 않는다.
+				var widest := 0.0
+				for word in value.text.split(" ", false):
+					widest = maxf(widest, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline)
+				value.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				value.custom_minimum_size.x = clampf(room, widest, maxf(widest, room))
+			node.size = Vector2.ZERO
 			continue
 		node.size = rect.size * scale_factor
 		node.add_theme_font_size_override("font_size", maxi(16 if entry.has("button") else 11, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))

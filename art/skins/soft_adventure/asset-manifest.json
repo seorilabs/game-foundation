@@ -25,6 +25,10 @@
         "crop_to": [
           1360,
           765
+        ],
+        "expect_size": [
+          150,
+          82
         ]
       }
     },
@@ -47,6 +51,10 @@
         "crop_to": [
           1360,
           765
+        ],
+        "expect_size": [
+          150,
+          82
         ]
       }
     },
@@ -69,6 +77,10 @@
         "crop_to": [
           1360,
           765
+        ],
+        "expect_size": [
+          150,
+          82
         ]
       }
     },
@@ -91,6 +103,10 @@
         "crop_to": [
           1360,
           765
+        ],
+        "expect_size": [
+          148,
+          78
         ]
       }
     },
@@ -113,6 +129,10 @@
         "crop_to": [
           1360,
           765
+        ],
+        "expect_size": [
+          148,
+          78
         ]
       }
     },
@@ -131,7 +151,11 @@
       ],
       "postprocess": {
         "chroma_key": "#FF00FF",
-        "trim_alpha": true
+        "trim_alpha": true,
+        "expect_size": [
+          148,
+          149
+        ]
       }
     },
     {
@@ -164,7 +188,11 @@
           "band": 24,
           "k_band": 4,
           "k_face": 12
-        }
+        },
+        "expect_size": [
+          226,
+          226
+        ]
       }
     },
     {
@@ -199,7 +227,11 @@
           ],
           "band": 0,
           "k_face": 6
-        }
+        },
+        "expect_size": [
+          94,
+          48
+        ]
       }
     },
     {
@@ -209,7 +241,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     },
     {
@@ -219,7 +255,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     },
     {
@@ -229,7 +269,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     },
     {
@@ -239,7 +283,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     },
     {
@@ -249,7 +297,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     },
     {
@@ -259,7 +311,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     },
     {
@@ -269,7 +325,11 @@
       "transparent": true,
       "aspect_ratio": "1:1",
       "postprocess": {
-        "chroma_key": "#FF00FF"
+        "chroma_key": "#FF00FF",
+        "expect_size": [
+          128,
+          128
+        ]
       }
     }
   ],

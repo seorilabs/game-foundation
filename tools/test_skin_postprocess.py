@@ -1,7 +1,13 @@
+import importlib.util
 import unittest
-from PIL import Image
-import skin_postprocess as sp
 
+HAS_PIL = importlib.util.find_spec('PIL') is not None
+if HAS_PIL:
+    from PIL import Image
+    import skin_postprocess as sp
+
+# 후처리 도구는 스킨을 다시 만들 때 로컬에서 쓴다. Pillow가 없는 CI에서는 건너뛴다.
+@unittest.skipUnless(HAS_PIL, 'Pillow not installed')
 class SkinPostprocessTests(unittest.TestCase):
     def test_chroma_key_is_idempotent_and_keys_magenta(self):
         im = Image.new('RGBA', (8, 8), (255, 0, 255, 255))

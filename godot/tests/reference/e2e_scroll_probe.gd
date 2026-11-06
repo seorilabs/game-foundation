@@ -44,19 +44,20 @@ func run() -> void:
 	d.step("oversized center at exclusive end remains hidden", d._axis_move(0, 100, 0, 200) > 0)
 	d.expect_equal("oversized visible center remains usable", d._axis_move(0, 100, -25, 150), 0.0)
 	d.expect_equal("sub-pixel overflow from a fractional UI scale is visible", d._axis_move(0, 100, 52.25, 48), 0.0)
-	# 실제 경계: 버튼(높이 48.25)이 정수 높이 내용(428)보다 0.25px 넘쳐 스크롤 끝에서도 완전히 들어오지 않는다.
+	d.expect_equal("0.96px overflow (1024x600 scale) is visible", d._axis_move(0, 100, 52.96, 48), 0.0)
+	# 실제 경계: 버튼(높이 48.96)이 정수 높이 내용(428)보다 0.96px 넘쳐 스크롤 끝에서도 완전히 들어오지 않는다.
 	var fraction := Button.new()
 	fraction.text = "Status"
 	fraction.position = Vector2(0, 380)
-	fraction.size = Vector2(354, 48.25)
+	fraction.size = Vector2(354, 48.96)
 	fraction.mouse_filter = Control.MOUSE_FILTER_PASS
 	fraction.pressed.connect(func(): clicks += 1)
 	button.visible = false
 	body.add_child(fraction)
 	scroll.scroll_vertical = 0
 	await d.frames(4)
-	d.step("tap reaches a button that overflows the content by a quarter pixel", await d.tap(fraction))
-	d.expect_equal("quarter-pixel button pressed once", clicks, 2)
+	d.step("tap reaches a button that overflows the content by under a pixel", await d.tap(fraction))
+	d.expect_equal("sub-pixel button pressed once", clicks, 2)
 	var view := scroll.get_global_rect()
 	var rect := button.get_global_rect()
 	var scalar_difference := (float(rect.position.y) + float(rect.size.y)) - (float(view.position.y) + float(view.size.y))

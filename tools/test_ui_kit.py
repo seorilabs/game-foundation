@@ -59,6 +59,9 @@ class UiKitTests(unittest.TestCase):
         for asset in manifest['assets']:
             name = asset['name'] + '.png'
             self.assertTrue((SKIN / name).is_file(), name)
+            # 기대 최종 크기가 기록돼 있어 재생성한 PNG의 크기가 달라지면 후처리 도구가 멈춘다.
+            head = (SKIN / name).read_bytes()[16:24]
+            self.assertEqual(asset['postprocess'].get('expect_size'), [int.from_bytes(head[:4], 'big'), int.from_bytes(head[4:], 'big')], name)
             tile = asset.get('postprocess', {}).get('tileable')
             if tile:
                 self.assertEqual(tile['margins'], by_file[name]['margins'], name)
