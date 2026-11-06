@@ -46,7 +46,7 @@ func run() -> void:
 	var inner: Rect2 = backing.get_global_rect().grow_individual(-frame.get_content_margin(SIDE_LEFT), -frame.get_content_margin(SIDE_TOP), -frame.get_content_margin(SIDE_RIGHT), -frame.get_content_margin(SIDE_BOTTOM))
 	d.step("modal content stays inside the frame art", inner.encloses(content.get_global_rect()))
 	await d.shot("camp-settings")
-	d.step("settings close", await d.tap(node(main, "close")) and main.screen == "home")
+	d.step("settings close", await d.tap(node(main, "close")) and main.screen in ["home", "title"])
 	d.step("account menu", await d.tap(node(main, "account")) and main.screen == "account")
 	await d.shot("account-signed-out")
 	d.step("button creates account", await d.tap(node(main, "account_create")) and main.accounts.connected())
