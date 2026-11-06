@@ -344,6 +344,7 @@ func _button(text: String, action: Callable, parent: Node = null, primary: bool 
 	return button
 
 ## 홈 재화 칩. resource_provider가 정수를 주면 카운트업 값으로, 문자열을 주면 그대로 표시하고, 없으면 코인 수를 쓴다.
+## 문자열에 재화가 여럿이면 재화 사이를 두 칸 이상의 공백으로 나눈다("★ 10    🎟 2"). 좁은 가로 캠프 홈은 재화 단위로 줄을 바꾼다.
 func _currency_chip(parent: Node) -> Control:
 	var chip := CurrencyChip.instantiate()
 	chip.name = "coins"

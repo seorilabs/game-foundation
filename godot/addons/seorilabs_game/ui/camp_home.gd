@@ -5,6 +5,8 @@ var title_screen := false
 var _placements: Array[Dictionary] = []
 ## 재화 칩이 쓸 수 있는 오른쪽 끝(설계 px). 헤드라인(464)과 12px 띄운다.
 const CHIP_LIMIT_X := 452.0
+## 시작 버튼의 위쪽 끝(설계 px). 재화 칩은 이보다 8px 위까지만 내려간다.
+const START_TOP_Y := 400.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -129,17 +131,20 @@ func _layout() -> void:
 			var room := slot - other
 			# 재화 문자열은 두 칸 이상의 공백으로 재화를 나눈다("★ 10    🎟 2"). 재화 하나(기호와 숫자)는 한 줄에 두고,
 			# 넘치면 재화 단위로 최대 두 줄에 채운다. 원래 문자열은 다시 배치할 때를 위해 메타에 둔다.
-			if not value.has_meta("source_text"):
-				value.set_meta("source_text", value.text)
-			var source: String = value.get_meta("source_text")
-			value.tooltip_text = source
-			var lines := _pack_currency(source, font, start_size, outline, room)
+			var source: String = value.get_meta("source_text", value.text)
+			node.tooltip_text = source
+			# 세로로는 시작 버튼 위(400 설계 px)에서 8px 띄운 곳까지 쓸 수 있다. 줄 수 한도는 이 높이에서 글자 크기별로 계산한다.
+			var vroom := (START_TOP_Y - 8.0 - rect.position.y) * scale_factor
+			var vpad := frame.content_margin_top + frame.content_margin_bottom
+			var spacing := float(value.get_theme_constant("line_spacing"))
+			# 외곽선 몇 px는 칩 안쪽 여백이 받아 주므로 배치 폭 판정에는 넣지 않는다.
+			var lines := _pack_currency(source, font, start_size, 0.0, room, vroom, vpad, spacing)
 			value.add_theme_font_size_override("font_size", int(lines[0]))
 			var packed: PackedStringArray = lines[1]
 			value.text = "\n".join(packed)
-			# 외곽선 몇 px는 칩 안쪽 여백이 받아 준다. 글자 자체가 자리보다 길 때만 자른다.
+			# 외곽선 몇 px는 칩 안쪽 여백이 받아 준다. 12px에서도 세로 공간에 다 들지 않을 때만(재화 넷 이상이 길 때)
+			# 마지막 줄을 말줄임으로 자른다. 원문은 칩의 tooltip에 둔다(숫자 라벨은 입력을 받지 않는다).
 			if _text_width(font, packed, int(lines[0]), 0.0) > room:
-				# 재화 하나가 12px에서도 자리보다 길면 줄 끝을 말줄임으로 자른다(원문은 tooltip).
 				value.clip_text = true
 				value.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 				value.custom_minimum_size.x = room
@@ -166,31 +171,55 @@ func _layout() -> void:
 
 const CURRENCY_GAP := "  "
 
-## 재화 문자열을 재화 단위로 나눠 가장 큰 글자 크기(start~12, 짝수 단위)에서 한 줄, 안 되면 두 줄에 채운다. [글자 크기, 줄 목록]을 돌려준다.
-static func _pack_currency(source: String, font: Font, start_size: int, outline: float, room: float) -> Array:
+## 재화 문자열을 재화 단위로 나눠, 가장 큰 글자 크기(start에서 2px씩, 12px 아래로는 내려가지 않음)와 가장 적은 줄 수로 채운다.
+## 줄 수 한도는 세로 공간(vroom)에서 글자 크기별로 계산한다. 재화 하나가 자리보다 길면(공백 하나로 구분한 문자열 등) 그 재화 안의 낱말 단위로 감싼다.
+## [글자 크기, 줄 목록]을 돌려준다.
+static func _pack_currency(source: String, font: Font, start_size: int, outline: float, room: float, vroom: float, vpad: float, spacing := 0.0) -> Array:
 	var groups := PackedStringArray()
 	var splitter := RegEx.create_from_string("\\s{2,}")
 	for part in splitter.sub(source.strip_edges(), "\t", true).split("\t", false):
-		groups.append(part.strip_edges().replace(" ", "\u00a0"))
+		groups.append(part.strip_edges())
 	if groups.is_empty():
 		return [maxi(12, start_size), PackedStringArray([source])]
 	var sizes: Array[int] = []
-	var size := start_size
+	var font_size := start_size
 	while true:
-		sizes.append(size)
-		if size <= 12: break
-		size = maxi(12, size - 2)
-	for limit in [1, 2]:
-		for font_size in sizes:
-			var lines := _greedy_lines(groups, font, font_size, outline, room)
-			if lines.size() <= limit and _text_width(font, lines, font_size, outline) <= room:
-				return [font_size, lines]
-	# 12px에서도 두 줄에 안 들면 셋째 줄부터는 둘째 줄 뒤에 붙인다(그 줄은 말줄임으로 잘린다).
-	var last := _greedy_lines(groups, font, 12, outline, room)
-	while last.size() > 2:
-		last[1] = last[1] + CURRENCY_GAP + last[2]
-		last.remove_at(2)
+		sizes.append(font_size)
+		if font_size <= 12: break
+		font_size = maxi(12, font_size - 2)
+	var most := 1
+	for size in sizes:
+		most = maxi(most, _line_capacity(font, size, vroom, vpad, spacing))
+	for limit in range(1, most + 1):
+		for size in sizes:
+			if limit > _line_capacity(font, size, vroom, vpad, spacing):
+				continue
+			var lines := _greedy_lines(_fit_groups(groups, font, size, outline, room), font, size, outline, room)
+			if lines.size() <= limit and _text_width(font, lines, size, outline) <= room:
+				return [size, lines]
+	# 12px에서도 세로 공간에 다 들지 않으면 넘친 줄을 마지막 줄 뒤에 붙인다(그 줄은 말줄임으로 잘린다).
+	var cap := _line_capacity(font, 12, vroom, vpad, spacing)
+	var last := _greedy_lines(_fit_groups(groups, font, 12, outline, room), font, 12, outline, room)
+	while last.size() > cap:
+		last[cap - 1] = last[cap - 1] + CURRENCY_GAP + last[cap]
+		last.remove_at(cap)
 	return [12, last]
+
+## Label 높이는 n줄 × 글자 높이 + (n-1) × 줄 간격이다.
+static func _line_capacity(font: Font, font_size: int, vroom: float, vpad: float, spacing: float) -> int:
+	return maxi(1, floori((vroom - vpad + spacing) / maxf(1.0, font.get_height(font_size) + spacing)))
+
+## 재화 하나는 줄바꿈 없는 공백으로 묶는다. 자리보다 긴 재화만 낱말 단위로 풀어 감쌀 수 있게 한다.
+static func _fit_groups(groups: PackedStringArray, font: Font, font_size: int, outline: float, room: float) -> PackedStringArray:
+	var out := PackedStringArray()
+	for group in groups:
+		var joined := group.replace(" ", "\u00a0")
+		if font.get_string_size(joined, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline <= room:
+			out.append(joined)
+		else:
+			for word in group.split(" ", false):
+				out.append(word)
+	return out
 
 static func _greedy_lines(groups: PackedStringArray, font: Font, font_size: int, outline: float, room: float) -> PackedStringArray:
 	var lines := PackedStringArray()

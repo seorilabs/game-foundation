@@ -50,7 +50,7 @@ func _chip_with_shop(dimensions: PackedStringArray) -> void:
 	d.step("chip value stays at 12px or larger", value.get_theme_font_size("font_size") >= 12)
 	d.step("chip does not overlap the headline", headline != null and not chip.get_global_rect().intersects(headline.get_global_rect()))
 	# 재화 하나(기호와 숫자)는 같은 줄에 있고, 칩은 두 줄 이내이며 시작 버튼과 겹치지 않는다.
-	var sources := ["★ 10    🎟 2", "1250    🎟 3", "★ 1,234,567    🎟 99,999", "★ 10    🎟 2    💎 5"]
+	var sources := ["★ 10    🎟 2", "1250    🎟 3", "★ 1,234,567    🎟 99,999", "★ 10    🎟 2    💎 5", "★ 123,456    💎 1,250    🎟 12", "★ 1,234,567    🎟 99,999    💎 12,345", "★ 1,234,567 🎟 99,999"]
 	for index in sources.size():
 		var source: String = sources[index]
 		main.resource_provider = func() -> String: return source
@@ -68,7 +68,9 @@ func _chip_with_shop(dimensions: PackedStringArray) -> void:
 				if line.contains(joined): found = true
 			intact = intact and found
 		var start := node(main, "start")
-		d.step("'%s' keeps each currency on one line in %d lines" % [source, lines.size()], intact and lines.size() <= 2)
+		# 공백 하나로 나눈 문자열은 재화 구분이 없으므로 한 덩어리로 보고, 잘리지 않는지만 본다.
+		var multi := source.contains("  ")
+		d.step("'%s' keeps each currency on one line in %d lines" % [source, lines.size()], (intact or not multi) and lines.size() <= 3)
 		var font: Font = value.get_theme_font("font")
 		var widest := 0.0
 		for line in lines:
