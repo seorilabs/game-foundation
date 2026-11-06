@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "level": "L3",
+  "baseline": "925cc8c629f58b9619d1b8fc7972a326714e341a",
+  "changedFeatures": ["ui_kit", "startup", "tutorial", "settings_support", "inbox", "commerce", "ui_navigation"],
+  "environments": ["dev"],
+  "redesign": true,
+  "foundationRerun": false,
+  "floorOverrides": [],
+  "release": null
+}
