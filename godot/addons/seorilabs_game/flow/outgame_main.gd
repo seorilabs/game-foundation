@@ -560,6 +560,10 @@ func _home() -> void:
 	var goal := PanelContainer.new()
 	# 한 줄 띠라 두꺼운 패널 테두리 대신 칩 판(얇은 알약)을 쓴다.
 	goal.theme_type_variation = &"ChipPanel"
+	# 칩 판은 어두운 가죽이라 목적지 글자는 밝은 색에 외곽선을 둔다.
+	target.add_theme_color_override("font_color", Color("fff7df"))
+	target.add_theme_color_override("font_outline_color", Color("3a2a16"))
+	target.add_theme_constant_override("outline_size", 3)
 	content.add_child(goal)
 	goal.add_child(target)
 	var play_full := _button(tr_text(home_text.action[0], home_text.action[1]), func() -> void: _open("play"), null, true)
