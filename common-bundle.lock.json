@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "335bc3444c6bed60ed147a2b15700db29c68f2f4"
+    "commit": "44b2471a90c0e47edfe540af3f710b267b49e76f"
   },
   "sdk": {
     "version": "1.1.0",
@@ -17,7 +17,7 @@
   },
   "files": {
     "godot/addons/seorilabs_game/README.md": "ee49c08aeae3a25dd148107148620f41969f5070b13133f1b2ebeb224d04cd09",
-    "godot/addons/seorilabs_game/flow/outgame_main.gd": "2b5d043996010447ffa83baf9083755357cebd6c7bd116f8639021dfd1ea5c39",
+    "godot/addons/seorilabs_game/flow/outgame_main.gd": "b073c3d4cbd545be94e668c2e63e9bd83c209b091ea6107995e6a39b3521b304",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
     "godot/addons/seorilabs_game/flow/state.gd": "c4f37aff8775ce5799f4f3d31f785e4f8a9bdc64b3619df6d652c52b4c933e5f",
     "godot/addons/seorilabs_game/fonts/Fredoka-OFL.txt": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab",
@@ -47,8 +47,8 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_operations.png": "8e7df2d7d84588ab0c1a8cf2a201278eaa3df60ca912e0aca1c265423ebd4ad9",
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_settings.png": "68c298369d59fb5bd597d6f9d9c07bac4f62f03a05406b870474720458d594a0",
     "godot/addons/seorilabs_game/skins/soft_adventure/icon_shop.png": "6ca72bd0f9f7d07819d8a6b1a16d2a62f3aa95e6cf1568021f58ddc1b5d85e7e",
-    "godot/addons/seorilabs_game/skins/soft_adventure/skin.json": "cfb284a6fc20e57553ac234152bef4671692dc18004cdf8ca5f9ddd427c23bcf",
-    "godot/addons/seorilabs_game/skins/soft_adventure/theme.tres": "f36aa6692b19862f39a7fe90e1272e8a6f9c3e87536d9b27b83ab1a110e69a29",
+    "godot/addons/seorilabs_game/skins/soft_adventure/skin.json": "998b8be8709eff6832314d4c25397834f3dd6993fa93eda1bab782d4650a873a",
+    "godot/addons/seorilabs_game/skins/soft_adventure/theme.tres": "eed9909e413566f2e59cb31dc84790097465bfd7a32a7f3b508c97f131a69ab9",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_button_primary_disabled.png": "0ab47602f5dbdb9e49ab206b8069019e9dc5c5ecfa6c00239de29cc3da22c82d",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_button_primary_normal.png": "b583f9c78774e14b4391693aded86077d6a2bcea52ec0621b33750c49411c990",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_button_primary_pressed.png": "82a0b3b392afdf84aca6d8efbfa952fed4c6e7cd1bb3c7d68b58948a150a2259",
