@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "c4999d674770ac63f1003dfdce0538b8d9a5bf44"
+    "commit": "4606f27bd74e0605dedd9f19397df9b2c09f56cf"
   },
   "sdk": {
     "version": "1.1.0",
@@ -17,7 +17,7 @@
   },
   "files": {
     "godot/addons/seorilabs_game/README.md": "ee49c08aeae3a25dd148107148620f41969f5070b13133f1b2ebeb224d04cd09",
-    "godot/addons/seorilabs_game/flow/outgame_main.gd": "a6c27e81bfbd018945520c59290c6b789d20f7a5e1d07d46d79ba4845ef18354",
+    "godot/addons/seorilabs_game/flow/outgame_main.gd": "af16b03a0a2e175a70578c3e8483ac5fc6a3105e01b71847eb59a0b750da0c94",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
     "godot/addons/seorilabs_game/flow/state.gd": "c4f37aff8775ce5799f4f3d31f785e4f8a9bdc64b3619df6d652c52b4c933e5f",
     "godot/addons/seorilabs_game/fonts/Fredoka-OFL.txt": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab",
@@ -55,10 +55,10 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_panel.png": "edbaee32fd650aba8c3e86593c96872f142795234ebe6a2391a54095857c48c5",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_popup_frame.png": "95dfd2d47c17c899ad48f3641d9377fc93c6a7c2d78127abb0a55c4781019bc8",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
-    "godot/addons/seorilabs_game/ui/camp_home.gd": "51c803a5b3af08c395390efcabf7a8eaf1ed7ba4d36b78cf7ad3cc5f4ee26106",
+    "godot/addons/seorilabs_game/ui/camp_home.gd": "4f8fffd9303669589140fe979cefefcfe770409e4584b79908627a7c0b0fed60",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
     "godot/addons/seorilabs_game/ui_kit/build_theme.gd": "ed4ca8e1a6ea0cb82e31c52b4bb2d7750f2ede316a2d07ed0639ec90088e0b6e",
-    "godot/addons/seorilabs_game/ui_kit/currency_chip.gd": "fb00d037e2409e3c5d5096b0372052df625d1babfbb784eefbc9fcd8bbb232cb",
+    "godot/addons/seorilabs_game/ui_kit/currency_chip.gd": "77796f313069b572ce4d41f53d76519e5a64c9cfcab4dff0ef3f630671567963",
     "godot/addons/seorilabs_game/ui_kit/currency_chip.tscn": "c2d80c329518e7ebd39b2ae070063c21581e6977e4254ecb8e34478d10a3cf49",
     "godot/addons/seorilabs_game/ui_kit/hud_layers.gd": "19bda38b82743b925205412f99e23d8ec9857c1a37c6b59dc32ab0333ffb60c6",
     "godot/addons/seorilabs_game/ui_kit/hud_layers.tscn": "0cc4d81f14714084119f14f5133a77e12d505b40176f874cfc871d7d65743764",
