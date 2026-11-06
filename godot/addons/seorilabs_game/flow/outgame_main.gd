@@ -526,7 +526,7 @@ func _home() -> void:
 		return
 	var hud := HBoxContainer.new()
 	content.add_child(hud)
-	_currency_chip(hud)
+	Juice.float_loop(_currency_chip(hud))
 	var hud_space := Control.new()
 	hud_space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hud_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -559,7 +559,10 @@ func _home() -> void:
 	var goal := PanelContainer.new()
 	content.add_child(goal)
 	goal.add_child(target)
-	_button(tr_text(home_text.action[0], home_text.action[1]), func() -> void: _open("play"), null, true).name = "play"
+	var play_full := _button(tr_text(home_text.action[0], home_text.action[1]), func() -> void: _open("play"), null, true)
+	play_full.name = "play"
+	Juice.idle_pulse(play_full)
+	Juice.shine(play_full)
 	var nav := HBoxContainer.new()
 	content.add_child(nav)
 	if commerce.available():
@@ -571,7 +574,7 @@ func _compact_home() -> void:
 	background.visible = false
 	var hud := HBoxContainer.new()
 	content.add_child(hud)
-	_currency_chip(hud)
+	Juice.float_loop(_currency_chip(hud))
 	var hud_space := Control.new()
 	hud_space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hud_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -600,7 +603,11 @@ func _compact_home() -> void:
 	actions.add_theme_constant_override("separation", 6)
 	split.add_child(actions)
 	actions.add_child(_label(tr_text(home_text.destination[0], home_text.destination[1]), 18))
-	_button(tr_text(home_text.action[0], home_text.action[1]), func() -> void: _open("play"), actions, true).name = "play"
+	var play := _button(tr_text(home_text.action[0], home_text.action[1]), func() -> void: _open("play"), actions, true)
+	play.name = "play"
+	# 상시 모션: 주 행동이 숨 쉬고 하이라이트가 지나간다(정지 화면이 앱처럼 보이는 것을 막는다).
+	Juice.idle_pulse(play)
+	Juice.shine(play)
 	if home_actions.is_valid(): home_actions.call(actions)
 	var nav := HBoxContainer.new()
 	actions.add_child(nav)

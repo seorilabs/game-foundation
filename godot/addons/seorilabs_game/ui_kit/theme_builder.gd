@@ -34,6 +34,10 @@ static func texture_box(dir: String, spec: Dictionary, state: String = "normal")
 	box.content_margin_top = float(content[1])
 	box.content_margin_right = float(content[2])
 	box.content_margin_bottom = float(content[3])
+	# 늘어나는 구역에 결(나뭇결, 바느질)이 있는 그린 스킨은 tile로 반복해 줄무늬가 생기지 않게 한다.
+	var axis: Array = spec.get("axis", ["stretch", "stretch"])
+	box.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE if str(axis[0]) == "tile" else StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	box.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE if str(axis[1]) == "tile" else StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
 	return box
 
 static func focus_overlay(color: Color) -> StyleBoxFlat:

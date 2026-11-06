@@ -83,7 +83,7 @@ func _button(text: String, id: String, rect: Rect2, action: Callable, icon: Stri
 	button.custom_minimum_size = Vector2.ZERO
 	button.add_theme_font_override("font", controller._font_title if controller._font_title != null else controller._font_body)
 	if not icon.is_empty():
-		button.icon = load("res://addons/seorilabs_game/skins/soft_adventure/icon_" + icon + ".svg")
+		button.icon = load("res://addons/seorilabs_game/skins/soft_adventure/icon_" + icon + ".png")
 		button.expand_icon = true
 	_placements.append({"node": button, "rect": rect, "font": 38 if primary else 36, "button": true, "primary": primary})
 	return button
