@@ -44,6 +44,8 @@ func run() -> void:
 	await d.frames(3)
 	var slot: float = 370.0 * minf(main.size.x / 1280.0, main.size.y / 720.0)
 	d.step("currency chip fits its slot (%d <= %d)" % [int(chip.get_global_rect().size.x), int(slot)], chip.get_global_rect().size.x <= slot + 1.0)
+	var add: Control = chip.get_node("Row/Add")
+	d.step("currency chip add button keeps a 44px touch target (%d)" % int(add.get_global_rect().size.y), not add.visible or add.get_global_rect().size.y >= 43.9)
 	d.step("settings menu", await d.tap(node(main, "settings")) and main.screen == "settings")
 	# 프레임 pop_in(0.22초)이 끝난 뒤 잰다. 모션 중에는 backing이 0.94배라 안쪽 사각형이 작다.
 	await d.frames(40)

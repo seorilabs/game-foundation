@@ -101,13 +101,21 @@ func _layout() -> void:
 			# 캠프의 모든 버튼은 56px 이상의 터치 영역을 가진다. (+)는 상점이 있을 때만 보인다.
 			node.get_node("Row/Add").custom_minimum_size = Vector2(56, 56)
 			node.get_node("Row/Value").add_theme_font_size_override("font_size", maxi(16, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))
-			# 내용이 자리 폭(370 설계 px)보다 넓으면(긴 재화 문자열) 칩을 축소해 헤드라인 자리와 겹치지 않게 한다. 최소 크기는 다음 프레임에 갱신된다.
+			# 내용이 자리 폭(370 설계 px)보다 넓으면(긴 재화 문자열) 먼저 숫자 글자를 12px까지 줄인다. 칩 전체를 줄이면 (+) 터치 영역도
+			# 함께 줄어 568x320에서 37px가 됐다. 그래도 넘칠 때만 칩을 줄이되 (+)가 44px 아래로 내려가지 않게 한다.
 			var slot := rect.size.x * scale_factor
+			var start_size := maxi(16, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0)
 			node.scale = Vector2.ONE
 			(func() -> void:
 				if not is_instance_valid(node): return
+				var value: Label = node.get_node("Row/Value")
+				var font_size := start_size
+				while font_size > 12 and node.get_combined_minimum_size().x > slot:
+					font_size -= 2
+					value.add_theme_font_size_override("font_size", font_size)
+				node.size = Vector2.ZERO
 				var have := maxf(node.size.x, node.get_combined_minimum_size().x)
-				node.scale = Vector2.ONE * minf(1.0, slot / maxf(have, 1.0))).call_deferred()
+				node.scale = Vector2.ONE * clampf(slot / maxf(have, 1.0), 44.0 / 56.0, 1.0)).call_deferred()
 			continue
 		node.size = rect.size * scale_factor
 		node.add_theme_font_size_override("font_size", maxi(16 if entry.has("button") else 11, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0))

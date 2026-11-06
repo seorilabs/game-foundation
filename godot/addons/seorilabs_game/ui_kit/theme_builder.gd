@@ -35,10 +35,17 @@ static func texture_box(dir: String, spec: Dictionary, state: String = "normal")
 	box.content_margin_right = float(content[2])
 	box.content_margin_bottom = float(content[3])
 	# 늘어나는 구역에 결(나뭇결, 바느질)이 있는 그린 스킨은 tile로 반복해 줄무늬가 생기지 않게 한다.
+	# tile_fit은 반복 횟수를 정수로 맞춰 마지막 타일이 잘리지 않게 한다(타일 끝 → 모서리 조각이 원래 이웃 픽셀로 이어진다).
 	var axis: Array = spec.get("axis", ["stretch", "stretch"])
-	box.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE if str(axis[0]) == "tile" else StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
-	box.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE if str(axis[1]) == "tile" else StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	box.axis_stretch_horizontal = _axis_mode(str(axis[0]))
+	box.axis_stretch_vertical = _axis_mode(str(axis[1]))
 	return box
+
+static func _axis_mode(name: String) -> StyleBoxTexture.AxisStretchMode:
+	match name:
+		"tile": return StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+		"tile_fit": return StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
+	return StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
 
 static func focus_overlay(color: Color) -> StyleBoxFlat:
 	var focus := StyleBoxFlat.new()

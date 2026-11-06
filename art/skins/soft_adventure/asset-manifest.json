@@ -1,7 +1,7 @@
 {
   "style": "style/style-guide.md",
   "anchor": {
-    "path": "../../../../../reference/assets/soft-adventure.png"
+    "path": "../../../godot/reference/assets/soft-adventure.png"
   },
   "model": "gemini-3-pro-image",
   "out_dir": ".",
@@ -18,7 +18,15 @@
       },
       "refs": [
         "style/ui-reference.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "crop_to": [
+          1360,
+          765
+        ]
+      }
     },
     {
       "name": "ui_button_primary_pressed",
@@ -32,7 +40,15 @@
       },
       "refs": [
         "raw/ui_button_primary_normal.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "crop_to": [
+          1360,
+          765
+        ]
+      }
     },
     {
       "name": "ui_button_primary_disabled",
@@ -46,7 +62,15 @@
       },
       "refs": [
         "raw/ui_button_primary_normal.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "crop_to": [
+          1360,
+          765
+        ]
+      }
     },
     {
       "name": "ui_button_secondary_normal",
@@ -60,7 +84,15 @@
       },
       "refs": [
         "style/ui-reference.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "crop_to": [
+          1360,
+          765
+        ]
+      }
     },
     {
       "name": "ui_button_secondary_pressed",
@@ -74,7 +106,15 @@
       },
       "refs": [
         "raw/ui_button_secondary_normal.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "crop_to": [
+          1360,
+          765
+        ]
+      }
     },
     {
       "name": "ui_panel",
@@ -83,12 +123,16 @@
       "transparent": true,
       "final_canvas": {
         "mode": "preserve-layout",
-        "width": 256,
-        "height": 256
+        "width": 160,
+        "height": 160
       },
       "refs": [
         "style/ui-reference.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true
+      }
     },
     {
       "name": "ui_popup_frame",
@@ -97,12 +141,31 @@
       "transparent": true,
       "final_canvas": {
         "mode": "preserve-layout",
-        "width": 320,
-        "height": 320
+        "width": 240,
+        "height": 240
       },
       "refs": [
         "style/ui-reference.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "tileable": {
+          "margins": [
+            62,
+            62,
+            62,
+            62
+          ],
+          "axes": [
+            "h",
+            "v"
+          ],
+          "band": 24,
+          "k_band": 4,
+          "k_face": 12
+        }
+      }
     },
     {
       "name": "ui_chip",
@@ -116,56 +179,100 @@
       },
       "refs": [
         "style/ui-reference.png"
-      ]
+      ],
+      "postprocess": {
+        "chroma_key": "#FF00FF",
+        "trim_alpha": true,
+        "crop_to": [
+          1360,
+          765
+        ],
+        "tileable": {
+          "margins": [
+            24,
+            8,
+            24,
+            8
+          ],
+          "axes": [
+            "h"
+          ],
+          "band": 0,
+          "k_face": 6
+        }
+      }
     },
     {
       "name": "icon_coin",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a gold coin with a star emblem.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     },
     {
       "name": "icon_account",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a cream round portrait badge with a fox face silhouette.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     },
     {
       "name": "icon_shop",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a small wooden market stall with a striped awning.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     },
     {
       "name": "icon_inbox",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a cream envelope with a wax seal.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     },
     {
       "name": "icon_ads",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a wooden film clapperboard with a play triangle.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     },
     {
       "name": "icon_operations",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a brass compass rose.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     },
     {
       "name": "icon_settings",
       "prompt": "Single centered cutout icon, painted casual game style matching the first image, bold simple silhouette, warm palette, thin dark outline, soft top-left highlight, readable at 32px. Solid flat pure magenta (#FF00FF) background filling the entire canvas outside the object, no gradient, no cast shadow, no vignette. Object: a brass cog wheel.",
       "size": 128,
       "transparent": true,
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "postprocess": {
+        "chroma_key": "#FF00FF"
+      }
     }
-  ]
+  ],
+  "postprocess_tool": "tools/skin_postprocess.py",
+  "notes": "raw는 Gemini 출력에 chroma_key와 16:9 crop_to를 적용한 상태로 NAS game-foundation/2026-11-06/4e9c7aa0fc820c9f80ebb8ed18878bc90aadba82/ui-kit-painted-skin-raw/raw 에 있다(원 출력은 그 단계에서 덮어썼다). 두 단계는 같은 결과를 내므로 다시 적용해도 된다."
 }
