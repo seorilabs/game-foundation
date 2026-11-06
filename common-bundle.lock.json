@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "8ce27dbb39d9a84075c4f4adcc21da9c6af4b8ad"
+    "commit": "53aa39f646f03755f57daa372f88eb5d4eb10b4d"
   },
   "sdk": {
     "version": "1.1.0",
@@ -96,7 +96,7 @@
     "godot/tests/common/e2e_driver.gd": "5c33e88183e96ecc86490812b00e18ef79113bd5b01a4ee29e38162117aa3cb0",
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
     "godot/tests/common/outgame_contract_probe.gd": "cbdfa89fd89426a363ff1c1928bdf4ffd9c47fbbf95c99f7bc6f4495c7ddbaeb",
-    "godot/tests/common/ui_kit_probe.gd": "d4f2a15e9b4a253d188dba3a7f7d8f13ecc3112670999da04a4dd0462b364896",
+    "godot/tests/common/ui_kit_probe.gd": "85e9c7ae42b306b349bdeea3cd7527ead7658e7f316324d7d0047addea239c8e",
     "godot/tests/common/ui_standard_contract_probe.gd": "119b131183484c5178d73771166c79bb9910a6bab334d16cee1a47c5be0d43ca"
   }
 }
