@@ -122,7 +122,8 @@ func _check_reward(reduced: bool) -> void:
 	host.add_child(low)
 	low.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	low.size = Vector2(568, 320)
-	low.present([{"amount": 10, "label": "coins"}], "", null, null, 0, 0, Vector2(0.5, 0.86))
+	# 실제 결과 화면처럼 아이콘(64px)이 있는 카드가 기준이다.
+	low.present([{"icon": load("res://addons/seorilabs_game/skins/soft_adventure/icon_coin.svg"), "amount": 10, "label": "coins"}], "", null, null, 0, 0, Vector2(0.5, 0.86))
 	await process_frame
 	await process_frame
 	var column: Control = low.get_node("Stage/Column")
