@@ -126,6 +126,13 @@ func _first_play() -> void:
 	await e2e.shot("reward-impact", false)
 	e2e.step("reward ceremony settle", await e2e.wait_for(func(): return main.ceremony.phase == "settle"))
 	await e2e.shot("reward-settle", false)
+	if main.size.x > main.size.y:
+		# 가로는 연출 열이 버튼 열과 겹치지 않고 프레임 안쪽 사각형 안에 있다.
+		var column: Control = main.ceremony.get_node("Stage/Column")
+		var backing: Control = main.backing
+		var frame: StyleBox = backing.get_theme_stylebox("panel")
+		var inner: Rect2 = backing.get_global_rect().grow_individual(-frame.get_content_margin(SIDE_LEFT), -frame.get_content_margin(SIDE_TOP), -frame.get_content_margin(SIDE_RIGHT), -frame.get_content_margin(SIDE_BOTTOM))
+		e2e.step("wide reward column clear of buttons", not column.get_global_rect().intersects(_button(main, "reward_continue").get_global_rect()) and inner.encloses(column.get_global_rect()))
 	e2e.step("reward ceremony finished", await e2e.wait_for(func(): return main.ceremony.phase == "done"))
 	await e2e.shot("reward")
 	e2e.expect_equal("completed run submitted once", main.ranking.port.submit_count, 1)

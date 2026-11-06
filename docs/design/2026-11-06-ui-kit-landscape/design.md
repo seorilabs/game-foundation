@@ -1,6 +1,6 @@
 # 설계: ui_kit 가로 화면 보정과 제품 스킨 폴더 hook
 
-- 설계 ID·버전·원본 커밋: 2026-11-06-ui-kit-landscape v1, 기준 main `8c9a309b7cb090ad7c03595e7737dd27c81c2bbd`
+- 설계 ID·버전·원본 커밋: 2026-11-06-ui-kit-landscape v2, 기준 main `8c9a309b7cb090ad7c03595e7737dd27c81c2bbd`(v1 #13 병합 `bc21978`, v2는 main `f7cc20f` 위)
 - 상태: 승인(2026-11-06 사용자, starter-template-game 검수 추가 회차 승인에 "skin_dir hook도 같은 foundation PR에 포함"으로 범위를 정함)
 - 관련: starter-template-game 설계 `2026-11-06-ui-kit-1-1-0`의 독립 검수 1·2회차(후보 `9217328`, fail), slot-defense #15, [ui_kit 설계](../2026-11-05-ui-kit/design.md)
 
@@ -17,6 +17,17 @@ starter-template-game(가로 전용, `landscape = true`)에 1.1.0 묶음을 설�
 같은 PR에 제품 스킨 폴더 hook `skin_dir`를 더한다. `outgame_main.gd`가 테마와 코인 아이콘을 `ThemeBuilder.DEFAULT_SKIN`으로 고정해 제품이 다른 스킨(slot-defense VD-B)을 쓰려면 묶음 파일을 고쳐야 했고, 그러면 해시 검증이 깨진다. 계약 버전은 1.1.0 그대로다(하위 호환, 기본값이 soft_adventure).
 
 제외: 세로 화면 배치, 캠프 그림(`camp.svg`)과 캠프 아이콘 경로(캠프 구성은 soft_adventure 전용 합성 화면), 소비 게임 전환.
+
+## v2 추가(2026-11-06, starter 검수 4회차 fail에 따른 보정)
+
+starter-template-game에 #13 묶음을 설치해 돌린 독립 검수 4회차(568x320)가 두 가지 겹침으로 fail했다(5회차 1024x600, 6회차 568x320은 pass). 사용자가 "foundation에서 둘 다 고치고 검수 3회 재실행"을 승인했다.
+
+| 결함 | 원인 | 보정 |
+|---|---|---|
+| 568x320 결과 화면에서 끌어올린 보상 코인이 Continue 버튼 하단 14~17px와 겹침 | 가로 결과 화면은 버튼이 전폭이라 빈 띠가 없다 | `_draw_result`가 가로에서 내용을 왼쪽 버튼 열(비율 3)과 오른쪽 연출 열(비율 2)로 나누고 연출 초점을 오른쪽 열 중심(내용 폭 0.8, 높이 0.55)에 둔다. 1024x600에서 "coins" 외곽선이 프레임 테두리에 5px 올라타던 것도 같이 사라지며, 연출 클램프 여유는 16→48px |
+| 플랫폼 캠프 홈에서 긴 재화 문자열("★ 10  🎟 2")로 넓어진 칩이 두 줄 헤드라인과 겹침 | 칩이 내용 크기라 설계 자리 370px(배율 적용)를 넘는다 | `camp_home._layout`이 다음 프레임에 칩 최소 폭을 재서 자리 폭에 맞게 `scale`을 줄인다 |
+
+검사: 참조 여정이 가로일 때 연출 열이 `reward_continue`와 겹치지 않고 프레임 안쪽 사각형 안인지, `camp_probe`가 긴 재화 문자열을 주고 칩 폭이 자리 폭 이하인지 본다. 테스트 계획은 v1과 같다(L3 dev, redesign false).
 
 ## 사용자 흐름·화면 상태
 
