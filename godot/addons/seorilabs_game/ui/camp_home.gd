@@ -107,7 +107,10 @@ func _layout() -> void:
 			frame.content_margin_left = 10
 			frame.content_margin_right = 10
 			node.add_theme_stylebox_override("panel", frame)
+			# _layout은 크기가 바뀔 때마다 다시 불린다(첫 호출은 화면 크기가 정해지기 전일 수 있다). 앞 배치의 자르기 설정을 매번 지운다.
 			value.autowrap_mode = TextServer.AUTOWRAP_OFF
+			value.clip_text = false
+			value.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 			value.custom_minimum_size = Vector2.ZERO
 			var start_size := maxi(16, roundi(entry.font * scale_factor)) + (2 if controller.state.data.get("settings", {}).get("large_text", false) else 0)
 			value.add_theme_font_size_override("font_size", start_size)
@@ -124,17 +127,22 @@ func _layout() -> void:
 			var font: Font = value.get_theme_font("font")
 			var outline := float(value.get_theme_constant("outline_size")) * 2.0
 			var room := slot - other
-			var font_size := start_size
-			while font_size > 12 and font.get_string_size(value.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline > room:
-				font_size = maxi(12, font_size - 2)
-			value.add_theme_font_size_override("font_size", font_size)
-			if font.get_string_size(value.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline > room:
-				# 한 줄에 안 들어가면 낱말 사이에서 두 줄로 감싼다. 폭은 가장 긴 낱말보다 좁게 잡지 않는다.
-				var widest := 0.0
-				for word in value.text.split(" ", false):
-					widest = maxf(widest, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline)
-				value.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-				value.custom_minimum_size.x = clampf(room, widest, maxf(widest, room))
+			# 재화 문자열은 두 칸 이상의 공백으로 재화를 나눈다("★ 10    🎟 2"). 재화 하나(기호와 숫자)는 한 줄에 두고,
+			# 넘치면 재화 단위로 최대 두 줄에 채운다. 원래 문자열은 다시 배치할 때를 위해 메타에 둔다.
+			if not value.has_meta("source_text"):
+				value.set_meta("source_text", value.text)
+			var source: String = value.get_meta("source_text")
+			value.tooltip_text = source
+			var lines := _pack_currency(source, font, start_size, outline, room)
+			value.add_theme_font_size_override("font_size", int(lines[0]))
+			var packed: PackedStringArray = lines[1]
+			value.text = "\n".join(packed)
+			# 외곽선 몇 px는 칩 안쪽 여백이 받아 준다. 글자 자체가 자리보다 길 때만 자른다.
+			if _text_width(font, packed, int(lines[0]), 0.0) > room:
+				# 재화 하나가 12px에서도 자리보다 길면 줄 끝을 말줄임으로 자른다(원문은 tooltip).
+				value.clip_text = true
+				value.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+				value.custom_minimum_size.x = room
 			node.size = Vector2.ZERO
 			continue
 		node.size = rect.size * scale_factor
@@ -154,3 +162,51 @@ func _layout() -> void:
 		var primary: bool = entry.primary
 		node.theme_type_variation = "PrimaryButton" if primary else ""
 		node.add_theme_constant_override("icon_max_width", maxi(20, roundi(44 * scale_factor)))
+
+
+const CURRENCY_GAP := "  "
+
+## 재화 문자열을 재화 단위로 나눠 가장 큰 글자 크기(start~12, 짝수 단위)에서 한 줄, 안 되면 두 줄에 채운다. [글자 크기, 줄 목록]을 돌려준다.
+static func _pack_currency(source: String, font: Font, start_size: int, outline: float, room: float) -> Array:
+	var groups := PackedStringArray()
+	var splitter := RegEx.create_from_string("\\s{2,}")
+	for part in splitter.sub(source.strip_edges(), "\t", true).split("\t", false):
+		groups.append(part.strip_edges().replace(" ", "\u00a0"))
+	if groups.is_empty():
+		return [maxi(12, start_size), PackedStringArray([source])]
+	var sizes: Array[int] = []
+	var size := start_size
+	while true:
+		sizes.append(size)
+		if size <= 12: break
+		size = maxi(12, size - 2)
+	for limit in [1, 2]:
+		for font_size in sizes:
+			var lines := _greedy_lines(groups, font, font_size, outline, room)
+			if lines.size() <= limit and _text_width(font, lines, font_size, outline) <= room:
+				return [font_size, lines]
+	# 12px에서도 두 줄에 안 들면 셋째 줄부터는 둘째 줄 뒤에 붙인다(그 줄은 말줄임으로 잘린다).
+	var last := _greedy_lines(groups, font, 12, outline, room)
+	while last.size() > 2:
+		last[1] = last[1] + CURRENCY_GAP + last[2]
+		last.remove_at(2)
+	return [12, last]
+
+static func _greedy_lines(groups: PackedStringArray, font: Font, font_size: int, outline: float, room: float) -> PackedStringArray:
+	var lines := PackedStringArray()
+	var current := ""
+	for group in groups:
+		var candidate := group if current.is_empty() else current + CURRENCY_GAP + group
+		if not current.is_empty() and font.get_string_size(candidate, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline > room:
+			lines.append(current)
+			current = group
+		else:
+			current = candidate
+	lines.append(current)
+	return lines
+
+static func _text_width(font: Font, lines: PackedStringArray, font_size: int, outline: float) -> float:
+	var widest := 0.0
+	for line in lines:
+		widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline)
+	return widest

@@ -49,6 +49,32 @@ func _chip_with_shop(dimensions: PackedStringArray) -> void:
 	d.step("add button keeps the camp touch target (%dx%d)" % [int(add.get_global_rect().size.x), int(add.get_global_rect().size.y)], add.get_global_rect().size.y >= 55.9 and add.get_global_rect().size.x >= 43.9)
 	d.step("chip value stays at 12px or larger", value.get_theme_font_size("font_size") >= 12)
 	d.step("chip does not overlap the headline", headline != null and not chip.get_global_rect().intersects(headline.get_global_rect()))
+	# 재화 하나(기호와 숫자)는 같은 줄에 있고, 칩은 두 줄 이내이며 시작 버튼과 겹치지 않는다.
+	var sources := ["★ 10    🎟 2", "1250    🎟 3", "★ 1,234,567    🎟 99,999", "★ 10    🎟 2    💎 5"]
+	for index in sources.size():
+		var source: String = sources[index]
+		main.resource_provider = func() -> String: return source
+		main._title()
+		await d.frames(6)
+		await d.shot("camp-chip-%d" % (index + 1))
+		chip = node(main, "coins")
+		value = chip.get_node("Row/Value")
+		var lines := value.text.split("\n")
+		var intact := true
+		for group in RegEx.create_from_string("\\s{2,}").sub(source, "\t", true).split("\t", false):
+			var joined := group.strip_edges().replace(" ", "\u00a0")
+			var found := false
+			for line in lines:
+				if line.contains(joined): found = true
+			intact = intact and found
+		var start := node(main, "start")
+		d.step("'%s' keeps each currency on one line in %d lines" % [source, lines.size()], intact and lines.size() <= 2)
+		var font: Font = value.get_theme_font("font")
+		var widest := 0.0
+		for line in lines:
+			widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, value.get_theme_font_size("font_size")).x)
+		d.step("'%s' value is drawn at its text width (%d >= %d)" % [source, int(value.size.x), int(widest)], value.size.x + 1.0 >= widest and not value.clip_text)
+		d.step("'%s' chip clears the start button" % source, start != null and not chip.get_global_rect().intersects(start.get_global_rect()))
 	await d.unmount(main)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path + ".bak"))
