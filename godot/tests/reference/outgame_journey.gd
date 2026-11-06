@@ -166,6 +166,9 @@ func _settings_support_language() -> void:
 	e2e.step("turn analytics off", await e2e.tap(_button(main, "analytics")))
 	e2e.step("collection and queue off", not main.analytics.effective and main.analytics.port.queue.is_empty())
 	e2e.step("support direct entry", await e2e.tap(_button(main, "support")))
+	# 입력란은 스킨 테마의 read_only 판으로 그린다(고정 색 덮어쓰기 없음).
+	var code: Control = main.find_child("support_code", true, false)
+	e2e.step("support code uses the skin theme", code != null and code.get_theme_stylebox("read_only") is StyleBoxTexture and not code.has_theme_stylebox_override("read_only"))
 	e2e.step("ready support code", main.support.code == "SK-7H2K9X4Q" and not _button(main, "copy").disabled)
 	await e2e.shot("support")
 	e2e.step("copy with boundary result", await e2e.tap(_button(main, "copy")) and _has_text(main, "Code copied"))

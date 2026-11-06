@@ -740,9 +740,7 @@ func _draw_support() -> void:
 	value.text = support.code if not support.code.is_empty() else tr_text("Checking…", "확인 중…") if support.status == "checking" else "—"
 	value.add_theme_font_override("font", _variable_font("res://addons/seorilabs_game/fonts/NotoSansMono.ttf", 500))
 	value.add_theme_font_size_override("font_size", _ui_font_size(21))
-	value.add_theme_color_override("font_uneditable_color", Color(palette.text))
-	value.add_theme_color_override("font_color", Color(palette.text))
-	value.add_theme_stylebox_override("read_only", _skin(Color("fffdf3"), Color("7e9b91")))
+	# 입력란 판과 글자색은 스킨 테마(LineEdit read_only = panel 텍스처, font_uneditable_color = skin.text)가 정한다. 고정 색을 칠하지 않는다.
 	value.custom_minimum_size.y = 56 * _ui_scale() if landscape else 54
 	box.add_child(value)
 	var description := tr_text("An identifier for customer support, not a password.", "고객지원에서 사용하는 식별코드입니다. 비밀번호가 아닙니다.")
@@ -908,7 +906,8 @@ func _rank_row(row: Dictionary, self_row: bool = false) -> PanelContainer:
 	var card := PanelContainer.new()
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.custom_minimum_size.y = 48
-	card.add_theme_stylebox_override("panel", _skin(Color("e5ebd2") if self_row or row.get("isSelf", false) else Color(palette.panel), Color("b4c4a0") if self_row else Color("e1e3d1"), 8))
+	# 내 줄은 칩 판, 나머지는 기본 판으로 스킨 테마가 그린다.
+	card.theme_type_variation = &"ChipPanel" if self_row or row.get("isSelf", false) else &""
 	var line := HBoxContainer.new()
 	line.mouse_filter = Control.MOUSE_FILTER_PASS
 	line.add_theme_constant_override("separation", 7)

@@ -22,6 +22,7 @@ func _run() -> void:
 	root.add_child(host)
 	host.theme = load(Builder.DEFAULT_SKIN.path_join("theme.tres"))
 	_check_theme()
+	_check_focus()
 	await _check_popup(false)
 	await _check_popup(true)
 	await _check_reward(false)
@@ -60,6 +61,12 @@ func _check_theme() -> void:
 	check(skin.get("contract") == "1.1.0" and skin.has("textures") and skin.has("fonts") and skin.has("motion"), "skin.json v2 records contract, textures, fonts, motion")
 	var built := Builder.build(Builder.DEFAULT_SKIN, "ko")
 	check(built.get_font("font", "TitleLabel") != theme.get_font("font", "TitleLabel"), "korean display font differs from english build")
+
+func _check_focus() -> void:
+	# 초점 테두리 색은 skin.json의 focus(없으면 #286778)다. 어두운 스킨은 밝은 초점 색을 지정한다.
+	var theme: Theme = ThemeBuilder.build(ThemeBuilder.DEFAULT_SKIN, "en")
+	var focus: StyleBox = theme.get_stylebox("focus", "Button")
+	check(focus is StyleBoxFlat and (focus as StyleBoxFlat).border_color.is_equal_approx(Color("286778")), "focus: default skin keeps the soft-adventure focus color")
 
 func _check_popup(reduced: bool) -> void:
 	Juice.reduced_motion = reduced
