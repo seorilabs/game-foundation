@@ -29,6 +29,8 @@ func run() -> void:
 	main.game_title = "Game Starter"
 	main.device_locale = arg(args, "--locale", "ko-KR")
 	main.accounts.port = AccountPort.new()
+	# 플랫폼 게임처럼 긴 재화 문자열을 주는 제품도 칩이 자리 폭을 넘지 않는다.
+	main.resource_provider = func() -> String: return "★ 10    🎟 2"
 	var path := "user://camp-probe-%d.json" % Time.get_ticks_usec()
 	main.state = State.new(path)
 	d.begin("landscape-account-buttons", ["startup", "ui_landscape", "account_save", "ui_navigation"])
@@ -39,6 +41,9 @@ func run() -> void:
 		d.step("large target " + str(button.name), button.size.y >= 55.9)
 	var chip := node(main, "coins")
 	d.step("currency chip replaces the plain label", chip != null and chip.get_node_or_null("Row/Value") != null and chip.get_node_or_null("Row/Icon") != null)
+	await d.frames(3)
+	var slot: float = 370.0 * minf(main.size.x / 1280.0, main.size.y / 720.0)
+	d.step("currency chip fits its slot (%d <= %d)" % [int(chip.get_global_rect().size.x), int(slot)], chip.get_global_rect().size.x <= slot + 1.0)
 	d.step("settings menu", await d.tap(node(main, "settings")) and main.screen == "settings")
 	# 프레임 pop_in(0.22초)이 끝난 뒤 잰다. 모션 중에는 backing이 0.94배라 안쪽 사각형이 작다.
 	await d.frames(40)
