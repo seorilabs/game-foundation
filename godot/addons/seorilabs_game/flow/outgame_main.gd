@@ -318,7 +318,9 @@ func _label(text: String, size: int = 16) -> Label:
 func _ui_scale() -> float:
 	# A 1280x720 canvas is reduced to 568x320 on small landscape screens.
 	# Scale modal controls too, so their 56px targets and 16px text survive that reduction.
-	return maxf(1.0, self.size.y / 320.0) if landscape else 1.0
+	# 너비 기준(568)도 함께 본다. 가로 전용 게임이 세로·4:3 창(웹 세로 화면)에 뜨면 높이만으로는 2.6배가 되어
+	# 제목이 1425px 높이로 부풀고 버튼이 화면 밖으로 밀렸다. 16:9 이상 가로 화면에서는 값이 같다.
+	return maxf(1.0, minf(self.size.x / 568.0, self.size.y / 320.0)) if landscape else 1.0
 
 func _ui_font_size(value: int) -> int:
 	var larger: bool = not state.data.is_empty() and state.data.get("settings", {}).get("large_text", false)
