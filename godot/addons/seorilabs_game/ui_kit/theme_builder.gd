@@ -83,6 +83,9 @@ static func build(dir: String = DEFAULT_SKIN, language: String = "en") -> Theme:
 	theme.set_stylebox("panel", "Panel", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "PopupFrame", texture_box(dir, textures.get("popup_frame", {})))
 	theme.set_stylebox("panel", "ChipPanel", texture_box(dir, textures.get("chip", {})))
+	# 툴팁(잘린 재화 칩 원문 등)은 어두운 칩 판에 밝은 글자로 띄운다. 기본 Label 색은 반투명 회색 바탕에서 대비가 1.6:1 아래였다.
+	theme.set_stylebox("panel", "TooltipPanel", texture_box(dir, textures.get("chip", {})))
+	theme.set_color("font_color", "TooltipLabel", Color("fff7df"))
 	# 한 줄 높이의 목록 행(순위, 짧은 카드)은 두꺼운 패널 대신 보조 버튼의 얇은 판을 쓴다.
 	theme.set_stylebox("panel", "RowPanel", texture_box(dir, textures.get("button_secondary", {})))
 	theme.set_stylebox("read_only", "LineEdit", texture_box(dir, textures.get("panel", {})))

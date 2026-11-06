@@ -263,14 +263,26 @@ texture_margin_top = 14.0
 texture_margin_right = 18.0
 texture_margin_bottom = 16.0
 
-[sub_resource type="FontVariation" id="FontVariation_ai4yd"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ai4yd"]
+content_margin_left = 20.0
+content_margin_top = 2.0
+content_margin_right = 20.0
+content_margin_bottom = 2.0
+texture = ExtResource("4_3jjco")
+texture_margin_left = 24.0
+texture_margin_top = 8.0
+texture_margin_right = 24.0
+texture_margin_bottom = 8.0
+axis_stretch_horizontal = 2
+
+[sub_resource type="FontVariation" id="FontVariation_g5s3y"]
 base_font = ExtResource("11_exlnx")
 variation_opentype = {
 2003265652: 550
 }
 
 [resource]
-default_font = SubResource("FontVariation_ai4yd")
+default_font = SubResource("FontVariation_g5s3y")
 default_font_size = 16
 Button/colors/font_color = Color(0.14117648, 0.30588236, 0.36078432, 1)
 Button/colors/font_disabled_color = Color(0.42745098, 0.4862745, 0.4745098, 1)
@@ -338,3 +350,5 @@ RowPanel/styles/panel = SubResource("StyleBoxTexture_g4jyj")
 TitleLabel/base_type = &"Label"
 TitleLabel/font_sizes/font_size = 24
 TitleLabel/fonts/font = SubResource("FontVariation_bjfgc")
+TooltipLabel/colors/font_color = Color(1, 0.96862745, 0.8745098, 1)
+TooltipPanel/styles/panel = SubResource("StyleBoxTexture_ai4yd")

@@ -49,8 +49,8 @@ func _chip_with_shop(dimensions: PackedStringArray) -> void:
 	d.step("add button keeps the camp touch target (%dx%d)" % [int(add.get_global_rect().size.x), int(add.get_global_rect().size.y)], add.get_global_rect().size.y >= 55.9 and add.get_global_rect().size.x >= 43.9)
 	d.step("chip value stays at 12px or larger", value.get_theme_font_size("font_size") >= 12)
 	d.step("chip does not overlap the headline", headline != null and not chip.get_global_rect().intersects(headline.get_global_rect()))
-	# 재화 하나(기호와 숫자)는 같은 줄에 있고, 칩은 두 줄 이내이며 시작 버튼과 겹치지 않는다.
-	var sources := ["★ 10    🎟 2", "1250    🎟 3", "★ 1,234,567    🎟 99,999", "★ 10    🎟 2    💎 5", "★ 123,456    💎 1,250    🎟 12", "★ 1,234,567    🎟 99,999    💎 12,345", "★ 1,234,567 🎟 99,999"]
+	# 재화 하나(기호와 숫자)는 같은 줄에 있고, 칩은 세 줄 이내이며 시작 버튼과 겹치지 않는다. 이름 붙은 재화도 다른 재화와 섞이지 않는다.
+	var sources := ["★ 10    🎟 2", "1250    🎟 3", "★ 1,234,567    🎟 99,999", "★ 10    🎟 2    💎 5", "★ 123,456    💎 1,250    🎟 12", "★ 1,234,567    🎟 99,999    💎 12,345", "★ 1,234,567 🎟 99,999", "★ 12    Gold 1,234,567"]
 	for index in sources.size():
 		var source: String = sources[index]
 		main.resource_provider = func() -> String: return source
@@ -68,9 +68,11 @@ func _chip_with_shop(dimensions: PackedStringArray) -> void:
 				if line.contains(joined): found = true
 			intact = intact and found
 		var start := node(main, "start")
-		# 공백 하나로 나눈 문자열은 재화 구분이 없으므로 한 덩어리로 보고, 잘리지 않는지만 본다.
-		var multi := source.contains("  ")
-		d.step("'%s' keeps each currency on one line in %d lines" % [source, lines.size()], (intact or not multi) and lines.size() <= 3)
+		# 기호 재화(앞 여섯 입력)는 재화 하나가 통째로 한 줄에 있어야 한다. 공백 하나 구분과 이름 붙은 긴 재화는 낱말로 풀릴 수 있으므로,
+		# 모든 입력에 대해 풀린 재화가 다른 재화와 한 줄에 섞이지 않는지 본다.
+		var whole_expected := index < 6
+		d.step("'%s' keeps each currency on one line in %d lines" % [source, lines.size()], (intact or not whole_expected) and lines.size() <= 3)
+		d.step("'%s' never mixes a split currency with another on one line" % source, _no_mixed_lines(source, lines))
 		var font: Font = value.get_theme_font("font")
 		var widest := 0.0
 		for line in lines:
@@ -81,6 +83,33 @@ func _chip_with_shop(dimensions: PackedStringArray) -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path + ".bak"))
 	d.end()
+
+## 줄을 앞에서부터 낱말 단위로 재화에 대응시킨다. 두 재화 이상이 한 줄에 있으면 그 재화들은 모두 그 줄에 통째로 있어야 한다.
+func _no_mixed_lines(source: String, lines: PackedStringArray) -> bool:
+	var owners: Array[int] = []
+	var groups := RegEx.create_from_string("\\s{2,}").sub(source.strip_edges(), "\t", true).split("\t", false)
+	for index in groups.size():
+		for word in groups[index].split(" ", false):
+			owners.append(index)
+	var cursor := 0
+	var line_groups: Array = []
+	for line in lines:
+		var seen := {}
+		for token in line.replace("\u00a0", " ").split(" ", false):
+			if cursor < owners.size():
+				seen[owners[cursor]] = true
+			cursor += 1
+		line_groups.append(seen.keys())
+	for keys in line_groups:
+		if keys.size() < 2:
+			continue
+		for group_index in keys:
+			var lines_with_group := 0
+			for other in line_groups:
+				if other.has(group_index): lines_with_group += 1
+			if lines_with_group > 1:
+				return false
+	return cursor == owners.size()
 
 func run() -> void:
 	var args := OS.get_cmdline_user_args()

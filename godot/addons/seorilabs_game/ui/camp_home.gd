@@ -101,7 +101,7 @@ func _layout() -> void:
 		node.position = origin + rect.position * scale_factor
 		if entry.has("chip"):
 			# 재화 칩은 내용 크기로 두되 헤드라인 시작(464 설계 px) 앞까지만 쓴다. (+)는 캠프 터치 기준(높이 56)과 폭 44를 지킨다.
-			# 넘치면 숫자 글자를 12px까지 줄이고, 그래도 넘치면 두 줄로 감싼다. 칩 전체를 줄이면 (+)가 함께 줄어 쓰지 않는다.
+			# 넘치면 숫자 글자를 12px까지 줄이고, 그래도 넘치면 재화 단위로 줄을 바꾼다(줄 수는 시작 버튼 위 세로 공간까지). 칩 전체를 줄이면 (+)가 함께 줄어 쓰지 않는다.
 			var add: Button = node.get_node("Row/Add")
 			add.custom_minimum_size = Vector2(44, 56)
 			var value: Label = node.get_node("Row/Value")
@@ -130,7 +130,7 @@ func _layout() -> void:
 			var outline := float(value.get_theme_constant("outline_size")) * 2.0
 			var room := slot - other
 			# 재화 문자열은 두 칸 이상의 공백으로 재화를 나눈다("★ 10    🎟 2"). 재화 하나(기호와 숫자)는 한 줄에 두고,
-			# 넘치면 재화 단위로 최대 두 줄에 채운다. 원래 문자열은 다시 배치할 때를 위해 메타에 둔다.
+			# 넘치면 재화 단위로 줄을 바꾼다. 원래 문자열은 currency_chip.set_text가 메타에 둔다.
 			var source: String = value.get_meta("source_text", value.text)
 			node.tooltip_text = source
 			# 세로로는 시작 버튼 위(400 설계 px)에서 8px 띄운 곳까지 쓸 수 있다. 줄 수 한도는 이 높이에서 글자 크기별로 계산한다.
@@ -142,8 +142,9 @@ func _layout() -> void:
 			value.add_theme_font_size_override("font_size", int(lines[0]))
 			var packed: PackedStringArray = lines[1]
 			value.text = "\n".join(packed)
-			# 외곽선 몇 px는 칩 안쪽 여백이 받아 준다. 12px에서도 세로 공간에 다 들지 않을 때만(재화 넷 이상이 길 때)
-			# 마지막 줄을 말줄임으로 자른다. 원문은 칩의 tooltip에 둔다(숫자 라벨은 입력을 받지 않는다).
+			# 외곽선 몇 px는 칩 안쪽 여백이 받아 준다. 두 경우에 줄 끝을 말줄임으로 자른다. 12px에서도 세로 공간(568x320에서 3줄)에 다 들지
+			# 않을 때(568x320에서 기호 재화 넷, 이름 붙은 재화 셋)와, 낱말 하나가 자리보다 넓을 때(568x320 "★ 1,234,567,890")다.
+			# 원문은 칩의 tooltip에 둔다(숫자 라벨은 입력을 받지 않는다).
 			if _text_width(font, packed, int(lines[0]), 0.0) > room:
 				value.clip_text = true
 				value.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -172,7 +173,8 @@ func _layout() -> void:
 const CURRENCY_GAP := "  "
 
 ## 재화 문자열을 재화 단위로 나눠, 가장 큰 글자 크기(start에서 2px씩, 12px 아래로는 내려가지 않음)와 가장 적은 줄 수로 채운다.
-## 줄 수 한도는 세로 공간(vroom)에서 글자 크기별로 계산한다. 재화 하나가 자리보다 길면(공백 하나로 구분한 문자열 등) 그 재화 안의 낱말 단위로 감싼다.
+## 줄 수 한도는 세로 공간(vroom)에서 글자 크기별로 계산한다. 먼저 재화를 풀지 않고 모든 글자 크기를 시도하고, 그래도 안 들 때만
+## 자리보다 긴 재화(이름 붙은 재화, 공백 하나로 구분한 문자열 등)를 그 재화 안의 낱말 단위로 감싼다. 푼 재화는 다른 재화와 한 줄에 섞지 않는다.
 ## [글자 크기, 줄 목록]을 돌려준다.
 static func _pack_currency(source: String, font: Font, start_size: int, outline: float, room: float, vroom: float, vpad: float, spacing := 0.0) -> Array:
 	var groups := PackedStringArray()
@@ -190,16 +192,17 @@ static func _pack_currency(source: String, font: Font, start_size: int, outline:
 	var most := 1
 	for size in sizes:
 		most = maxi(most, _line_capacity(font, size, vroom, vpad, spacing))
-	for limit in range(1, most + 1):
-		for size in sizes:
-			if limit > _line_capacity(font, size, vroom, vpad, spacing):
-				continue
-			var lines := _greedy_lines(_fit_groups(groups, font, size, outline, room), font, size, outline, room)
-			if lines.size() <= limit and _text_width(font, lines, size, outline) <= room:
-				return [size, lines]
+	for split_long in [false, true]:
+		for limit in range(1, most + 1):
+			for size in sizes:
+				if limit > _line_capacity(font, size, vroom, vpad, spacing):
+					continue
+				var lines := _currency_lines(groups, font, size, outline, room, split_long)
+				if lines.size() <= limit and _text_width(font, lines, size, outline) <= room:
+					return [size, lines]
 	# 12px에서도 세로 공간에 다 들지 않으면 넘친 줄을 마지막 줄 뒤에 붙인다(그 줄은 말줄임으로 잘린다).
 	var cap := _line_capacity(font, 12, vroom, vpad, spacing)
-	var last := _greedy_lines(_fit_groups(groups, font, 12, outline, room), font, 12, outline, room)
+	var last := _currency_lines(groups, font, 12, outline, room, true)
 	while last.size() > cap:
 		last[cap - 1] = last[cap - 1] + CURRENCY_GAP + last[cap]
 		last.remove_at(cap)
@@ -209,30 +212,41 @@ static func _pack_currency(source: String, font: Font, start_size: int, outline:
 static func _line_capacity(font: Font, font_size: int, vroom: float, vpad: float, spacing: float) -> int:
 	return maxi(1, floori((vroom - vpad + spacing) / maxf(1.0, font.get_height(font_size) + spacing)))
 
-## 재화 하나는 줄바꿈 없는 공백으로 묶는다. 자리보다 긴 재화만 낱말 단위로 풀어 감쌀 수 있게 한다.
-static func _fit_groups(groups: PackedStringArray, font: Font, font_size: int, outline: float, room: float) -> PackedStringArray:
-	var out := PackedStringArray()
-	for group in groups:
-		var joined := group.replace(" ", "\u00a0")
-		if font.get_string_size(joined, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline <= room:
-			out.append(joined)
-		else:
-			for word in group.split(" ", false):
-				out.append(word)
-	return out
-
-static func _greedy_lines(groups: PackedStringArray, font: Font, font_size: int, outline: float, room: float) -> PackedStringArray:
+## 재화 하나는 줄바꿈 없는 공백으로 묶어 한 덩어리로 줄에 채운다. split_long이면 자리보다 긴 재화만 낱말로 풀어
+## 새 줄에서 시작하고, 그 재화가 끝나면 다음 재화도 새 줄에서 시작한다.
+static func _currency_lines(groups: PackedStringArray, font: Font, font_size: int, outline: float, room: float, split_long: bool) -> PackedStringArray:
 	var lines := PackedStringArray()
 	var current := ""
 	for group in groups:
-		var candidate := group if current.is_empty() else current + CURRENCY_GAP + group
-		if not current.is_empty() and font.get_string_size(candidate, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline > room:
+		var joined := group.replace(" ", "\u00a0")
+		if not split_long or _width(font, joined, font_size, outline) <= room:
+			if current.is_empty():
+				current = joined
+			elif _width(font, current + CURRENCY_GAP + joined, font_size, outline) <= room:
+				current += CURRENCY_GAP + joined
+			else:
+				lines.append(current)
+				current = joined
+			continue
+		if not current.is_empty():
 			lines.append(current)
-			current = group
-		else:
-			current = candidate
-	lines.append(current)
+			current = ""
+		for word in group.split(" ", false):
+			if current.is_empty():
+				current = word
+			elif _width(font, current + " " + word, font_size, outline) <= room:
+				current += " " + word
+			else:
+				lines.append(current)
+				current = word
+		lines.append(current)
+		current = ""
+	if not current.is_empty():
+		lines.append(current)
 	return lines
+
+static func _width(font: Font, text: String, font_size: int, outline: float) -> float:
+	return font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x + outline
 
 static func _text_width(font: Font, lines: PackedStringArray, font_size: int, outline: float) -> float:
 	var widest := 0.0

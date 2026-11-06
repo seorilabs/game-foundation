@@ -23,6 +23,7 @@ func _run() -> void:
 	host.theme = load(Builder.DEFAULT_SKIN.path_join("theme.tres"))
 	_check_theme()
 	_check_focus()
+	_check_tooltip()
 	await _check_ambient(false)
 	await _check_ambient(true)
 	await _check_popup(false)
@@ -80,6 +81,11 @@ func _check_ambient(reduced: bool) -> void:
 	check((button.get_node_or_null("Shine") != null) != reduced, "ambient %s: shine band %s" % [_mode(reduced), "exists" if not reduced else "absent"])
 	button.queue_free()
 	await process_frame
+
+func _check_tooltip() -> void:
+	var theme: Theme = Builder.build(Builder.DEFAULT_SKIN, "en")
+	var color := theme.get_color("font_color", "TooltipLabel")
+	check(theme.get_stylebox("panel", "TooltipPanel") is StyleBoxTexture and color.get_luminance() > 0.8, "tooltip: painted panel with light text")
 
 func _check_focus() -> void:
 	# 초점 테두리 색은 skin.json의 focus(없으면 #286778)다. 어두운 스킨은 밝은 초점 색을 지정한다.
