@@ -274,13 +274,14 @@ func _clear(title: String) -> void:
 		content.remove_child(child)
 		child.queue_free()
 	backing.visible = screen not in ["title", "home"]
-	if landscape:
-		# 내용은 프레임 그림의 테두리 안쪽(backing 여백 12 + 스킨 content 여백)보다 안에 둔다. 높이 320에서 16px만 띄우면 하단 테두리와 겹친다.
-		var frame: StyleBox = backing.get_theme_stylebox("panel")
-		var sides := {"left": SIDE_LEFT, "right": SIDE_RIGHT, "top": SIDE_TOP, "bottom": SIDE_BOTTOM}
-		for side in sides:
-			var inset := maxf(16 * _ui_scale(), 12 + frame.get_content_margin(sides[side]))
-			_content_margin.add_theme_constant_override("margin_" + side, 0 if screen in ["title", "home"] else roundi(inset))
+	# 모달 화면의 내용은 프레임 그림의 테두리 안쪽(backing 여백 12 + 스킨 content 여백)보다 안에 둔다. 그린 스킨은 테두리 띠가 두껍다.
+	# 타이틀·홈은 프레임이 없으므로 기본 여백(가로 0, 세로 28/12|26)을 쓴다.
+	var frame: StyleBox = backing.get_theme_stylebox("panel")
+	var sides := {"left": SIDE_LEFT, "right": SIDE_RIGHT, "top": SIDE_TOP, "bottom": SIDE_BOTTOM}
+	for side in sides:
+		var base := 0.0 if landscape else (28.0 if side in ["left", "right"] else (12.0 if size.y < 500 else 26.0))
+		var inset := base if screen in ["title", "home"] else maxf(maxf(base, 16 * _ui_scale()), 12 + frame.get_content_margin(sides[side]))
+		_content_margin.add_theme_constant_override("margin_" + side, roundi(inset))
 	background.visible = home_profile == "hero" or screen != "home"
 	if screen in ["title", "home"]:
 		return
@@ -557,6 +558,8 @@ func _home() -> void:
 		content.add_child(hero)
 	var target := _label(tr_text(home_text.destination[0], home_text.destination[1]), 16)
 	var goal := PanelContainer.new()
+	# 한 줄 띠라 두꺼운 패널 테두리 대신 칩 판(얇은 알약)을 쓴다.
+	goal.theme_type_variation = &"ChipPanel"
 	content.add_child(goal)
 	goal.add_child(target)
 	var play_full := _button(tr_text(home_text.action[0], home_text.action[1]), func() -> void: _open("play"), null, true)

@@ -75,8 +75,8 @@
         72
       ],
       "axis": [
-        "tile",
-        "tile"
+        "stretch",
+        "stretch"
       ]
     },
     "popup_frame": {
@@ -88,17 +88,17 @@
         64
       ],
       "content": [
-        40,
-        40,
-        40,
-        40
+        44,
+        48,
+        44,
+        48
       ],
       "minimum": [
         136,
         136
       ],
       "axis": [
-        "tile",
+        "stretch",
         "tile"
       ]
     },
