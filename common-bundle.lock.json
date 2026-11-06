@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "6cff90b284816684b52bec2d963905ed021ddfa7"
+    "commit": "547b1a0ac6378818fef0750c717f66563266e379"
   },
   "sdk": {
     "version": "1.1.0",
@@ -55,7 +55,7 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_panel.svg": "104b73697a90ff512e988592f72c798e744b3b41df4e3f03aecfd936b8c9726a",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_popup_frame.svg": "f98bdef344584b2efacaeb1459ccaef112bb4a10c3822d3196bbd64d6d6a7490",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
-    "godot/addons/seorilabs_game/ui/camp_home.gd": "90c798c6e7ff747dc31996ef903094772cb689a208c6fef6c669e0122a8d2488",
+    "godot/addons/seorilabs_game/ui/camp_home.gd": "d08f87f7886f44bec4292bdfe02b9f80a938d4a006bb78752e071a4711d663e0",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
     "godot/addons/seorilabs_game/ui_kit/build_theme.gd": "ed4ca8e1a6ea0cb82e31c52b4bb2d7750f2ede316a2d07ed0639ec90088e0b6e",
     "godot/addons/seorilabs_game/ui_kit/currency_chip.gd": "fb00d037e2409e3c5d5096b0372052df625d1babfbb784eefbc9fcd8bbb232cb",
