@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "547b1a0ac6378818fef0750c717f66563266e379"
+    "commit": "17984c9603c10a69498cb2464413b86932437cc9"
   },
   "sdk": {
     "version": "1.1.0",
