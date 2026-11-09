@@ -38,6 +38,11 @@ func mount(node: Node) -> Node:
 func unmount(node: Node) -> void:
 	node.queue_free()
 	await frames(2)
+	# AudioServer의 비동기 stop은 실제 시간이 필요하다. 빠른 headless/fixed-FPS에서도
+	# 해제한 장면의 재생 자원이 정리된 뒤 다음 fixture로 넘어간다.
+	var audio_deadline: int = Time.get_ticks_msec() + 200
+	while Time.get_ticks_msec() < audio_deadline:
+		await tree.process_frame
 
 
 func begin(id: String, feature_ids: Array) -> void:
