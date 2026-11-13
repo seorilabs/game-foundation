@@ -68,10 +68,12 @@ def pack(root, commit, out):
         if Path(name).suffix in ('.uid', '.import'):
             continue
         payload[name] = git(root, 'cat-file', 'blob', oid)
+    if 'godot/addons/seorilabs_platform/VERSION' not in payload:
+        raise ValueError('SDK VERSION missing from the selected bundle source')
     lock = {'schemaVersion': 1, 'version': CURRENT, 'roots': list(ROOTS),
             'source': {'repository': REPOSITORY, 'commit': commit},
-            'sdk': {'version': '1.1.0', 'archiveSha256': '77a1dd4ce627f93f9bbe716924202c3c93c047f3cf4bdd59c05294cbc950ec5c',
-                    'source': 'https://github.com/seorilabs/platform/releases/tag/v1.1.0'},
+            'sdk': {'version': payload['godot/addons/seorilabs_platform/VERSION'].decode().strip(), 'baseArchiveSha256': '77a1dd4ce627f93f9bbe716924202c3c93c047f3cf4bdd59c05294cbc950ec5c',
+                    'source': 'https://github.com/seorilabs/platform/tree/245427be79729915113e876cacbaa8a772f032bd/sdk-gdscript'},
             'files': {name: sha(data) for name, data in sorted(payload.items())}}
     validate_manifest(lock)
     # Exclusive creation avoids replacing a reviewed or user-owned bundle.
