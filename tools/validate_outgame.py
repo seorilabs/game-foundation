@@ -89,9 +89,26 @@ def headless_e2e_inventory(root):
         return False
 
 
-def validate(root, profile, stage='implementation', require_ui_standard=False):
+def validate(root, profile, stage='implementation', require_ui_standard=False, market=None):
     errors = []
     def fail(kind, detail): errors.append({'category': kind, 'detail': detail})
+    adopted_markets = profile.get('adoptedMarkets', [])
+    if market is not None and market not in adopted_markets:
+        fail('invalid_market_services', 'target market is not adopted')
+    market_services = profile.get('marketServices')
+    if market_services is not None:
+        names = ('auth', 'payments', 'ads')
+        valid_map = (isinstance(market_services, dict) and set(market_services) == set(adopted_markets)
+                     and all(isinstance(entry, dict) and set(entry) == set(names)
+                             and all(isinstance(entry[n], bool) for n in names)
+                             for entry in market_services.values()))
+        if not valid_map:
+            fail('invalid_market_services', 'complete boolean map for adopted markets required')
+        else:
+            for name in names:
+                exposed = profile.get('services', {}).get(name, {}).get('exposed') is True
+                if exposed != any(entry[name] for entry in market_services.values()):
+                    fail('invalid_market_services', name + ': global exposure and market adoption differ')
     standard = profile.get('uiStandard')
     if require_ui_standard and not isinstance(standard, dict):
         fail('missing_ui_standard', 'uiStandard adoption marker')
@@ -260,14 +277,17 @@ def validate(root, profile, stage='implementation', require_ui_standard=False):
                 if not isinstance(markets, list) or not markets:
                     fail('unverified', 'market_sdk: adopted market results required')
                 else:
-                    if {m.get('market') for m in markets if isinstance(m, dict)} != set(profile.get('adoptedMarkets', [])):
+                    if {m.get('market') for m in markets if isinstance(m, dict)} != ({market} if market is not None else set(adopted_markets)):
                         fail('unverified', 'market_sdk: all adopted markets required')
-                    for market in markets:
-                        if not isinstance(market, dict) or market.get('market') not in ('google_play', 'app_store', 'apps_in_toss') or market.get('passed') is not True or not meaningful(market.get('sdkVersion')) or not isinstance(market.get('services'), dict):
+                    for market_result in markets:
+                        if not isinstance(market_result, dict) or market_result.get('market') not in ('google_play', 'app_store', 'apps_in_toss') or market_result.get('passed') is not True or not meaningful(market_result.get('sdkVersion')) or not isinstance(market_result.get('services'), dict):
                             fail('unverified', 'market_sdk: invalid market result'); continue
                         for service in ('auth', 'payments', 'ads'):
                             adopted = profile.get('services', {}).get(service, {}).get('exposed')
-                            result = market['services'].get(service, {})
+                            if isinstance(market_services, dict):
+                                entry = market_services.get(market_result.get('market'), {})
+                                adopted = entry.get(service) if isinstance(entry, dict) else None
+                            result = market_result['services'].get(service, {})
                             if not adopted:
                                 if result != {'status': 'not_adopted'}:
                                     fail('unverified', 'market_sdk: ' + service + ' decision')
@@ -286,12 +306,13 @@ def main():
     parser.add_argument('--project', default='godot')
     parser.add_argument('--profile')
     parser.add_argument('--stage', choices=('implementation', 'release'), default='implementation')
+    parser.add_argument('--market', choices=('google_play', 'app_store', 'apps_in_toss'), help='Verify the selected release lane; omit to require all adopted markets.')
     parser.add_argument('--require-ui-standard', action='store_true', help='New standard adoption path; legacy profiles remain unchanged.')
     args = parser.parse_args()
     try:
         profile_path = args.profile or args.project + '/data/outgame/outgame-profile.json'
         profile = json.loads((args.root / profile_path).read_text())
-        errors = validate(args.root, profile, args.stage, args.require_ui_standard)
+        errors = validate(args.root, profile, args.stage, args.require_ui_standard, args.market)
     except (OSError, ValueError, TypeError, AttributeError, subprocess.TimeoutExpired) as error:
         errors = [{'category':'invalid_profile', 'detail':str(error)}]
     print(json.dumps({'ok':not errors, 'stage':args.stage, 'errors':errors}, ensure_ascii=False, indent=2))
