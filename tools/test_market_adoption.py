@@ -19,6 +19,9 @@ class MarketAdoption(unittest.TestCase):
         self.profile['adoptedMarkets']=['google_play','app_store']
         self.profile['services']['ads']['exposed']=True
         self.profile['services']['ads']['status']='wired'
+        self.profile['services']['ads']['binding']='godot/addons/seorilabs_platform/platform_client.gd'
+        bm=self.folder/'bm-fixture.json';bm.write_text('{}')
+        self.profile['bmProfile']=str(bm.relative_to(ROOT))
         self.profile['marketServices']={'google_play':{'ads':True,'auth':False,'payments':False},'app_store':{'ads':False,'auth':False,'payments':False}}
     def errors(self):
         report={'kind':'market_sdk','passed':True,'recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sourceSha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'implementationFingerprint':gate.fingerprint(ROOT,self.profile),'checks':{'adopted_markets':True,'service_states':True},'markets':[],'artifacts':[]}
@@ -30,7 +33,10 @@ class MarketAdoption(unittest.TestCase):
                 services[service]={'status':'passed','checks':{'success':True,'cancelled':True,'failed':True}} if enabled else {'status':'not_adopted'}
             report['markets'].append({'market':market,'passed':True,'sdkVersion':'fixture-1','services':services})
         path=self.folder/'sdk.json';path.write_text(json.dumps(report));self.profile['evidence']['market_sdk']={'status':'passed','path':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'implementationFingerprint':report['implementationFingerprint']}
-        return [e for e in gate.validate(ROOT,self.profile,stage='release',market=self.target) if e['detail'].startswith('market_sdk') or e['category']=='invalid_market_services']
+        errors=gate.validate(ROOT,self.profile,stage='release',market=self.target)
+        self.assertFalse(any(e['category']=='unconnected' for e in errors),errors)
+        # Only the SDK section is under test; render and other reports are deliberately absent.
+        return [e for e in errors if e['detail'].startswith('market_sdk') or e['category']=='invalid_market_services']
     def test_android_ads_do_not_require_ios_ads(self): self.assertEqual([],self.errors())
     def test_one_market_lane_preserves_other_market_debt(self):
         self.target='google_play'

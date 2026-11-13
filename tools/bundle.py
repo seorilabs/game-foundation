@@ -68,6 +68,8 @@ def pack(root, commit, out):
         if Path(name).suffix in ('.uid', '.import'):
             continue
         payload[name] = git(root, 'cat-file', 'blob', oid)
+    if 'godot/addons/seorilabs_platform/VERSION' not in payload:
+        raise ValueError('SDK VERSION missing from the selected bundle source')
     lock = {'schemaVersion': 1, 'version': CURRENT, 'roots': list(ROOTS),
             'source': {'repository': REPOSITORY, 'commit': commit},
             'sdk': {'version': payload['godot/addons/seorilabs_platform/VERSION'].decode().strip(), 'baseArchiveSha256': '77a1dd4ce627f93f9bbe716924202c3c93c047f3cf4bdd59c05294cbc950ec5c',
