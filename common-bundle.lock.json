@@ -8,12 +8,12 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "ca2ff1f22b3b3aa0ffb718639a980d4d4bb5b6b8"
+    "commit": "72ea5f57c0aeb98779f6c21618015165fd4da172"
   },
   "sdk": {
     "version": "1.1.0",
-    "archiveSha256": "77a1dd4ce627f93f9bbe716924202c3c93c047f3cf4bdd59c05294cbc950ec5c",
-    "source": "https://github.com/seorilabs/platform/releases/tag/v1.1.0"
+    "baseArchiveSha256": "77a1dd4ce627f93f9bbe716924202c3c93c047f3cf4bdd59c05294cbc950ec5c",
+    "source": "https://github.com/seorilabs/platform/tree/245427be79729915113e876cacbaa8a772f032bd/sdk-gdscript"
   },
   "files": {
     "godot/addons/seorilabs_game/README.md": "ee49c08aeae3a25dd148107148620f41969f5070b13133f1b2ebeb224d04cd09",
@@ -79,7 +79,7 @@
     "godot/addons/seorilabs_game/ui_kit/ui_sfx.gd": "8f4a77f193daa3fe9487568bb82484e34726e4975579b107547cecb514367bcd",
     "godot/addons/seorilabs_platform/CHECKSUM": "31d5273efd257f7fed416fb80c072542527e4912dd7584ffb65500c97d54c03e",
     "godot/addons/seorilabs_platform/LICENSE": "44a6be16b60cab758678f098d2e1a9964305ce870ab39f338c9d7a397ad2d7fc",
-    "godot/addons/seorilabs_platform/SOURCE": "a793db03446a485b5acb38696be613f4cb9e0145e34d60eaeb8de3ff1c74c429",
+    "godot/addons/seorilabs_platform/SOURCE": "3535b0c3322b73d33b2ab300c64faf903cc76802620f94727f16362db3d1a129",
     "godot/addons/seorilabs_platform/VERSION": "1575e1af4a95f12f70b4ee6a6adce8160953d93ea17dc2611b90883ccc3ad3b8",
     "godot/addons/seorilabs_platform/adapters/firebase_identity_adapter.gd": "2901e911acd557388d125267b8c49cc44258710385ee49dc09d62b0d130ad2c9",
     "godot/addons/seorilabs_platform/adapters/rewarded_claim_adapter.gd": "7b5cd55913e784a6c073d9db5383ea7df340fc9fe68db66c771d2e7324f2ec41",
@@ -90,7 +90,7 @@
     "godot/addons/seorilabs_platform/core/param_normalizer.gd": "61fbd640cf55851a0b398cda57f633e64d87eff5bee704bb8870ef1a491ac781",
     "godot/addons/seorilabs_platform/core/presence_client.gd": "3803aac9043f95cfd035df471be79e0a58529cd873511a35834d0231ae1eabcf",
     "godot/addons/seorilabs_platform/core/update_gate.gd": "960bab68100038a628aa2321ba006bf7b7c747f10601320d525d6f37dad6e5de",
-    "godot/addons/seorilabs_platform/platform_client.gd": "493e5f3803f3e84bfa10dbde47e5df4c169068b7522fe9ac03ff4942c2f869e0",
+    "godot/addons/seorilabs_platform/platform_client.gd": "80f017d8e65421f7374c1de708b75cc3cd62746663ca779cf701429242706046",
     "godot/tests/common/account_services_probe.gd": "159cf4622f47226ef6321aeda9e5e5464fa7ad3994692d90f3b86042f9acd18f",
     "godot/tests/common/accounts_probe.gd": "1236852f716dfecccce68db13bb0637361c1efe264b5a91d3ff72de310b99a2a",
     "godot/tests/common/e2e_driver.gd": "4f64e861497e7243c7a57dff7958edf67528b7a084f532784a92ccaeaa278f41",
