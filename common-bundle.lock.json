@@ -8,10 +8,10 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "72ea5f57c0aeb98779f6c21618015165fd4da172"
+    "commit": "dcd05f65cb8f88bb047387fcd59a6c1b11eb47d2"
   },
   "sdk": {
-    "version": "1.1.0",
+    "version": "1.1.1",
     "baseArchiveSha256": "77a1dd4ce627f93f9bbe716924202c3c93c047f3cf4bdd59c05294cbc950ec5c",
     "source": "https://github.com/seorilabs/platform/tree/245427be79729915113e876cacbaa8a772f032bd/sdk-gdscript"
   },
@@ -80,7 +80,7 @@
     "godot/addons/seorilabs_platform/CHECKSUM": "31d5273efd257f7fed416fb80c072542527e4912dd7584ffb65500c97d54c03e",
     "godot/addons/seorilabs_platform/LICENSE": "44a6be16b60cab758678f098d2e1a9964305ce870ab39f338c9d7a397ad2d7fc",
     "godot/addons/seorilabs_platform/SOURCE": "3535b0c3322b73d33b2ab300c64faf903cc76802620f94727f16362db3d1a129",
-    "godot/addons/seorilabs_platform/VERSION": "1575e1af4a95f12f70b4ee6a6adce8160953d93ea17dc2611b90883ccc3ad3b8",
+    "godot/addons/seorilabs_platform/VERSION": "cc52f678848b814373757b460383bf61960e4943c203735adde0a350b3e50989",
     "godot/addons/seorilabs_platform/adapters/firebase_identity_adapter.gd": "2901e911acd557388d125267b8c49cc44258710385ee49dc09d62b0d130ad2c9",
     "godot/addons/seorilabs_platform/adapters/rewarded_claim_adapter.gd": "7b5cd55913e784a6c073d9db5383ea7df340fc9fe68db66c771d2e7324f2ec41",
     "godot/addons/seorilabs_platform/core/atomic_json_store.gd": "b142b5dcbd4fa4eae0b35e2185bce4c8f349ca871ec1960238bbf60f08b10dd8",
