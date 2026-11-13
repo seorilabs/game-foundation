@@ -15,13 +15,15 @@ class MarketAdoption(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory(dir=ROOT/'build');self.addCleanup(self.tmp.cleanup);self.folder=Path(self.tmp.name)
         self.profile=json.loads((ROOT/'godot/data/outgame/outgame-profile.json').read_text())
         self.target=None
+        self.all_markets=False
         self.profile['adoptedMarkets']=['google_play','app_store']
         self.profile['services']['ads']['exposed']=True
+        self.profile['services']['ads']['status']='wired'
         self.profile['marketServices']={'google_play':{'ads':True,'auth':False,'payments':False},'app_store':{'ads':False,'auth':False,'payments':False}}
     def errors(self):
         report={'kind':'market_sdk','passed':True,'recordedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sourceSha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'implementationFingerprint':gate.fingerprint(ROOT,self.profile),'checks':{'adopted_markets':True,'service_states':True},'markets':[],'artifacts':[]}
         artifact=self.folder/'raw.json';artifact.write_text('{}');report['artifacts']=[{'path':str(artifact.relative_to(ROOT)),'sha256':hashlib.sha256(artifact.read_bytes()).hexdigest(),'type':'report'}]
-        for market in ([self.target] if self.target else self.profile['adoptedMarkets']):
+        for market in ([self.target] if self.target and not self.all_markets else self.profile['adoptedMarkets']):
             services={}
             for service in ['auth','payments','ads']:
                 enabled=self.profile['marketServices'][market].get(service)
@@ -32,6 +34,9 @@ class MarketAdoption(unittest.TestCase):
     def test_android_ads_do_not_require_ios_ads(self): self.assertEqual([],self.errors())
     def test_one_market_lane_preserves_other_market_debt(self):
         self.target='google_play'
+        self.assertEqual([],self.errors())
+    def test_full_valid_report_can_be_used_for_one_lane(self):
+        self.target='google_play';self.all_markets=True
         self.assertEqual([],self.errors())
     def test_incomplete_market_map_rejected(self):
         del self.profile['marketServices']['app_store']['ads']

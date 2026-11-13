@@ -89,6 +89,27 @@ def headless_e2e_inventory(root):
         return False
 
 
+def declared_skin(root, standard):
+    if not isinstance(standard.get('skin'), str) or not standard['skin'].strip():
+        return False
+    if standard.get('skin') == 'soft-adventure':
+        return True
+    resources = standard.get('resources', [])
+    if not isinstance(resources, list):
+        return False
+    for resource in resources:
+        path = safe_file(root, resource)
+        if path is None or path.name != 'skin.json':
+            continue
+        try:
+            skin = json.loads(path.read_text())
+        except (ValueError, OSError):
+            continue
+        if isinstance(skin, dict) and skin.get('id') == standard.get('skin') and skin.get('contract') == standard.get('version'):
+            return True
+    return False
+
+
 def validate(root, profile, stage='implementation', require_ui_standard=False, market=None):
     errors = []
     def fail(kind, detail): errors.append({'category': kind, 'detail': detail})
@@ -116,7 +137,7 @@ def validate(root, profile, stage='implementation', require_ui_standard=False, m
         if not isinstance(standard, dict):
             fail('missing_ui_standard', 'uiStandard object')
         else:
-            if standard.get('version') not in ('1.0.0', '1.1.0') or standard.get('homeProfile') not in ('hero', 'map', 'world') or standard.get('skin') != 'soft-adventure':
+            if standard.get('version') not in ('1.0.0', '1.1.0') or standard.get('homeProfile') not in ('hero', 'map', 'world') or not declared_skin(root, standard):
                 fail('missing_ui_standard', 'version/homeProfile/skin')
             if not isinstance(standard.get('locales'), list) or not standard['locales'] or any(v not in ('en', 'ko') for v in standard['locales']):
                 fail('missing_ui_standard', 'bundled locales')
@@ -277,7 +298,9 @@ def validate(root, profile, stage='implementation', require_ui_standard=False, m
                 if not isinstance(markets, list) or not markets:
                     fail('unverified', 'market_sdk: adopted market results required')
                 else:
-                    if {m.get('market') for m in markets if isinstance(m, dict)} != ({market} if market is not None else set(adopted_markets)):
+                    reported = {m.get('market') for m in markets if isinstance(m, dict)}
+                    required = {market} if market is not None else set(adopted_markets)
+                    if not required.issubset(reported) or not reported.issubset(set(adopted_markets)):
                         fail('unverified', 'market_sdk: all adopted markets required')
                     for market_result in markets:
                         if not isinstance(market_result, dict) or market_result.get('market') not in ('google_play', 'app_store', 'apps_in_toss') or market_result.get('passed') is not True or not meaningful(market_result.get('sdkVersion')) or not isinstance(market_result.get('services'), dict):
