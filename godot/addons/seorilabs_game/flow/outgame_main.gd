@@ -31,7 +31,7 @@ var launch_game: Callable
 var score_provider: Callable
 var home_actions: Callable
 var feature_routes: Dictionary = {}
-var home_text := {"hero": ["Player", "플레이어"], "destination": ["Ready to play", "플레이 준비"], "action": ["Play", "플레이"], "account": ["Account", "계정"]}
+var home_text := {"hero": ["Player", "플레이어"], "destination": ["Ready to play", "준비 완료"], "action": ["Play", "플레이"], "account": ["Account", "계정"]}
 var reward_text := ""
 var transient_notice := ""
 var _notice_label: Label
@@ -387,7 +387,7 @@ func _title() -> void:
 	logo.add_theme_constant_override("shadow_offset_y", 4)
 	content.add_child(logo)
 	_spacer()
-	var ready := _label(_error_text(startup_error) if not startup_error.is_empty() else tr_text("Ready for adventure", "시작할 준비가 됐어요") if initialized else tr_text("Preparing %d / 3", "준비 단계 %d / 3") % progress)
+	var ready := _label(_error_text(startup_error) if not startup_error.is_empty() else tr_text("Ready for adventure", "시작할 준비가 됐어요") if initialized else tr_text("Preparing %d / 3", "준비 중 %d / 3") % progress)
 	ready.add_theme_color_override("font_color", Color("fffbe9"))
 	ready.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	content.add_child(ready)
@@ -398,7 +398,7 @@ func _title() -> void:
 		bar.show_percentage = false
 		content.add_child(bar)
 	if not startup_error.is_empty():
-		_button(tr_text("Retry", "다시 준비"), _initialize, null, true).name = "retry"
+		_button(tr_text("Retry", "다시 시도"), _initialize, null, true).name = "retry"
 	else:
 		var start := _button(tr_text("Begin adventure", "모험 시작"), _start, null, true)
 		start.name = "start"
@@ -538,7 +538,7 @@ func _home() -> void:
 	settings_button.size_flags_horizontal = Control.SIZE_FILL
 	var actions := HBoxContainer.new()
 	content.add_child(actions)
-	_button(tr_text("Inbox", "우편"), func() -> void: _open("inbox"), actions).name = "inbox"
+	_button(tr_text("Inbox", "우편함"), func() -> void: _open("inbox"), actions).name = "inbox"
 	if ranking.available():
 		_button(tr_text("Rank", "순위"), func() -> void: _open("leaderboard"), actions).name = "leaderboard"
 	if home_profile != "hero":
@@ -576,7 +576,7 @@ func _compact_home() -> void:
 	hud_space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hud_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud.add_child(hud_space)
-	_button(tr_text("Inbox", "우편"), func() -> void: _open("inbox"), hud).name = "inbox"
+	_button(tr_text("Inbox", "우편함"), func() -> void: _open("inbox"), hud).name = "inbox"
 	if ranking.available(): _button(tr_text("Rank", "순위"), func() -> void: _open("leaderboard"), hud).name = "leaderboard"
 	_button(tr_text("Settings", "설정"), func() -> void: _open("settings"), hud).name = "settings"
 	var split := HBoxContainer.new()
@@ -611,21 +611,21 @@ func _settings() -> void:
 	screen = "settings"
 	_clear(tr_text("Settings", "설정"))
 	var box := _scroll()
-	_settings_toggles(box, [["music", "Music", "음악"], ["sfx", "Sound effects", "효과음"], ["vibration", "Vibration", "진동"], ["analytics", "Allow analytics", "데이터 분석 허용"]])
-	box.add_child(_label(tr_text("Gameplay statistics help improve the game. You can turn them off.", "게임 개선을 위한 플레이 통계를 보냅니다. 언제든 끌 수 있습니다."), 14))
+	_settings_toggles(box, [["music", "Music", "음악"], ["sfx", "Sound effects", "효과음"], ["vibration", "Vibration", "진동"], ["analytics", "Allow analytics", "이용 통계 보내기"]])
+	box.add_child(_label(tr_text("Gameplay statistics help improve the game. You can turn them off.", "플레이 통계는 게임을 고치고 다듬는 데 쓰여요. 언제든 끌 수 있어요."), 14))
 	if analytics.reason in ["policy", "unavailable"]:
-		box.add_child(_label(tr_text("Collection is currently unavailable or restricted.", "현재 수집이 제한되거나 지원되지 않습니다."), 14))
+		box.add_child(_label(tr_text("Collection is currently unavailable or restricted.", "지금은 통계를 보낼 수 없거나 제한돼 있어요."), 14))
 	_button(tr_text("Language", "언어"), func() -> void: _open("language"), box).name = "language"
 	_button(tr_text("Account and save", "계정과 저장"), func() -> void: _open("account"), box)
-	_button(tr_text("Support code", "지원코드"), func() -> void: _open("support"), box).name = "support"
+	_button(tr_text("Support code", "지원 코드"), func() -> void: _open("support"), box).name = "support"
 	if commerce.available():
-		_button(tr_text("Restore purchases", "구매 내역 복원"), func() -> void: _open("purchase"); commerce.restore(), box).name = "restore"
+		_button(tr_text("Restore purchases", "구매 복원"), func() -> void: _open("purchase"); commerce.restore(), box).name = "restore"
 	_button(tr_text("Accessibility", "접근성"), func() -> void: _open("accessibility"), box).name = "accessibility"
 	_button(tr_text("Replay guide", "안내 다시 보기"), func() -> void:
 		if state.replay_tutorial(): _open("play")
 		else: _show_error(state.error)
 	, box).name = "replay"
-	for item in [["terms_url", "Terms", "약관"], ["privacy_url", "Privacy", "개인정보 처리방침"]]:
+	for item in [["terms_url", "Terms", "이용약관"], ["privacy_url", "Privacy", "개인정보 처리방침"]]:
 		var url := str(config.get(item[0], ""))
 		if not url.is_empty():
 			_button(tr_text(item[1], item[2]), func() -> void: OS.shell_open(url), box)
@@ -674,8 +674,8 @@ func _account() -> void:
 		AccountPanel.show_account(self)
 		return
 	_clear(tr_text("Account and save", "계정과 저장"))
-	content.add_child(_label(tr_text("Guest, saved on this device" if services.mode == "local" else "Connected game account", "게스트, 이 기기에 저장" if services.mode == "local" else "연결된 게임 계정")))
-	content.add_child(_label(tr_text("Progress is preserved. Linking is available only when supported by this game.", "진행은 유지됩니다. 계정 연결은 이 게임에서 지원하는 경우에만 제공됩니다.")))
+	content.add_child(_label(tr_text("Guest, saved on this device" if services.mode == "local" else "Connected game account", "게스트(이 기기에 저장)" if services.mode == "local" else "연결된 게임 계정")))
+	content.add_child(_label(tr_text("Progress is preserved. Linking is available only when supported by this game.", "진행 상황은 그대로 남아요. 계정 연결은 지원하는 게임에서만 쓸 수 있어요.")))
 
 func _camp_home(is_title: bool) -> void:
 	background.visible = false
@@ -717,7 +717,7 @@ func _accounts_changed() -> void:
 		_route("account" if accounts.status != "busy" else screen)
 
 func _draw_support() -> void:
-	_clear(tr_text("Support code", "지원코드"))
+	_clear(tr_text("Support code", "지원 코드"))
 	var box: VBoxContainer = _scroll() if landscape else content
 	if landscape and accounts.connected():
 		for item in [["uid", "UID"], ["platformUserId", "PUID"]]:
@@ -732,7 +732,7 @@ func _draw_support() -> void:
 		_button(tr_text("Copy UID", "UID 복사"), func() -> void:
 			_show_error("copied" if clipboard_writer.call(str(accounts.details.get("uid", ""))) else "copy_failed")
 		, box).name = "copy_uid"
-	box.add_child(_label(tr_text("Customer support identifier", "고객지원용 식별코드"), 20))
+	box.add_child(_label(tr_text("Customer support identifier", "고객 지원용 식별 코드"), 20))
 	var value := LineEdit.new()
 	value.name = "support_code"
 	value.editable = false
@@ -743,9 +743,9 @@ func _draw_support() -> void:
 	# 입력란 판과 글자색은 스킨 테마(LineEdit read_only = panel 텍스처, font_uneditable_color = skin.text)가 정한다. 고정 색을 칠하지 않는다.
 	value.custom_minimum_size.y = 56 * _ui_scale() if landscape else 54
 	box.add_child(value)
-	var description := tr_text("An identifier for customer support, not a password.", "고객지원에서 사용하는 식별코드입니다. 비밀번호가 아닙니다.")
-	if support.status == "cached_offline": description = tr_text("Offline, showing your previously confirmed code.", "오프라인입니다. 이전에 확인한 현재 계정의 코드입니다.")
-	elif support.status in ["failed", "unavailable"]: description = tr_text("The code cannot be checked right now. Local play remains available.", "지금 코드를 확인할 수 없습니다. 로컬 플레이는 계속할 수 있습니다.")
+	var description := tr_text("An identifier for customer support, not a password.", "고객 지원에서 쓰는 식별 코드예요. 비밀번호가 아니에요.")
+	if support.status == "cached_offline": description = tr_text("Offline, showing your previously confirmed code.", "오프라인이라 이전에 확인한 코드를 보여 드려요.")
+	elif support.status in ["failed", "unavailable"]: description = tr_text("The code cannot be checked right now. Local play remains available.", "지금은 코드를 확인할 수 없어요. 게임은 계속할 수 있어요.")
 	box.add_child(_label(description))
 	var copy := _button(tr_text("Copy code", "코드 복사"), func() -> void:
 		_show_error("copied" if support.copy_code(clipboard_writer) else "copy_failed")
@@ -753,14 +753,14 @@ func _draw_support() -> void:
 	copy.name = "copy"
 	copy.disabled = support.status not in ["ready", "cached_offline"]
 	if support.status in ["failed", "unavailable"]:
-		_button(tr_text("Try again", "다시 확인"), func() -> void: support.request(current_identity(), _lookup_support), box).name = "support_retry"
+		_button(tr_text("Try again", "다시 시도"), func() -> void: support.request(current_identity(), _lookup_support), box).name = "support_retry"
 
 func _draw_shop() -> void:
 	_clear(tr_text("Shop", "상점"))
 	var box := _scroll()
 	if commerce.catalog_state != "available":
-		box.add_child(_label(tr_text("Loading products…", "상품을 확인하고 있어요…") if commerce.catalog_state == "loading" else tr_text("Products are unavailable. Try again later.", "상품을 확인할 수 없습니다. 잠시 후 다시 확인해 주세요.")))
-		if commerce.catalog_state == "failed": _button(tr_text("Try again", "다시 확인"), commerce.catalog, box)
+		box.add_child(_label(tr_text("Loading products…", "상품을 불러오는 중이에요…") if commerce.catalog_state == "loading" else tr_text("Products are unavailable. Try again later.", "상품을 불러올 수 없어요. 잠시 후 다시 시도해 주세요.")))
+		if commerce.catalog_state == "failed": _button(tr_text("Try again", "다시 시도"), commerce.catalog, box)
 	for product in commerce.products:
 		var id := str(product.id)
 		_product_art(product, box, 110)
@@ -769,7 +769,7 @@ func _draw_shop() -> void:
 		b.disabled = not product.get("available", false) or str(product.get("price", "")).is_empty()
 
 func _draw_offer() -> void:
-	_clear(tr_text("Offer details", "상품 상세"))
+	_clear(tr_text("Offer details", "상품 정보"))
 	var box := _scroll()
 	for product in commerce.products:
 		if str(product.id) != str(config.get("selected_product", "")): continue
@@ -841,7 +841,7 @@ func _draw_result() -> void:
 		# 가로는 오른쪽 연출 열의 중심(내용 폭의 0.8), 세로는 버튼 아래 넓은 영역에 연출한다.
 		var focus := Vector2((content.global_position.x + content.size.x * 0.8) / maxf(size.x, 1.0), 0.55) if wide else Vector2(0.5, 0.62)
 		ceremony.present([reward], "" if wide else tr_text("Reward", "보상"), null, null, 0, 0, focus)
-	if ranking.status == "submitting": column.add_child(_label(tr_text("Your score is being checked", "점수를 확인하고 있어요")))
+	if ranking.status == "submitting": column.add_child(_label(tr_text("Your score is being checked", "점수를 확인하는 중이에요")))
 	if ranking.status == "submitted": column.add_child(_label(tr_text("Score accepted, rankings may update shortly", "점수를 접수했어요. 순위 반영까지 잠시 걸릴 수 있어요.")))
 	if ranking.status == "failed": _button(tr_text("Retry score submission", "점수 다시 보내기"), _submit_result, column).name = "submit_retry"
 	_button(tr_text("Continue", "계속"), _finish_result, column, true).name = "reward_continue"
@@ -856,21 +856,21 @@ func _finish_result() -> void:
 func _draw_purchase() -> void:
 	_clear(tr_text("Purchases", "구매와 복원"))
 	var names := {
-		"idle": ["Confirm your purchase", "구매를 확인해 주세요"], "store_open": ["Store payment is open", "마켓 결제 확인 중"],
-		"cancelled": ["Purchase cancelled", "구매를 취소했어요"], "pending": ["Waiting for approval", "결제 승인을 기다리고 있어요"],
-		"verifying": ["Checking the transaction", "거래를 확인하고 있어요"], "fulfilling": ["Delivering your purchase", "상품을 지급하고 있어요"],
-		"completed": ["Purchase delivered", "상품 지급 완료"], "failed": ["Check your previous transaction", "기존 거래를 확인해 주세요"],
-		"revoked": ["Purchase access changed", "구매 권한이 변경됐어요"], "checking": ["Checking owned items", "보유 상품을 확인하고 있어요"],
-		"none": ["No items to restore", "복원할 상품이 없어요"], "restored": ["Items restored", "보유 상품 복원 완료"], "partial": ["Some items still need checking", "일부 상품을 더 확인해야 해요"]}
+		"idle": ["Confirm your purchase", "구매를 확인해 주세요"], "store_open": ["Store payment is open", "스토어 결제 창이 열려 있어요"],
+		"cancelled": ["Purchase cancelled", "구매를 취소했어요"], "pending": ["Waiting for approval", "결제 승인을 기다리는 중이에요"],
+		"verifying": ["Checking the transaction", "결제 내역을 확인하는 중이에요"], "fulfilling": ["Delivering your purchase", "상품을 지급하는 중이에요"],
+		"completed": ["Purchase delivered", "상품 지급 완료"], "failed": ["Check your previous transaction", "이전 결제 내역을 확인해 주세요"],
+		"revoked": ["Purchase access changed", "구매 상태가 바뀌었어요"], "checking": ["Checking owned items", "보유 상품을 확인하는 중이에요"],
+		"none": ["No items to restore", "복원할 상품이 없어요"], "restored": ["Items restored", "보유 상품을 복원했어요"], "partial": ["Some items still need checking", "일부 상품을 더 확인해야 해요"]}
 	var pair: Array = names.get(commerce.state, names.failed)
 	content.add_child(_label(tr_text(pair[0], pair[1]), 24))
-	content.add_child(_label(tr_text("A completed payment and a delivered item are checked separately. Check the previous transaction before buying again.", "결제와 상품 지급을 각각 확인합니다. 다시 구매하기 전에 기존 거래를 확인해 주세요.")))
+	content.add_child(_label(tr_text("A completed payment and a delivered item are checked separately. Check the previous transaction before buying again.", "결제와 상품 지급은 따로 확인해요. 다시 구매하기 전에 이전 결제 내역을 확인해 주세요.")))
 	if commerce.state in ["pending", "failed", "verifying", "fulfilling"]:
-		_button(tr_text("Check transaction", "기존 거래 확인"), commerce.reconcile).name = "reconcile"
-	_button(tr_text("Support code", "지원코드 확인"), func() -> void: _open("support")).name = "support"
+		_button(tr_text("Check transaction", "결제 내역 확인"), commerce.reconcile).name = "reconcile"
+	_button(tr_text("Support code", "지원 코드 확인"), func() -> void: _open("support")).name = "support"
 
 func _draw_ranking() -> void:
-	_clear(tr_text("Leaderboard", "리더보드"))
+	_clear(tr_text("Leaderboard", "순위표"))
 	var compact := size.y < 500
 	var periods := HBoxContainer.new()
 	content.add_child(periods)
@@ -880,11 +880,11 @@ func _draw_ranking() -> void:
 		_button(("✓ " if ranking.period == value else "") + tr_text(item[1], item[2]), func() -> void: ranking.period = value; ranking.fetch(), periods).name = value
 	var scopes := periods if compact else HBoxContainer.new()
 	if not compact: content.add_child(scopes)
-	for item in [["top", "Top scores", "상위 기록"], ["around", "Around me", "내 주변"]]:
+	for item in [["top", "Top scores", "상위 기록"], ["around", "Around me", "내 순위 근처"]]:
 		var value: String = item[0]
 		_button(tr_text(item[1], item[2]), func() -> void: ranking.scope = value; ranking.fetch(), scopes).name = value
 	var box := _scroll()
-	var statuses := {"loading": ["Loading scores…", "순위를 불러오고 있어요…"], "empty": ["No scores yet", "아직 등록된 기록이 없어요"], "self_unranked": ["No personal score yet", "아직 내 기록이 없어요"], "failed": ["Scores could not be loaded", "순위를 불러오지 못했어요"], "offline_cached": ["Offline, previously checked scores", "오프라인, 이전에 확인한 순위예요"], "season_closed": ["This season has ended", "이번 시즌이 종료됐어요"], "auth_required": ["Sign in to view your score", "내 기록을 보려면 로그인이 필요해요"], "submitting": ["Checking your score", "점수를 확인하고 있어요"]}
+	var statuses := {"loading": ["Loading scores…", "순위를 불러오는 중이에요…"], "empty": ["No scores yet", "아직 등록된 기록이 없어요"], "self_unranked": ["No personal score yet", "아직 내 기록이 없어요"], "failed": ["Scores could not be loaded", "순위를 불러오지 못했어요"], "offline_cached": ["Offline, previously checked scores", "오프라인이라 이전에 확인한 순위를 보여 드려요"], "season_closed": ["This season has ended", "이번 시즌이 끝났어요"], "auth_required": ["Sign in to view your score", "내 기록을 보려면 로그인이 필요해요"], "submitting": ["Checking your score", "점수를 확인하는 중이에요"]}
 	if statuses.has(ranking.status):
 		var pair: Array = statuses[ranking.status]
 		box.add_child(_label(tr_text(pair[0], pair[1])))
@@ -937,17 +937,17 @@ func _show_error(code: String) -> void:
 
 func _error_text(code: String) -> String:
 	match code:
-		"service_unconnected": return tr_text("Account services are unavailable in this build.", "이 빌드에서는 계정 서비스를 지원하지 않습니다.")
+		"service_unconnected": return tr_text("Account services are unavailable in this build.", "이 버전에서는 계정 서비스를 쓸 수 없어요.")
 		"expected_uid_required": return tr_text("Enter the UID of the account you want to recover.", "복구할 이전 계정의 UID를 입력해 주세요.")
-		"cloud_save_not_ready", "cloud_save_pending": return tr_text("Wait for cloud saving, then refresh your account.", "클라우드 저장을 기다린 뒤 계정을 다시 확인해 주세요.")
+		"cloud_save_not_ready", "cloud_save_pending": return tr_text("Wait for cloud saving, then refresh your account.", "클라우드 저장이 끝난 뒤 계정을 다시 확인해 주세요.")
 		"copied": return tr_text("Code copied", "코드를 복사했어요")
-		"copy_failed": return tr_text("Copy failed. Please try the Copy button again.", "복사하지 못했습니다. 복사 버튼을 다시 눌러 주세요.")
-		"save_failed": return tr_text("Could not save. Try again.", "저장하지 못했습니다. 다시 시도해 주세요.")
-		"save_corrupt", "save_schema_invalid": return tr_text("The save could not be read. Your data was preserved.", "저장을 읽지 못했습니다. 기존 데이터는 보존했습니다.")
-		"save_newer_version": return tr_text("Update the game to open this save.", "이 저장을 열려면 게임을 업데이트해 주세요.")
-		"maintenance": return tr_text("Service maintenance, try again later.", "서비스 점검 중입니다. 잠시 후 다시 확인해 주세요.")
-		"update_required": return tr_text("A game update is required.", "게임 업데이트가 필요합니다.")
-	return tr_text("Could not complete this action. Try again.", "처리하지 못했습니다. 다시 확인해 주세요.")
+		"copy_failed": return tr_text("Copy failed. Please try the Copy button again.", "복사하지 못했어요. 복사 버튼을 다시 눌러 주세요.")
+		"save_failed": return tr_text("Could not save. Try again.", "저장하지 못했어요. 다시 시도해 주세요.")
+		"save_corrupt", "save_schema_invalid": return tr_text("The save could not be read. Your data was preserved.", "저장 데이터를 읽지 못했어요. 기존 데이터는 그대로 두었어요.")
+		"save_newer_version": return tr_text("Update the game to open this save.", "이 저장 데이터를 열려면 게임을 업데이트해 주세요.")
+		"maintenance": return tr_text("Service maintenance, try again later.", "서비스 점검 중이에요. 잠시 후 다시 시도해 주세요.")
+		"update_required": return tr_text("A game update is required.", "게임을 업데이트해야 해요.")
+	return tr_text("Could not complete this action. Try again.", "처리하지 못했어요. 다시 시도해 주세요.")
 
 func _unclaimed() -> int:
 	var count := 0
@@ -1007,14 +1007,14 @@ func _render_mail() -> void:
 				card.add_child(_label("%s ×%d" % [reward.entitlementId, reward.quantity], 20))
 		card.add_child(_label(tr_text("Read", "읽음") if mail.readAt != 0 else tr_text("Unread", "읽지 않음"), 18))
 		if mail.expiresAt != 0:
-			card.add_child(_label(tr_text("Expires: ", "만료: ") + Time.get_datetime_string_from_unix_time(mail.expiresAt), 18))
+			card.add_child(_label(tr_text("Expires: ", "만료일: ") + Time.get_datetime_string_from_unix_time(mail.expiresAt), 18))
 		_button(tr_text("Mark read", "읽음 표시"), func() -> void: _read(str(mail.id)), card)
 		var expired: bool = mail.expiresAt != 0 and mail.expiresAt <= Time.get_unix_time_from_system()
-		var claim := _button(tr_text("Received", "수령 완료") if mail.claimedAt != 0 else (tr_text("Expired", "만료됨") if expired else tr_text("Claim", "받기")), func() -> void: _claim(str(mail.id)), card)
+		var claim := _button(tr_text("Received", "받음") if mail.claimedAt != 0 else (tr_text("Expired", "만료됨") if expired else tr_text("Claim", "받기")), func() -> void: _claim(str(mail.id)), card)
 		claim.disabled = pending or mail.claimedAt != 0 or expired
 	if services.mode == "server" and not services.cursor.is_empty():
 		_button(tr_text("More messages", "더 보기"), func() -> void: _inbox(true), box)
-	var all := _button(tr_text("Claim all available", "받을 수 있는 우편 모두 받기"), _claim_all, box)
+	var all := _button(tr_text("Claim all available", "모두 받기"), _claim_all, box)
 	all.disabled = pending or _unclaimed() == 0
 	box.move_child(all, 0)
 	var history := _button(tr_text("Grant history", "지급 내역"), _history, box)
@@ -1084,7 +1084,7 @@ func _claim_batches(remaining: Array, failures: Array, view: int) -> void:
 	if remaining.is_empty():
 		pending = false
 		_sync_metrics()
-		var notice: String = "" if failures.is_empty() else tr_text("Some rewards remain. Retry the unclaimed messages.", "받지 못한 우편이 있어요. 미수령 우편을 다시 받아 주세요.")
+		var notice: String = "" if failures.is_empty() else tr_text("Some rewards remain. Retry the unclaimed messages.", "아직 받지 못한 보상이 있어요. 남은 우편을 다시 받아 주세요.")
 		# 화면이 바뀌었으면 사용자 위치를 바꾸지 않는다. 우편함을 다시 열어 둔 경우에만 새로 그린다.
 		if view == _view or screen == "inbox":
 			_inbox(false, notice)

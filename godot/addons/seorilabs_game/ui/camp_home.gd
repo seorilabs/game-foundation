@@ -23,9 +23,9 @@ func _ready() -> void:
 	var chip: Control = controller._currency_chip(self)
 	_placements.append({"node": chip, "rect": Rect2(32, 244, 370, 76), "font": 32, "chip": true})
 	var account := _button(controller.tr_text("My account", "내 계정"), "account_hud", Rect2(772, 26, 328, 128), func() -> void: controller._open("account"), "account")
-	account.tooltip_text = str(controller.accounts.details.get("uid", controller.tr_text("UID appears after connecting", "연결 후 UID 표시")))
+	account.tooltip_text = str(controller.accounts.details.get("uid", controller.tr_text("UID appears after connecting", "연결하면 UID가 보여요")))
 	_button("", "settings", Rect2(1120, 26, 128, 128), func() -> void: controller._open("settings"), "settings")
-	var headline: String = controller.tr_text("A new adventure begins", "새로운 모험의 시작")
+	var headline: String = controller.tr_text("A new adventure begins", "새로운 모험이 시작돼요")
 	if not controller.startup_error.is_empty():
 		headline = controller._error_text(controller.startup_error)
 	if not controller.transient_notice.is_empty(): headline = controller.transient_notice

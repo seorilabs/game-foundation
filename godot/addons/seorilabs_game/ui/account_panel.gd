@@ -5,7 +5,7 @@ static func show_account(c: Control) -> void:
 	c._clear(c.tr_text("My account", "내 계정"))
 	var box: VBoxContainer = c._scroll()
 	var info: Dictionary = c.accounts.details
-	box.add_child(c._label(c.tr_text("Connected account", "연결된 계정") if c.accounts.connected() else c.tr_text("Create or recover an account to connect services.", "계정을 만들거나 복구하면 서비스를 이용할 수 있습니다."), 20))
+	box.add_child(c._label(c.tr_text("Connected account", "연결된 계정") if c.accounts.connected() else c.tr_text("Create or recover an account to connect services.", "계정을 만들거나 복구하면 서비스를 이용할 수 있어요."), 20))
 	if not info.is_empty():
 		box.add_child(c._label("UID  " + str(info.get("uid", "—")), 18))
 	if not str(info.get("saveStatus", "")).is_empty():
@@ -13,7 +13,7 @@ static func show_account(c: Control) -> void:
 	if not str(info.get("deletionStatus", "")).is_empty():
 		box.add_child(c._label(c.tr_text("Deletion request: ", "탈퇴 요청: ") + str(info.deletionStatus)))
 	if c.accounts.status == "busy":
-		box.add_child(c._label(c.tr_text("Connecting…", "연결 중입니다…")))
+		box.add_child(c._label(c.tr_text("Connecting…", "연결하는 중…")))
 	elif not c.accounts.error.is_empty():
 		box.add_child(c._label(c._error_text(c.accounts.error)))
 	var grid := GridContainer.new()
@@ -32,16 +32,16 @@ static func show_account(c: Control) -> void:
 	recover.name = "account_recovery"
 	recover.disabled = not c.accounts.capabilities().get("recover", false) or c.accounts.status == "busy"
 	c._button(c.tr_text("Link and manage account", "계정 연결과 관리"), func() -> void: c._open("account_manage"), grid).name = "account_manage"
-	for item in [["refresh", c.tr_text("Refresh account and save", "계정과 저장 새로 확인")], ["deletion_status", c.tr_text("Check deletion request", "탈퇴 처리 상태 확인")]]:
+	for item in [["refresh", c.tr_text("Refresh account and save", "계정과 저장 다시 확인")], ["deletion_status", c.tr_text("Check deletion request", "탈퇴 처리 상태 확인")]]:
 		var action := str(item[0])
 		if c.accounts.capabilities().get(action, false):
 			c._button(str(item[1]), func() -> void: c.accounts.perform(action), grid).name = "account_" + action
-	for item in [["keep_cloud", c.tr_text("Load server progress", "서버 진행 불러오기")], ["keep_local", c.tr_text("Use this device's progress", "이 기기 진행 사용")]]:
+	for item in [["keep_cloud", c.tr_text("Load server progress", "서버 진행 상황 불러오기")], ["keep_local", c.tr_text("Use this device's progress", "이 기기 진행 상황 쓰기")]]:
 		var action := str(item[0])
 		if c.accounts.capabilities().get(action, false):
 			c._button(str(item[1]), func() -> void: confirmation(c, action), grid).name = "account_" + action
 	if c.accounts.port == null:
-		box.add_child(c._label(c.tr_text("Account services are unavailable in this build.", "이 빌드에서는 계정 서비스를 지원하지 않습니다.")))
+		box.add_child(c._label(c.tr_text("Account services are unavailable in this build.", "이 버전에서는 계정 서비스를 쓸 수 없어요.")))
 
 static func manage(c: Control) -> void:
 	c._clear(c.tr_text("Manage account", "계정 관리"))
@@ -49,7 +49,7 @@ static func manage(c: Control) -> void:
 	var caps: Dictionary = c.accounts.capabilities()
 	for provider in caps.get("providers", []):
 		var selected := str(provider)
-		var link: Button = c._button(c.tr_text("Link with %s", "%s로 계정 연결") % selected.capitalize(), func() -> void: c.accounts.perform("link", {"provider": selected}), box)
+		var link: Button = c._button(c.tr_text("Link with %s", "%s 계정으로 연결") % selected.capitalize(), func() -> void: c.accounts.perform("link", {"provider": selected}), box)
 		link.name = "link_" + selected
 		link.disabled = not c.accounts.connected() or c.accounts.status == "busy"
 	var logout: Button = c._button(c.tr_text("Sign out", "로그아웃"), func() -> void: confirmation(c, "logout"), box)
@@ -58,12 +58,12 @@ static func manage(c: Control) -> void:
 	var delete: Button = c._button(c.tr_text("Delete account", "계정 탈퇴"), func() -> void: confirmation(c, "delete"), box)
 	delete.name = "account_delete"
 	delete.disabled = not c.accounts.connected() or not caps.get("delete", false)
-	box.add_child(c._label(c.tr_text("Link your account before signing out so you can recover it.", "로그아웃 전에 계정을 연결해 두면 이전 계정을 복구할 수 있습니다.")))
+	box.add_child(c._label(c.tr_text("Link your account before signing out so you can recover it.", "로그아웃하기 전에 계정을 연결해 두면 나중에 복구할 수 있어요.")))
 
 static func recovery(c: Control) -> void:
 	c._clear(c.tr_text("Recover account", "계정 복구"))
 	var box: VBoxContainer = c._scroll()
-	box.add_child(c._label(c.tr_text("Enter your previous UID, then sign in with its linked provider.", "이전 UID를 입력하고 연결해 둔 로그인 수단으로 인증해 주세요.")))
+	box.add_child(c._label(c.tr_text("Enter your previous UID, then sign in with its linked provider.", "이전 UID를 입력하고, 연결해 둔 계정으로 로그인해 주세요.")))
 	var uid := LineEdit.new()
 	uid.name = "recovery_uid"
 	uid.placeholder_text = c.tr_text("Previous account UID", "이전 계정 UID")
@@ -72,7 +72,7 @@ static func recovery(c: Control) -> void:
 	box.add_child(uid)
 	for provider in c.accounts.capabilities().get("providers", []):
 		var selected := str(provider)
-		c._button(c.tr_text("Recover with %s", "%s로 계정 복구") % selected.capitalize(), func() -> void:
+		c._button(c.tr_text("Recover with %s", "%s 계정으로 복구") % selected.capitalize(), func() -> void:
 			if uid.text.strip_edges().is_empty():
 				c._show_error("expected_uid_required")
 				return
@@ -88,13 +88,13 @@ static func confirm(c: Control) -> void:
 	c._clear(c.tr_text("Confirm account action", "계정 작업 확인"))
 	var box: VBoxContainer = c._scroll()
 	box.add_child(c._label("UID  " + str(c.accounts.details.get("uid", "—"))))
-	var description: String = c.tr_text("Your current account will be signed out. Save its UID and link it before continuing.", "현재 계정에서 로그아웃합니다. 계속하기 전에 UID를 보관하고 계정을 연결해 주세요.")
+	var description: String = c.tr_text("Your current account will be signed out. Save its UID and link it before continuing.", "지금 계정에서 로그아웃돼요. 계속하기 전에 UID를 적어 두고 계정을 연결해 주세요.")
 	if action == "delete":
-		description = c.tr_text("This requests permanent deletion of this account and its saved data. It cannot be undone.", "이 계정과 저장 데이터의 영구 삭제를 요청합니다. 되돌릴 수 없습니다.")
+		description = c.tr_text("This requests permanent deletion of this account and its saved data. It cannot be undone.", "이 계정과 저장 데이터를 영구 삭제해 달라고 요청해요. 되돌릴 수 없어요.")
 	elif action == "keep_cloud":
-		description = c.tr_text("Replace this device's progress with the server save? Unsynced progress will be backed up on this device.", "서버 저장으로 이 기기의 진행을 바꿀까요? 아직 보내지 못한 진행은 이 기기에 백업합니다.")
+		description = c.tr_text("Replace this device's progress with the server save? Unsynced progress will be backed up on this device.", "이 기기의 진행 상황을 서버 저장으로 바꿀까요? 아직 보내지 못한 진행 상황은 이 기기에 백업해 둬요.")
 	elif action == "keep_local":
-		description = c.tr_text("Replace the server save with this device's progress? The other device's progress may be replaced.", "이 기기의 진행을 서버에 보낼까요? 다른 기기에서 진행한 내용이 바뀔 수 있습니다.")
+		description = c.tr_text("Replace the server save with this device's progress? The other device's progress may be replaced.", "서버 저장을 이 기기의 진행 상황으로 바꿀까요? 다른 기기에서 진행한 내용이 덮어써질 수 있어요.")
 	box.add_child(c._label(description, 20))
 	var proceed: Button = c._button(c.tr_text("Confirm and continue", "확인하고 계속"), func() -> void: c.accounts.perform(action), box, true)
 	proceed.name = "account_confirm"
