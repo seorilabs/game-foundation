@@ -65,6 +65,7 @@ var accounts = Accounts.new()
 var account_changed: Callable
 var gameplay_ready: Callable
 var resource_provider: Callable
+var mail_reward_name_provider: Callable
 var identity_provider: Callable
 var support_provider: Callable
 var clipboard_writer: Callable
@@ -1220,7 +1221,11 @@ func _render_mail() -> void:
 			card.add_child(_label("+%d " % mail.amount + tr_text("coins", "코인"), 20))
 		else:
 			for reward in mail.get("rewards", []):
-				card.add_child(_label("%s ×%d" % [reward.entitlementId, reward.quantity], 20))
+				var name := str(reward.entitlementId)
+				if mail_reward_name_provider.is_valid():
+					name = str(mail_reward_name_provider.call(name))
+					if name.is_empty(): name = tr_text("Reward", "보상")
+				card.add_child(_label("%s ×%d" % [name, reward.quantity], 20))
 		card.add_child(_label(tr_text("Read", "읽음") if mail.readAt != 0 else tr_text("Unread", "읽지 않음"), 18))
 		if mail.expiresAt != 0:
 			card.add_child(_label(tr_text("Expires: ", "만료: ") + Time.get_datetime_string_from_unix_time(mail.expiresAt), 18))
