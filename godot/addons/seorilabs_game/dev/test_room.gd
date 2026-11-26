@@ -205,7 +205,7 @@ func _label(value: String, base: int) -> Label:
 func _button(id: String, label_pair: Variant, parent: Control, action: Callable) -> Button:
 	var s := _scale()
 	var button := Button.new()
-	button.name = id
+	button.name = _node_id(id)
 	button.text = _say(label_pair)
 	button.set_meta("label_pair", label_pair)
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -223,7 +223,7 @@ func _confirmed(id: String) -> bool:
 		_disarm()
 		return true
 	_disarm()
-	var button := find_child(id, true, false) as Button
+	var button := find_child(_node_id(id), true, false) as Button
 	if button == null:
 		return false
 	_armed = id
@@ -234,7 +234,7 @@ func _confirmed(id: String) -> bool:
 func _disarm() -> void:
 	if _armed.is_empty():
 		return
-	var button := find_child(_armed, true, false) as Button
+	var button := find_child(_node_id(_armed), true, false) as Button
 	_armed = ""
 	if button != null:
 		button.text = _say(button.get_meta("label_pair", ""))
@@ -261,7 +261,14 @@ func _run_replay(entry: Dictionary) -> void:
 	else:
 		_report(result)
 
+## 노드 이름에 쓸 수 없는 글자(. : @ / " %)는 _로 바꾼다. 버튼 이름과 두 번 누름 찾기가 같은 규칙을 쓴다.
+func _node_id(id: String) -> String:
+	return id.validate_node_name()
+
+## 행동이 값을 돌려주지 않으면(null) 실행된 것으로 보고 "완료"를 적는다.
 func _report(result: Variant) -> void:
+	if result == null:
+		result = {"ok": true}
 	var outcome: Dictionary = result if result is Dictionary else {}
 	if outcome.get("ok", false):
 		_result = outcome.get("message_pair", ["Done", "완료"])

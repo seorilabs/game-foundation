@@ -296,9 +296,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if test_room.is_open(): test_room.close()
 	else: open_test_room()
 
-## 노출 게이트: 디버그 실행 또는 playtest 기능 태그 빌드이고 파일이 있을 때만 연다. 그때만 F9와 설정 항목이 생긴다.
+## 노출 게이트: 디버그 실행 또는 playtest 기능 태그 빌드이고 파일이 있으며, 제품이 test_room_setup을 줬을 때만 연다.
+## 그때만 F9와 설정 항목이 생긴다. test_room_setup은 _ready() 전에(bootstrap의 _init에서) 정한다.
 func _attach_test_room() -> void:
-	if not (OS.is_debug_build() or OS.has_feature("playtest")) or not ResourceLoader.exists(TEST_ROOM):
+	if not test_room_setup.is_valid() or not (OS.is_debug_build() or OS.has_feature("playtest")) or not ResourceLoader.exists(TEST_ROOM):
 		return
 	var scene := load(TEST_ROOM) as PackedScene
 	if scene == null:
@@ -308,8 +309,7 @@ func _attach_test_room() -> void:
 	test_room.layers = layers
 	test_room.play_cutscene = play_cutscene
 	layers.layer("Popup").add_child(test_room)
-	if test_room_setup.is_valid():
-		test_room_setup.call(test_room)
+	test_room_setup.call(test_room)
 
 func open_test_room() -> void:
 	if test_room == null or (cutscene != null and cutscene.state() != "idle"):

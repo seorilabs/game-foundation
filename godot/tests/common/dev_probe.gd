@@ -25,6 +25,8 @@ func _initialize() -> void:
 
 func _run() -> void:
 	# headless 루트 창은 64x64라 그 밖의 탭이 컨트롤에 닿지 않는다. 검사 화면 크기로 맞춘다.
+	# 소비 게임의 기준 해상도(예: 1280x720) 늘이기 변환이 탭 좌표를 옮기지 않도록 배율을 끈다.
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(390, 844)
 	host = Control.new()
 	host.size = Vector2(390, 844)

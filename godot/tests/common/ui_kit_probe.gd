@@ -212,12 +212,21 @@ func _check_layers() -> void:
 	await process_frame
 	check(absf(toast.get_global_rect().get_center().x - layers.layer("Toast").size.x / 2.0) < 2.0, "layers: toast is centered horizontally (%s)" % str(toast.get_global_rect()))
 	# 화면 폭보다 긴 문장은 칩이 화면 안(양옆 16px)에 머물고 줄을 바꾼다.
-	var long_toast = layers.toast("Finish the current round first, then try this action again from the test room. ".repeat(4).strip_edges(), 0.05)
+	var long_toast = layers.toast("Finish the current round first, then try this action again from the test room. ".repeat(4).strip_edges(), 30.0)
 	await process_frame
 	await process_frame
 	var bounds: Rect2 = long_toast.get_global_rect()
 	var width: float = layers.layer("Toast").size.x
 	check(bounds.position.x >= 15.0 and bounds.end.x <= width - 15.0 and (long_toast.get_child(0) as Label).get_line_count() > 1, "layers: long toast wraps inside the screen (%s in %s)" % [str(bounds), str(width)])
+	check((long_toast.get_child(0) as Label).theme_type_variation == &"", "layers: long toast switches to the body font before wrapping")
+	# 화면 안에 드는 여러 줄 토스트는 1.1.0 모양(왼쪽 정렬, 폭 고정 없음, 숫자 글꼴) 그대로다.
+	var lines_toast = layers.toast("Could not save.\nTap again to retry.", 30.0)
+	await process_frame
+	await process_frame
+	var lines_label := lines_toast.get_child(0) as Label
+	check(lines_label.custom_minimum_size.x == 0.0 and lines_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_LEFT and lines_label.theme_type_variation == &"NumberLabel", "layers: fitting multi-line toast keeps the 1.1.0 look")
+	long_toast.queue_free()
+	lines_toast.queue_free()
 	for i in 40: await process_frame
 	check(not is_instance_valid(toast) or toast.is_queued_for_deletion() or toast.modulate.a < 0.05, "layers: toast leaves after its time")
 	layers.queue_free()
@@ -266,6 +275,8 @@ func _check_cutscene(reduced: bool) -> void:
 	check(ResourceLoader.exists(CUTSCENE), mode + ": cutscene_player.tscn exists")
 	if not ResourceLoader.exists(CUTSCENE): return
 	# headless 루트 창은 64x64라 그 밖의 탭이 컨트롤에 닿지 않는다. 검사 화면 크기로 맞춘다.
+	# 소비 게임의 기준 해상도(예: 1280x720) 늘이기 변환이 탭 좌표를 옮기지 않도록 배율을 끈다.
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	root.size = Vector2i(390, 844)
 	var player: Control = load(CUTSCENE).instantiate()
 	host.add_child(player)
