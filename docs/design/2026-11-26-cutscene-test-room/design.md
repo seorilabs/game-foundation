@@ -29,7 +29,7 @@ stateDiagram-v2
     End --> Play: 계속하기
     Settings --> CreditsScreen: 크레딧(늘 있음)
     Settings --> Ending: 엔딩 다시 보기(set_ending_seen 뒤)
-    Settings --> TestRoom: 테스트실(디버그·playtest 빌드)
+    Settings --> TestRoom: 테스트실(test_room_setup이 있고 디버그·playtest 빌드)
     TestRoom --> Settings: 닫기, Esc, 뒤로 가기, F9
 ```
 
@@ -142,3 +142,15 @@ outgame_main
 
 - 상위 설계 승인: 2026-11-26 사용자, agent-config `docs/design/2026-11-26-game-skill-system-v2/approval.json`.
 - 남은 게이트: 독립 검수 3회 기록, PR 리뷰와 병합, 잠금 후속 PR, starter-template-game 설치.
+
+### 독립 검수 결과
+
+| 회차 | 후보 | 판정 | 주요 지적과 처리 |
+|---|---|---|---|
+| 1 | `0dbc661` | pass | 크레딧 여백·글꼴 묶음 구분(F-1), 끝 화면 뒤로 가기(F-2), 한국어 캡처(F-5)를 반영 |
+| 2 | `c6da5af` | pass | 320 폭 긴 토스트 잘림(R2-1)을 반영. 한국어 음절 줄바꿈(R2-2)은 #26 |
+| 3 | `1c73506` | fail | 기준 1280x720 소비 게임에서 공용 probe 탭 빗나감(R3-1, 차단)과 토스트 모양 변화, 테스트실 API 경계를 반영하고 `tools/test_consumer_scale.py` 추가 |
+| 4 | `14d8acc` | fail | 긴 토스트 글자색 상실(R4-1, 차단)과 버튼 찾기 충돌(R4-2)을 반영. 2026-11-26 사용자 승인으로 추가 회차 |
+| 5 | `33dbf93` | pass | 네 크기 AC-13 pass, 토스트 대비 10.95:1, 화면 안 토스트는 main과 픽셀 동일, starter 설치 통과. 렌더 probe 간헐 실패(R5-2)는 #27 |
+
+4·5회차는 3회 뒤 미완료 정책에 따라 사용자 승인("4회차 진행", "5회차 진행", 2026-11-26)을 받고 진행했다. 기록은 `docs/qa/cutscene-test-room-review/round-N.md`, 증적 원본은 NAS1dual `agent-artifacts/game-foundation/2026-11-26/<후보 SHA>/cutscene-test-room-review-rN`에 있다.

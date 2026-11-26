@@ -42,8 +42,9 @@ var credits: Dictionary = {}
 ## 제품이 play_cutscene으로 띄우는 엔딩. 제품이 set_ending_seen(true)를 알리면 설정에 "엔딩 다시 보기"가 생긴다.
 var ending_script: Dictionary = {}
 ## 테스트실이 생기면 부른다. 제품은 여기서 행동, 플레이 시점 프리셋, 연출 다시 보기, 봐줄 점을 등록한다.
+## _ready() 전에(bootstrap의 _init()에서) 정한다. 정하지 않으면 테스트실, F9, 설정 항목이 생기지 않는다.
 var test_room_setup: Callable
-## 디버그·playtest 빌드에서만 생기는 테스트실. 출시 빌드에서는 null이다.
+## test_room_setup이 있고 디버그·playtest 빌드일 때만 생기는 테스트실. 그 밖에는 null이다.
 var test_room: Control
 var cutscene: Control
 var _ending_seen := false
