@@ -145,6 +145,13 @@ func _check_room() -> void:
 	before = _bytes()
 	var shown_result := result.text
 	check(await _press(_node("test_action_blocked")) and _toast_texts().has("Finish the current round first"), "blocked action shows its reason as a toast %s" % str(_toast_texts()))
+	# 390 폭에서 숫자 글꼴로는 넘치는 문장이 본문 글꼴 한 줄로 들어가 테스트실 제목·닫기를 덮지 않는다.
+	await process_frame
+	await process_frame
+	var reason_label: Label = null
+	for label in layers.layer("Toast").find_children("*", "Label", true, false):
+		if (label as Label).text == "Finish the current round first": reason_label = label
+	check(reason_label != null and reason_label.get_line_count() == 1 and reason_label.get_theme_font("font") == reason_label.get_theme_default_font(), "blocked reason fits one line in the body font at 390")
 	check(_bytes() == before and result.text == shown_result, "blocked action leaves the save and result line unchanged")
 	# 연출 다시 보기는 저장을 바꾸지 않는다. 제품이 막으면(판 진행 중) 재생하지 않고 이유를 알린다.
 	before = _bytes()

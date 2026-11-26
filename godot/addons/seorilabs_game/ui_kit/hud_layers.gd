@@ -58,7 +58,8 @@ func _fit_toast(chip: PanelContainer, label: Label) -> void:
 	if room <= 0.0 or _longest_line(label) <= room:
 		return
 	if label.theme_type_variation == &"NumberLabel" and not label.has_theme_font_override("font"):
-		label.add_theme_font_override("font", label.get_theme_font("font", &"Label"))
+		# get_theme_font("font", &"Label")은 이 Label의 변형(NumberLabel)을 그대로 따라가므로 테마 기본(본문) 글꼴을 직접 쓴다.
+		label.add_theme_font_override("font", label.get_theme_default_font())
 		if _longest_line(label) <= room:
 			return
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
