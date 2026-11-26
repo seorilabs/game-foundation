@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3c2a55"/>
+      <stop offset="0.5" stop-color="#e2795a"/>
+      <stop offset="1" stop-color="#ffd890"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff0c0"/>
+      <stop offset="1" stop-color="#ffb86b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lamp" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fffbe0"/>
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#dusk)"/>
+  <circle cx="600" cy="840" r="360" fill="url(#sun)"/>
+  <circle cx="600" cy="840" r="130" fill="#ffe7a8"/>
+  <path d="M0 900 Q300 870 600 900 T1200 900 L1200 1200 L0 1200 Z" fill="#7a4a5a"/>
+  <path d="M0 980 Q300 950 600 980 T1200 980 L1200 1200 L0 1200 Z" fill="#4a2f45"/>
+  <g>
+    <path d="M760 640 Q900 600 1040 640 L980 760 L900 800 L820 750 Z" fill="#4f4a5f"/>
+    <path d="M760 640 Q900 600 1040 640 Q900 665 760 640 Z" fill="#8aa86a"/>
+    <rect x="885" y="520" width="30" height="120" fill="#f1ecdc"/>
+    <rect x="880" y="500" width="40" height="26" fill="#fff6c8"/>
+    <path d="M876 500 L900 474 L924 500 Z" fill="#c8553d"/>
+    <circle cx="900" cy="512" r="70" fill="url(#lamp)"/>
+  </g>
+  <g transform="translate(420 520) scale(0.75)">
+    <ellipse cx="0" cy="0" rx="185" ry="105" fill="#c8553d"/>
+    <path d="M-170 0 Q0 80 170 0 Q0 40 -170 0 Z" fill="#9d3a2b"/>
+    <path d="M0 -105 Q-40 0 0 105 Q40 0 0 -105 Z" fill="#f6d072" opacity="0.85"/>
+    <g stroke="#3a2a16" stroke-width="6">
+      <line x1="-100" y1="80" x2="-60" y2="185"/>
+      <line x1="100" y1="80" x2="60" y2="185"/>
+    </g>
+    <path d="M-80 185 L80 185 L60 240 L-60 240 Z" fill="#8a5a33"/>
+  </g>
+  <g fill="none" stroke="#3a2a40" stroke-width="7" stroke-linecap="round">
+    <path d="M200 300 q20 -18 40 0 q20 -18 40 0"/>
+    <path d="M300 250 q16 -14 32 0 q16 -14 32 0"/>
+    <path d="M980 260 q18 -16 36 0 q18 -16 36 0"/>
+  </g>
+</svg>

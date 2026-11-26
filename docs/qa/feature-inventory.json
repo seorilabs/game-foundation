@@ -131,6 +131,41 @@
         "godot/addons/seorilabs_game/skins/**",
         "godot/tests/common/ui_kit_probe.gd"
       ]
+    },
+    {
+      "id": "cutscene",
+      "core": false,
+      "foundation": false,
+      "paths": [
+        "godot/addons/seorilabs_game/ui_kit/cutscene_player.gd",
+        "godot/addons/seorilabs_game/ui_kit/cutscene_player.tscn",
+        "godot/addons/seorilabs_game/flow/**",
+        "godot/reference/config/map.json",
+        "godot/reference/assets/cutscene/**",
+        "godot/tests/common/ui_kit_probe.gd"
+      ]
+    },
+    {
+      "id": "credits",
+      "core": false,
+      "foundation": false,
+      "paths": [
+        "godot/addons/seorilabs_game/flow/outgame_main.gd",
+        "godot/addons/seorilabs_game/fonts/**",
+        "godot/reference/config/map.json"
+      ]
+    },
+    {
+      "id": "test_room",
+      "core": false,
+      "foundation": false,
+      "paths": [
+        "godot/addons/seorilabs_game/dev/**",
+        "godot/addons/seorilabs_game/flow/outgame_main.gd",
+        "godot/reference/bootstrap/**",
+        "godot/tests/common/dev_probe.gd",
+        "godot/export_presets.cfg"
+      ]
     }
   ]
 }
