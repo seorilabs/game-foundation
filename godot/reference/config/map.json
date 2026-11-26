@@ -2,7 +2,7 @@
   "id": "map-reference",
   "title": "SKY ATLAS",
   "homeProfile": "map",
-  "commonVersion": "1.1.0",
+  "commonVersion": "1.2.0",
   "runtime": "res://addons/seorilabs_game/flow/outgame_main.gd",
   "introScript": {
     "id": "prologue",
