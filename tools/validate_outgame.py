@@ -14,6 +14,9 @@ REQUIRED = ('startup', 'tutorial', 'account_save', 'settings_support', 'inbox', 
 OPTIONAL = ('attendance', 'missions', 'achievements', 'events', 'shop', 'pass', 'ranking', 'friends', 'guild', 'push', 'review')
 SERVICES = ('auth', 'payments', 'ads', 'analytics', 'remote_config', 'mailbox')
 UI_CHECKS = ('ui_support_entry', 'ui_analytics_opt_out', 'ui_locale_offline', 'ui_navigation', 'ui_leaderboard')
+# 공통 묶음 계약 버전. 1.2.0(컷신·크레딧·테스트실)은 스킨을 바꾸지 않아 제품 skin.json 계약은 1.1.0 그대로다.
+UI_VERSIONS = ('1.0.0', '1.1.0', '1.2.0')
+SKIN_CONTRACTS = {'1.0.0': '1.0.0', '1.1.0': '1.1.0', '1.2.0': '1.1.0'}
 REPORT_CHECKS = {
     'render': ('startup', 'tutorial', 'reward', 'home', 'settings', 'inbox', 'empty', 'error', 'small_screen', 'large_text', 'touch_drag'),
     'device': ('startup', 'tutorial', 'resume', 'save', 'settings', 'inbox', 'touch'),
@@ -105,7 +108,7 @@ def declared_skin(root, standard):
             skin = json.loads(path.read_text())
         except (ValueError, OSError):
             continue
-        if isinstance(skin, dict) and skin.get('id') == standard.get('skin') and skin.get('contract') == standard.get('version'):
+        if isinstance(skin, dict) and skin.get('id') == standard.get('skin') and skin.get('contract') == SKIN_CONTRACTS.get(standard.get('version')):
             return True
     return False
 
@@ -137,7 +140,7 @@ def validate(root, profile, stage='implementation', require_ui_standard=False, m
         if not isinstance(standard, dict):
             fail('missing_ui_standard', 'uiStandard object')
         else:
-            if standard.get('version') not in ('1.0.0', '1.1.0') or standard.get('homeProfile') not in ('hero', 'map', 'world') or not declared_skin(root, standard):
+            if standard.get('version') not in UI_VERSIONS or standard.get('homeProfile') not in ('hero', 'map', 'world') or not declared_skin(root, standard):
                 fail('missing_ui_standard', 'version/homeProfile/skin')
             if not isinstance(standard.get('locales'), list) or not standard['locales'] or any(v not in ('en', 'ko') for v in standard['locales']):
                 fail('missing_ui_standard', 'bundled locales')

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1a2b"/>
+      <stop offset="1" stop-color="#244e5c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff1b8" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#sky)"/>
+  <g stroke="#f6d072" stroke-width="4" opacity="0.8" fill="none">
+    <path d="M220 260 L420 200 L600 330 L800 220 L980 300"/>
+    <path d="M420 200 L380 420 L600 330 L760 470 L980 300"/>
+    <path d="M380 420 L560 560 L760 470"/>
+  </g>
+  <g>
+    <circle cx="220" cy="260" r="60" fill="url(#glow)"/><circle cx="420" cy="200" r="60" fill="url(#glow)"/>
+    <circle cx="600" cy="330" r="60" fill="url(#glow)"/><circle cx="800" cy="220" r="60" fill="url(#glow)"/>
+    <circle cx="980" cy="300" r="60" fill="url(#glow)"/><circle cx="380" cy="420" r="60" fill="url(#glow)"/>
+    <circle cx="760" cy="470" r="60" fill="url(#glow)"/><circle cx="560" cy="560" r="60" fill="url(#glow)"/>
+    <g fill="#fffbe0">
+      <circle cx="220" cy="260" r="10"/><circle cx="420" cy="200" r="10"/><circle cx="600" cy="330" r="12"/>
+      <circle cx="800" cy="220" r="10"/><circle cx="980" cy="300" r="10"/><circle cx="380" cy="420" r="10"/>
+      <circle cx="760" cy="470" r="10"/><circle cx="560" cy="560" r="10"/>
+    </g>
+  </g>
+  <circle cx="600" cy="860" r="330" fill="url(#glow)" opacity="0.55"/>
+  <path d="M600 760 Q440 700 240 730 L250 1010 Q440 990 600 1050 Z" fill="#f3e3bb" stroke="#6b4a2f" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M600 760 Q760 700 960 730 L950 1010 Q760 990 600 1050 Z" fill="#ead8ad" stroke="#6b4a2f" stroke-width="10" stroke-linejoin="round"/>
+  <g fill="none" stroke="#c8553d" stroke-width="6" stroke-dasharray="16 12" stroke-linecap="round">
+    <path d="M300 800 C380 760 460 860 540 820"/>
+    <path d="M660 830 C740 770 820 870 900 800"/>
+  </g>
+  <g fill="#a9cbbf" stroke="#4f6f7d" stroke-width="4">
+    <circle cx="330" cy="900" r="26"/><circle cx="480" cy="930" r="20"/>
+    <circle cx="720" cy="920" r="24"/><circle cx="860" cy="890" r="20"/>
+  </g>
+</svg>

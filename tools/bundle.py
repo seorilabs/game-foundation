@@ -10,9 +10,10 @@ import tarfile
 from pathlib import Path, PurePosixPath
 
 ROOTS = ('godot/addons/seorilabs_game', 'godot/addons/seorilabs_platform', 'godot/tests/common')
-# 1.1.0은 ui_kit(테마·모션·효과음·HUD 층·보상 연출)을 더한 하위 호환 묶음이다. 1.0.0 묶음 위에 설치할 수 있고 그 반대는 거부한다.
-VERSIONS = ('1.0.0', '1.1.0')
-CURRENT = '1.1.0'
+# 1.1.0은 ui_kit(테마·모션·효과음·HUD 층·보상 연출)을, 1.2.0은 컷신 재생기·크레딧·테스트실(dev/)을 더한 하위 호환 묶음이다.
+# 낮은 버전 묶음 위에 설치할 수 있고 그 반대는 거부한다.
+VERSIONS = ('1.0.0', '1.1.0', '1.2.0')
+CURRENT = '1.2.0'
 REPOSITORY = 'https://github.com/seorilabs/game-foundation'
 
 def sha(data):

@@ -29,6 +29,10 @@ func _run() -> void:
 	await _save_integrity()
 	await _server_inbox()
 	await _late_response()
+	await _prologue()
+	await _credits_and_ending()
+	await _test_room()
+	await _korean_scenes()
 	quit(e2e.finish({"sourceSha": OS.get_environment("GITHUB_SHA")}))
 
 func _mount(path: String, sdk: Node = null, fixtures: bool = true, profile: String = "hero", hook: Dictionary = {}) -> Control:
@@ -287,7 +291,7 @@ func _homes() -> void:
 		var hook: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://reference/config/" + product + ".json"))
 		var main: Control = await _mount(dir + "/hook-" + product + ".json", null, true, hook.homeProfile, hook)
 		e2e.step("own product title", _has_text(main, hook.title))
-		e2e.step("same common version for " + product, hook.commonVersion == "1.1.0" and hook.runtime == "res://addons/seorilabs_game/flow/outgame_main.gd")
+		e2e.step("same common version for " + product, hook.commonVersion == "1.2.0" and hook.runtime == "res://addons/seorilabs_game/flow/outgame_main.gd")
 		await e2e.wait_for(func(): return main.initialized)
 		e2e.step("product title settings", await e2e.tap(_button(main, "settings")))
 		e2e.step("product support", await e2e.tap(_button(main, "support")) and main.support.status == "ready")
@@ -353,5 +357,200 @@ func _late_response() -> void:
 	sdk.release_claim()
 	await e2e.frames()
 	e2e.step("late claim does not reopen inbox", main.screen == "home")
+	e2e.end()
+	await e2e.unmount(main)
+
+## map 제품(프롤로그·엔딩·크레딧이 있는 레퍼런스)을 격리 저장으로 띄운다. 다른 제품과 기존 여정은 프롤로그가 없다.
+func _map(path: String) -> Control:
+	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.apply_product("map")
+	main.state = State.new(path)
+	main.device_locale = "en-US"
+	await e2e.mount(main)
+	e2e.step("map ready", await e2e.wait_for(func(): return main.initialized))
+	return main
+
+## 컷신 시간은 _process에서만 흐른다. 창 포커스와 무관하게 같은 화면을 찍도록 시계를 직접 넘긴다.
+func _play_for(main: Control, seconds: float) -> void:
+	for i in roundi(seconds / 0.1):
+		main.cutscene._process(0.1)
+	await e2e.frames(2)
+
+func _subtitle(main: Control) -> String:
+	return main.cutscene.get_node("Captions/Column/Subtitle").text
+
+func _prologue() -> void:
+	e2e.begin("map-prologue-first-start-once", ["cutscene", "startup", "tutorial", "account_save"])
+	for product in ["skyway", "windharbor"]:
+		var hook: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://reference/config/" + product + ".json"))
+		e2e.step(product + " keeps the 1.1.0 start without a prologue", not hook.has("introScript") and not hook.has("endingScript"))
+	var path := dir + "/prologue.json"
+	var main: Control = await _map(path)
+	e2e.step("first start opens the prologue", await e2e.tap(_button(main, "start")) and main.cutscene.state() == "cut" and main.screen == "title")
+	await _play_for(main, 1.0)
+	e2e.expect_equal("first cut subtitle", _subtitle(main), "Long ago, the wind charts of the sky isles were scattered.")
+	await e2e.shot("prologue-1")
+	e2e.step("tap shows the next cut", await e2e.tap(main.cutscene) and main.cutscene.current_cut() == 1)
+	await _play_for(main, 1.0)
+	await e2e.shot("prologue-2")
+	e2e.step("tap shows the title cut", await e2e.tap(main.cutscene) and main.cutscene.current_cut() == 2)
+	await _play_for(main, 2.0)
+	e2e.step("title card shows the product name", main.cutscene.get_node("Captions/Column/TitleCard").visible and main.cutscene.get_node("Captions/Column/TitleCard/Title").text == "SKY ATLAS")
+	await e2e.shot("prologue-title")
+	var skip: Button = main.cutscene.get_node("Skip")
+	e2e.step("skip goes to play", await e2e.tap(skip) and await e2e.wait_for(func(): return main.screen == "play" and main.cutscene.state() == "idle"))
+	var saved := State.new(path)
+	e2e.step("seen flag saved without a new save version", saved.load_state() and saved.intro_seen() and int(saved.data.version) == State.SAVE_VERSION)
+	await e2e.frames(30)
+	e2e.step("play takes taps after the prologue", await e2e.tap(_text_button(main, "★")))
+	await e2e.unmount(main)
+	main = await _map(path)
+	e2e.step("restart starts play without the prologue", await e2e.tap(_button(main, "start")) and main.screen == "play" and main.cutscene.state() == "idle")
+	await e2e.unmount(main)
+	# 길이 0인 컷만 있는 프롤로그도 시작 흐름이 끝나고 본 기록이 남아야 한다(재생 안에서 끝나는 신호를 놓치지 않는다).
+	var flash_path := dir + "/prologue-flash.json"
+	main = await _map(flash_path)
+	main.intro_script = {"id": "flash", "cuts": [{"art": "", "dur": 0}]}
+	e2e.step("zero-length prologue still enters the game", await e2e.tap(_button(main, "start")) and main.screen == "play" and main.cutscene.state() == "idle")
+	var flash_saved := State.new(flash_path)
+	e2e.step("zero-length prologue is recorded as seen", flash_saved.load_state() and flash_saved.intro_seen())
+	e2e.end()
+	await e2e.unmount(main)
+
+func _credits_and_ending() -> void:
+	e2e.begin("settings-credits-and-ending-replay", ["credits", "cutscene", "settings_support", "ui_navigation"])
+	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://addons/seorilabs_game/fonts/manifest.json"))
+	var fonts: Array = []
+	for entry in manifest.files:
+		if str(entry.path).get_extension() == "ttf": fonts.append(RegEx.create_from_string("([a-z])([A-Z])").sub(str(entry.path).get_basename(), "$1 $2", true))
+	# 제품 크레딧이 없는 제품도 글꼴 라이선스는 보인다.
+	var main: Control = await _mount(dir + "/credits-skyway.json")
+	await e2e.wait_for(func(): return main.initialized)
+	e2e.step("skyway settings", await e2e.tap(_button(main, "settings")))
+	e2e.step("credits entry is always in settings", await e2e.tap(_button(main, "credits")) and main.screen == "credits")
+	e2e.step("font licenses without product credits", fonts.all(func(font): return _has_text(main.content, font)) and _has_text(main.content, "SIL Open Font License 1.1") and not _has_text(main.content, "AI-generated content"))
+	await e2e.unmount(main)
+	var path := dir + "/credits-map.json"
+	_seed(path)
+	main = await _map(path)
+	e2e.step("map settings", await e2e.tap(_button(main, "settings")))
+	e2e.step("no ending replay before the ending", _button(main, "replay_ending") == null)
+	e2e.step("open credits", await e2e.tap(_button(main, "credits")) and main.screen == "credits")
+	e2e.step("product credits and AI notice", _has_text(main.content, "Made by the Seorilabs game foundation team") and _has_text(main.content, "AI-generated content") and _has_text(main.content, "made with AI tools"))
+	e2e.step("%d font licenses from the manifest" % fonts.size(), fonts.size() >= 3 and fonts.all(func(font): return _has_text(main.content, font)) and _has_text(main.content, "Copyright 2018 The Jua Project Authors"))
+	await e2e.shot("credits")
+	var labels: Array = main.content.find_children("*", "Label", true, false)
+	e2e.step("credits scroll to the last license", await e2e.scroll_into_view(labels.back()))
+	await e2e.shot("credits-end")
+	e2e.step("credits back to settings", await e2e.tap(_button(main, "back")) and main.screen == "settings")
+	main.set_ending_seen(true)
+	await e2e.frames(2)
+	var replay := _button(main, "replay_ending")
+	e2e.step("ending seen adds Replay ending", replay != null and await e2e.scroll_into_view(replay))
+	await e2e.shot("settings-ending")
+	var before := FileAccess.get_file_as_bytes(path)
+	e2e.step("replay ending", await e2e.tap(replay) and main.cutscene.state() == "cut")
+	e2e.step("replay unlocks the locked first cut", main.cutscene.can_skip())
+	await _play_for(main, 1.0)
+	await e2e.shot("ending-1")
+	e2e.step("next ending cut", await e2e.tap(main.cutscene) and main.cutscene.current_cut() == 1)
+	await _play_for(main, 3.0)
+	e2e.expect_equal("count-up uses the shared number format", main.cutscene.get_node("Captions/Column/Count").text, "12,800")
+	await e2e.shot("ending-count")
+	e2e.step("last cut rolls the credits", await e2e.tap(main.cutscene) and main.cutscene.state() == "credits")
+	await _play_for(main, 5.0)
+	var roll := ""
+	for label in main.cutscene.get_node("Credits/Roll").find_children("*", "Label", true, false): roll += label.text + "\n"
+	e2e.step("credits roll lists the product and font credits", "AI-generated content" in roll and "Jua" in roll)
+	await e2e.shot("ending-credits")
+	e2e.step("credits tap opens the end screen", await e2e.tap(main.cutscene) and main.cutscene.state() == "end")
+	await e2e.shot("ending-end")
+	e2e.step("continue returns to settings", await e2e.tap(main.cutscene.get_node("End/Continue")) and await e2e.wait_for(func(): return main.cutscene.state() == "idle") and main.screen == "settings")
+	e2e.step("ending replay leaves the save bytes identical", FileAccess.get_file_as_bytes(path) == before)
+	e2e.end()
+	await e2e.unmount(main)
+
+func _f9(main: Control) -> void:
+	var key := InputEventKey.new()
+	key.keycode = KEY_F9
+	key.pressed = true
+	e2e.viewport.push_input(key)
+	await e2e.frames(3)
+
+func _toasts(main: Control) -> Array:
+	var texts: Array = []
+	for label in main.layers.layer("Toast").find_children("*", "Label", true, false):
+		if not label.is_queued_for_deletion(): texts.append(label.text)
+	return texts
+
+func _test_room() -> void:
+	e2e.begin("debug-test-room", ["test_room", "cutscene", "ui_navigation"])
+	var path := dir + "/test-room.json"
+	_seed(path)
+	var seen := State.new(path)
+	seen.load_state()
+	seen.mark_intro_seen()
+	var main: Control = await _map(path)
+	e2e.step("debug run attaches the test room", OS.is_debug_build() and main.test_room != null and not main.test_room.is_open())
+	e2e.step("start home", await e2e.tap(_button(main, "start")) and main.screen == "home")
+	await _f9(main)
+	e2e.step("F9 opens the test room", main.test_room.is_open())
+	await e2e.shot("test-room")
+	var coins := int(main.state.data.coins)
+	e2e.step("plain action applies", await e2e.tap(_button(main, "test_action_coins")) and int(main.state.data.coins) == coins + 100)
+	var result: Label = main.test_room.get_node("Frame/Body/Result")
+	var height := result.size.y
+	var preset: Button = _button(main, "test_snapshot_m10")
+	var before := FileAccess.get_file_as_bytes(path)
+	e2e.step("first tap arms the preset", await e2e.tap(preset) and preset.text == "Tap again to apply" and FileAccess.get_file_as_bytes(path) == before)
+	await e2e.shot("test-room-armed")
+	e2e.step("second tap applies the preset", await e2e.tap(preset) and int(main.state.data.coins) == 120 and int(main.state.data.ui.home.level) == 3)
+	e2e.step("result line keeps its height", absf(result.size.y - height) < 0.5 and "10-minute preset" in result.text)
+	before = FileAccess.get_file_as_bytes(path)
+	e2e.step("replay prologue closes the room", await e2e.tap(_button(main, "test_replay_prologue")) and not main.test_room.is_open() and main.cutscene.state() == "cut")
+	await _f9(main)
+	e2e.step("F9 is ignored while a scene plays", not main.test_room.is_open())
+	e2e.step("skip the replay", await e2e.tap(main.cutscene.get_node("Skip")) and await e2e.wait_for(func(): return main.cutscene.state() == "idle"))
+	e2e.step("replay leaves the save bytes identical", FileAccess.get_file_as_bytes(path) == before)
+	await e2e.frames(30)
+	e2e.step("settings", await e2e.tap(_button(main, "settings")))
+	e2e.step("settings entry opens the test room", await e2e.tap(_button(main, "test_room")) and main.test_room.is_open())
+	e2e.step("close button", await e2e.tap(_button(main, "test_room_close")) and not main.test_room.is_open() and main.screen == "settings")
+	e2e.step("back home", await e2e.tap(_button(main, "close")) and main.screen == "home")
+	e2e.step("enter play", await e2e.tap(_button(main, "play")) and main.screen == "play")
+	await _f9(main)
+	before = FileAccess.get_file_as_bytes(path)
+	e2e.step("blocked action during a round", await e2e.tap(_button(main, "test_action_coins")) and _toasts(main).has("Finish the current round first"))
+	e2e.step("blocked action leaves the save unchanged", FileAccess.get_file_as_bytes(path) == before)
+	await e2e.shot("test-room-blocked")
+	await _f9(main)
+	e2e.step("F9 closes the test room", not main.test_room.is_open())
+	e2e.end()
+	await e2e.unmount(main)
+
+## 새 화면의 한국어 캡처: 프롤로그 자막, 테스트실, 크레딧(1회차 검수 F-5).
+func _korean_scenes() -> void:
+	e2e.begin("korean-cutscene-test-room-credits", ["cutscene", "test_room", "credits"])
+	# 튜토리얼을 마친 저장에서 시작해 프롤로그 뒤 홈(설정 버튼이 있는 화면)으로 간다. 프롤로그 본 기록은 비어 있다.
+	_seed(dir + "/korean.json")
+	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.apply_product("map")
+	main.state = State.new(dir + "/korean.json")
+	main.device_locale = "ko-KR"
+	await e2e.mount(main)
+	e2e.step("map ready in Korean", await e2e.wait_for(func(): return main.initialized) and main.language() == "ko")
+	e2e.step("first start opens the prologue", await e2e.tap(_button(main, "start")) and main.cutscene.state() == "cut")
+	await _play_for(main, 1.0)
+	e2e.step("Korean subtitle", _subtitle(main) != "" and _subtitle(main) != "Long ago, the wind charts of the sky isles were scattered.")
+	await e2e.shot("prologue-1-ko")
+	e2e.step("skip to home", await e2e.tap(main.cutscene.get_node("Skip")) and await e2e.wait_for(func(): return main.cutscene.state() == "idle" and main.screen == "home"))
+	await e2e.frames(30)
+	await _f9(main)
+	e2e.step("F9 opens the Korean test room", main.test_room.is_open())
+	await e2e.shot("test-room-ko")
+	await _f9(main)
+	e2e.step("settings", await e2e.tap(_button(main, "settings")))
+	e2e.step("credits", await e2e.tap(_button(main, "credits")) and main.screen == "credits" and _has_text(main.content, "글꼴 라이선스"))
+	await e2e.shot("credits-ko")
 	e2e.end()
 	await e2e.unmount(main)

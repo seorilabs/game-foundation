@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d2233"/>
+      <stop offset="0.7" stop-color="#2c5a6e"/>
+      <stop offset="1" stop-color="#4f7d86"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff1b8" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#fff1b8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="beam2" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#fff1b8" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#fff1b8" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fffbe0"/>
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#night)"/>
+  <g fill="#fff6d8">
+    <circle cx="120" cy="140" r="4"/><circle cx="260" cy="90" r="3"/><circle cx="420" cy="180" r="5"/>
+    <circle cx="760" cy="110" r="4"/><circle cx="900" cy="200" r="3"/><circle cx="1080" cy="120" r="5"/>
+    <circle cx="180" cy="320" r="3"/><circle cx="1010" cy="330" r="4"/><circle cx="660" cy="60" r="3"/>
+  </g>
+  <path d="M600 430 L1200 300 L1200 560 Z" fill="url(#beam)"/>
+  <path d="M600 430 L0 310 L0 550 Z" fill="url(#beam2)"/>
+  <circle cx="600" cy="430" r="150" fill="url(#lamp)"/>
+  <path d="M250 930 Q600 820 950 930 L860 1040 L600 1130 L340 1040 Z" fill="#3b5560"/>
+  <path d="M250 930 Q600 820 950 930 Q600 960 250 930 Z" fill="#6f9a63"/>
+  <path d="M530 880 L560 480 L640 480 L670 880 Z" fill="#f1ecdc"/>
+  <path d="M540 760 L660 760 L666 830 L534 830 Z" fill="#c8553d"/>
+  <path d="M550 600 L650 600 L654 660 L546 660 Z" fill="#c8553d"/>
+  <rect x="545" y="400" width="110" height="80" rx="8" fill="#fff6c8" stroke="#3a2a16" stroke-width="8"/>
+  <path d="M530 400 L600 340 L670 400 Z" fill="#c8553d" stroke="#3a2a16" stroke-width="8" stroke-linejoin="round"/>
+  <rect x="520" y="476" width="160" height="14" rx="7" fill="#3a2a16"/>
+  <rect x="580" y="800" width="40" height="80" rx="18" fill="#6b4a2f"/>
+</svg>

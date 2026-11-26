@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <defs>
+    <radialGradient id="paper" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0" stop-color="#f3e3bb"/>
+      <stop offset="1" stop-color="#c9a873"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff1b8"/>
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="#3a2a16"/>
+  <path d="M140 150 L420 120 L470 170 L760 130 L1060 160 L1080 470 L1040 520 L1070 860 L1030 1070 L700 1050 L650 1090 L330 1060 L120 1080 L150 760 L110 700 L130 400 Z" fill="url(#paper)"/>
+  <g fill="#a9cbbf" stroke="#4f6f7d" stroke-width="5">
+    <path d="M250 300 q60 -50 130 -10 q40 40 -10 90 q-70 40 -130 0 q-30 -40 10 -80 Z"/>
+    <path d="M700 250 q80 -40 150 10 q30 60 -40 90 q-90 20 -120 -30 q-20 -40 10 -70 Z"/>
+    <path d="M430 600 q90 -60 170 0 q50 70 -30 120 q-100 40 -150 -20 q-30 -60 10 -100 Z"/>
+    <path d="M820 760 q70 -40 130 10 q30 60 -30 90 q-80 20 -110 -30 q-20 -40 10 -70 Z"/>
+    <path d="M220 860 q60 -30 110 10 q20 50 -30 70 q-70 20 -90 -30 q-10 -30 10 -50 Z"/>
+  </g>
+  <path d="M320 340 C460 420 560 280 760 300 S620 560 520 650 S760 740 880 800 S500 920 280 900" fill="none" stroke="#c8553d" stroke-width="9" stroke-dasharray="26 18" stroke-linecap="round"/>
+  <g>
+    <circle cx="320" cy="340" r="70" fill="url(#glow)"/>
+    <circle cx="760" cy="300" r="70" fill="url(#glow)"/>
+    <circle cx="520" cy="650" r="70" fill="url(#glow)"/>
+    <circle cx="880" cy="800" r="70" fill="url(#glow)"/>
+    <circle cx="280" cy="900" r="70" fill="url(#glow)"/>
+    <g fill="#244e5c" stroke="#fff1b8" stroke-width="5">
+      <circle cx="320" cy="340" r="16"/>
+      <circle cx="760" cy="300" r="16"/>
+      <circle cx="520" cy="650" r="16"/>
+      <circle cx="880" cy="800" r="16"/>
+      <circle cx="280" cy="900" r="16"/>
+    </g>
+  </g>
+  <g transform="translate(930 1000)">
+    <circle r="78" fill="none" stroke="#6b4a2f" stroke-width="6"/>
+    <path d="M0 -92 L18 0 L0 92 L-18 0 Z" fill="#6b4a2f"/>
+    <path d="M-92 0 L0 -18 L92 0 L0 18 Z" fill="#8a6a43"/>
+    <circle r="10" fill="#f6d072"/>
+  </g>
+</svg>

@@ -11,6 +11,7 @@ func _init() -> void:
  home_actions = _home_actions
  feature_routes.building = _building
  launch_game = _launch_round
+ test_room_setup = _setup_test_room
  var runtime: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://config/runtime.json"))
  var product := str(runtime.get("product", "skyway"))
  var args := OS.get_cmdline_user_args()
@@ -22,13 +23,7 @@ func _init() -> void:
    push_warning("Use --product skyway, map or windharbor; using skyway")
    product = "skyway"
  if product not in ["skyway", "map", "windharbor"]: product = "skyway"
- var file := FileAccess.open("res://reference/config/" + product + ".json", FileAccess.READ)
- if file != null:
-  var hook: Dictionary = JSON.parse_string(file.get_as_text())
-  game_title = hook.title
-  home_profile = hook.homeProfile
-  config.appId = hook.id
- state = State.new("user://reference-" + product + ".json")
+ apply_product(product)
  studio_name = "SEORILABS REFERENCE"
  if not OS.get_cmdline_user_args().has("--scenarios"):
   return
@@ -42,6 +37,80 @@ func _init() -> void:
  support_provider = func(callback: Callable) -> void: callback.call({"ok": true, "identity": current_identity(), "code": "SK-7H2K9X4Q"})
 
  score_provider = func() -> Dictionary: return {"score": int(state.data.tutorial.hits) * 100, "runId": state.data.ui.get("runId", ""), "completed": state.data.tutorial.status == "complete"}
+
+## 제품 설정(reference/config/<product>.json)의 이름, 홈 모양, 컷신, 크레딧을 적용한다. 프롤로그와 엔딩은 map에만 있다.
+func apply_product(product: String) -> void:
+ var file := FileAccess.open("res://reference/config/" + product + ".json", FileAccess.READ)
+ if file != null:
+  var hook: Dictionary = JSON.parse_string(file.get_as_text())
+  game_title = hook.title
+  home_profile = hook.homeProfile
+  config.appId = hook.id
+  intro_script = hook.get("introScript", {})
+  credits = hook.get("credits", {})
+  ending_script = hook.get("endingScript", {})
+  # 엔딩 크레딧은 설정 크레딧과 같은 목록(제품 크레딧 + 글꼴 라이선스)을 쓴다.
+  if ending_script.get("credits") is Dictionary and not ending_script.credits.has("sections"):
+   ending_script.credits.sections = credit_sections()
+ state = State.new("user://reference-" + product + ".json")
+
+## 테스트실 예제: 재화 행동, 진행 덮어쓰기(두 번 눌러 적용), 플레이 시점 프리셋, 연출 다시 보기, 봐줄 점.
+func _setup_test_room(room: Control) -> void:
+ room.register_action("coins", ["Add 100 coins", "코인 100 추가"], _test_add_coins, {"group": ["Economy", "재화"]})
+ room.register_action("guide", ["Finish the guide", "안내 끝내기"], _test_finish_guide, {"confirm": "double_tap", "group": ["Progress", "진행"]})
+ if not ending_script.is_empty():
+  room.register_action("ending", ["Reach the ending", "엔딩 도달"], _test_reach_ending, {"confirm": "double_tap", "group": ["Progress", "진행"]})
+ room.register_snapshots([{"id": "start", "label_pair": ["Fresh start", "처음 시작"], "minutes": 0}, {"id": "m10", "label_pair": ["10 min", "10분"], "minutes": 10}, {"id": "m30", "label_pair": ["30 min", "30분"], "minutes": 30}], _test_snapshot)
+ if not intro_script.is_empty():
+  room.register_replay("prologue", ["Replay prologue", "프롤로그 다시 보기"], intro_script)
+ if not ending_script.is_empty():
+  room.register_replay("ending", ["Replay ending", "엔딩 다시 보기"], ending_script)
+ room.set_notes([["Presets overwrite progress, so tap twice to apply.", "시점 프리셋은 진행을 덮어써요. 두 번 눌러 적용해요."],
+  ["Settings, Credits lists the team, the AI notice and font licenses.", "설정의 크레딧에 제작진, AI 고지, 글꼴 라이선스가 있어요."]])
+
+func _test_blocked() -> Dictionary:
+ return {"ok": false, "blocked_reason_pair": ["Finish the current round first", "진행 중인 판을 먼저 끝내 주세요"]}
+
+func _test_commit(next: Dictionary, message: Array) -> Dictionary:
+ if not state.commit(next):
+  return {"ok": false, "blocked_reason_pair": [_error_text(state.error), _error_text(state.error)]}
+ if screen == "home": _home()
+ return {"ok": true, "message_pair": message}
+
+func _test_add_coins() -> Dictionary:
+ if screen == "play": return _test_blocked()
+ var next: Dictionary = state.data.duplicate(true)
+ next.coins += 100
+ return _test_commit(next, ["Coins %d → %d" % [state.data.coins, next.coins], "코인 %d → %d" % [state.data.coins, next.coins]])
+
+func _test_finish_guide() -> Dictionary:
+ if screen == "play": return _test_blocked()
+ var next: Dictionary = state.data.duplicate(true)
+ next.tutorial.status = "complete"
+ next.tutorial.step = 2
+ return _test_commit(next, ["Guide marked complete. Start now opens home.", "안내를 끝냈어요. 이제 시작하면 홈으로 가요."])
+
+## 제품이 최종 목표를 처음 이뤘을 때처럼 엔딩을 띄우고 본 기록을 알린다(이 예제는 기록을 저장하지 않는다).
+func _test_reach_ending() -> Dictionary:
+ var result := play_cutscene(ending_script)
+ if result.get("ok", false):
+  set_ending_seen(true)
+  return {"ok": true, "message_pair": ["Ending shown. Settings now offers Replay ending.", "엔딩을 보여 줬어요. 설정에 엔딩 다시 보기가 생겨요."]}
+ return result
+
+func _test_snapshot(snapshot: Dictionary) -> Dictionary:
+ if screen == "play": return _test_blocked()
+ var minutes := int(snapshot.get("minutes", 0))
+ var preset: Array = {0: [0, 2], 10: [120, 3], 30: [480, 5]}.get(minutes, [0, 2])
+ var next: Dictionary = state.data.duplicate(true)
+ next.coins = preset[0]
+ next.ui.home.level = preset[1]
+ next.ui.home.collected = false
+ next.tutorial = {"version": State.TUTORIAL_VERSION, "step": 0 if minutes == 0 else 2, "status": "active" if minutes == 0 else "complete", "hits": 0, "replay": false}
+ # 처음 시작 시점은 프롤로그를 다시 보게 본 기록을 지운다.
+ if minutes == 0: next.erase("intro_seen")
+ else: next.intro_seen = true
+ return _test_commit(next, ["%d-minute preset: %d coins, lighthouse Lv.%d" % [minutes, preset[0], preset[1]], "%d분 시점: 코인 %d, 등대 Lv.%d" % [minutes, preset[0], preset[1]]])
 
 func _launch_round(owner: Control) -> void:
  if state.data.tutorial.status != "active" and not state.replay_tutorial():

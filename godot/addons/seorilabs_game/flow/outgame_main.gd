@@ -17,6 +17,10 @@ const UiSfx = preload("res://addons/seorilabs_game/ui_kit/ui_sfx.gd")
 const HudLayers = preload("res://addons/seorilabs_game/ui_kit/hud_layers.tscn")
 const CurrencyChip = preload("res://addons/seorilabs_game/ui_kit/currency_chip.tscn")
 const RewardCeremony = preload("res://addons/seorilabs_game/ui_kit/reward_ceremony.tscn")
+const CutscenePlayer = preload("res://addons/seorilabs_game/ui_kit/cutscene_player.tscn")
+## 테스트실은 preload하지 않는다. 출시 export는 dev/를 빼므로 디버그·playtest 빌드에서 파일이 있을 때만 load()한다.
+const TEST_ROOM := "res://addons/seorilabs_game/dev/test_room.tscn"
+const FONTS := "res://addons/seorilabs_game/fonts/"
 @export var landscape := false
 @export var game_title := "Game"
 @export var game_title_ko := "Game"
@@ -31,6 +35,19 @@ var launch_game: Callable
 var score_provider: Callable
 var home_actions: Callable
 var feature_routes: Dictionary = {}
+## 첫 시작에 한 번 보여 줄 프롤로그(cutscene_player의 script). 비우면 1.1.0과 같은 흐름이다. 본 기록은 저장의 선택 키 intro_seen이다.
+var intro_script: Dictionary = {}
+## 설정 "크레딧"에 글꼴 라이선스와 함께 보여 줄 제품 크레딧 {sections: [[[en, ko], [en, ko]]]}. 제작진과 AI 생성 콘텐츠 고지를 넣는다.
+var credits: Dictionary = {}
+## 제품이 play_cutscene으로 띄우는 엔딩. 제품이 set_ending_seen(true)를 알리면 설정에 "엔딩 다시 보기"가 생긴다.
+var ending_script: Dictionary = {}
+## 테스트실이 생기면 부른다. 제품은 여기서 행동, 플레이 시점 프리셋, 연출 다시 보기, 봐줄 점을 등록한다.
+## _ready() 전에(bootstrap의 _init()에서) 정한다. 정하지 않으면 테스트실, F9, 설정 항목이 생기지 않는다.
+var test_room_setup: Callable
+## test_room_setup이 있고 디버그·playtest 빌드일 때만 생기는 테스트실. 그 밖에는 null이다.
+var test_room: Control
+var cutscene: Control
+var _ending_seen := false
 var home_text := {"hero": ["Player", "플레이어"], "destination": ["Ready to play", "플레이 준비"], "action": ["Play", "플레이"], "account": ["Account", "계정"]}
 var reward_text := ""
 var transient_notice := ""
@@ -172,6 +189,10 @@ func _ready() -> void:
 	ceremony = RewardCeremony.instantiate()
 	ceremony.sfx = sfx
 	layers.layer("Popup").add_child(ceremony)
+	cutscene = CutscenePlayer.instantiate()
+	cutscene.text = tr_text
+	layers.layer("Ftue").add_child(cutscene)
+	_attach_test_room()
 	accounts.changed.connect(_accounts_changed)
 	feature_routes.account_manage = func() -> void: AccountPanel.manage(self)
 	feature_routes.account_recovery = func() -> void: AccountPanel.recovery(self)
@@ -263,7 +284,105 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_RESUMED and initialized and services.sdk != null:
 		services.sdk.resume_presence()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		# 컷신(스킵)과 테스트실(닫기)은 자기 뒤로 가기를 처리한다. 그 아래 화면은 움직이지 않는다.
+		if (cutscene != null and cutscene.state() != "idle") or (test_room != null and test_room.is_open()):
+			return
 		_back()
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if test_room == null or key == null or not key.pressed or key.echo or key.keycode != KEY_F9:
+		return
+	get_viewport().set_input_as_handled()
+	if test_room.is_open(): test_room.close()
+	else: open_test_room()
+
+## 노출 게이트: 디버그 실행 또는 playtest 기능 태그 빌드이고 파일이 있으며, 제품이 test_room_setup을 줬을 때만 연다.
+## 그때만 F9와 설정 항목이 생긴다. test_room_setup은 _ready() 전에(bootstrap의 _init에서) 정한다.
+func _attach_test_room() -> void:
+	if not test_room_setup.is_valid() or not (OS.is_debug_build() or OS.has_feature("playtest")) or not ResourceLoader.exists(TEST_ROOM):
+		return
+	var scene := load(TEST_ROOM) as PackedScene
+	if scene == null:
+		return
+	test_room = scene.instantiate()
+	test_room.text = tr_text
+	test_room.layers = layers
+	test_room.play_cutscene = play_cutscene
+	layers.layer("Popup").add_child(test_room)
+	test_room_setup.call(test_room)
+
+func open_test_room() -> void:
+	if test_room == null or (cutscene != null and cutscene.state() != "idle"):
+		return
+	test_room.ui_scale = _ui_scale()
+	test_room.open()
+
+## 제품이 엔딩 같은 컷신을 띄운다. 저장은 바꾸지 않는다. 이미 재생 중이거나 컷이 없으면 막고 이유를 돌려준다.
+## 끝나면 cutscene.finished(skipped)가 온다. 아래 화면은 그대로 남는다.
+func play_cutscene(script: Dictionary, options := {}) -> Dictionary:
+	if cutscene == null or cutscene.state() != "idle":
+		return {"ok": false, "blocked_reason_pair": ["A scene is already playing", "이미 연출이 재생 중이에요"]}
+	if not script.get("cuts") is Array or script.cuts.is_empty():
+		return {"ok": false, "blocked_reason_pair": ["This scene has no cuts", "재생할 컷이 없어요"]}
+	if test_room != null:
+		test_room.close()
+	cutscene.title_text = game_title
+	cutscene.ui_scale = _ui_scale()
+	cutscene.play(script, options)
+	return {"ok": true}
+
+## 제품이 엔딩 본 기록을 알린다. 기록 저장은 제품 소관이다. 참이면 설정에 "엔딩 다시 보기"가 나타난다.
+func set_ending_seen(seen: bool) -> void:
+	_ending_seen = seen
+	if screen == "settings":
+		_settings()
+
+## 설정 크레딧과 엔딩 크레딧에 쓰는 구역 [[제목, 본문]]: 제품 credits.sections 뒤에 글꼴 라이선스를 붙인다. 제품 크레딧이 없어도 글꼴 고지는 남는다.
+func credit_sections() -> Array:
+	var sections: Array = []
+	var product: Variant = credits.get("sections", [])
+	if product is Array:
+		for section in product:
+			if section is Array and section.size() >= 2:
+				sections.append(section)
+	var fonts := _font_licenses()
+	if not fonts.is_empty():
+		sections.append([["Font licenses", "글꼴 라이선스"], fonts])
+	return sections
+
+## fonts/manifest.json의 글꼴마다 이름, OFL 파일 첫 줄(저작권), 라이선스 이름을 적는다.
+func _font_licenses() -> String:
+	if not FileAccess.file_exists(FONTS + "manifest.json"):
+		return ""
+	var manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string(FONTS + "manifest.json"))
+	if not manifest is Dictionary:
+		return ""
+	var blocks := PackedStringArray()
+	var spaced := RegEx.create_from_string("([a-z])([A-Z])")
+	for entry in manifest.get("files", []):
+		var file := str(entry.get("path", "")) if entry is Dictionary else ""
+		if file.get_extension() != "ttf":
+			continue
+		var stem := file.get_basename()
+		var lines := PackedStringArray([spaced.sub(stem, "$1 $2", true)])
+		var notice := FONTS + stem + "-OFL.txt"
+		if FileAccess.file_exists(notice):
+			var first := FileAccess.get_file_as_string(notice).get_slice("\n", 0).strip_edges()
+			if not first.is_empty():
+				lines.append(first)
+		lines.append(str(manifest.get("license", "")))
+		blocks.append("\n".join(lines))
+	return "\n\n".join(blocks)
+
+func _pair_text(value: Variant) -> String:
+	if value is Array and value.size() >= 2:
+		return tr_text(str(value[0]), str(value[1]))
+	return str(value[0]) if value is Array and not value.is_empty() else str(value)
+
+func _toast_blocked(result: Dictionary) -> void:
+	if not result.get("ok", false):
+		layers.toast(_pair_text(result.get("blocked_reason_pair", ["Not available right now", "지금은 할 수 없어요"])))
 
 func _clear(title: String) -> void:
 	_view += 1
@@ -423,6 +542,22 @@ func _start() -> void:
 	if state.data.consentVersion == 0 and not state.accept_consent(bool(state.data.settings.analytics)):
 		_show_error(state.error)
 		return
+	# 프롤로그는 첫 시작에 한 번만 본다. 끝나거나 스킵하면 본 기록을 저장하고 원래 흐름으로 간다.
+	if not intro_script.get("cuts", []).is_empty() and not state.intro_seen() and cutscene != null:
+		# 길이 0인 컷만 있으면 play() 안에서 바로 끝나므로 재생 전에 연결한다.
+		cutscene.finished.connect(_intro_finished, CONNECT_ONE_SHOT)
+		if play_cutscene(intro_script).get("ok", false):
+			return
+		if cutscene.finished.is_connected(_intro_finished):
+			cutscene.finished.disconnect(_intro_finished)
+	_enter_game()
+
+func _intro_finished(_skipped: bool) -> void:
+	if not state.mark_intro_seen():
+		layers.toast(_error_text(state.error))
+	_enter_game()
+
+func _enter_game() -> void:
 	if state.data.tutorial.status == "active":
 		_route("play")
 	else:
@@ -457,6 +592,7 @@ func _route(target: String) -> void:
 		"offer": _draw_offer()
 		"purchase": _draw_purchase()
 		"result": _draw_result()
+		"credits": _credits_screen()
 		"leaderboard":
 			if ranking.capabilities().get("list", false):
 				_draw_ranking()
@@ -642,11 +778,57 @@ func _settings() -> void:
 		if state.replay_tutorial(): _open("play")
 		else: _show_error(state.error)
 	, box).name = "replay"
+	if _ending_seen and ending_script.get("cuts") is Array and not ending_script.cuts.is_empty():
+		_button(tr_text("Replay ending", "엔딩 다시 보기"), func() -> void: _toast_blocked(play_cutscene(ending_script, {"replay": true})), box).name = "replay_ending"
+	_button(tr_text("Credits", "크레딧"), func() -> void: _open("credits"), box).name = "credits"
+	if test_room != null:
+		_button(tr_text("Test room", "테스트실"), open_test_room, box).name = "test_room"
 	for item in [["terms_url", "Terms", "약관"], ["privacy_url", "Privacy", "개인정보 처리방침"]]:
 		var url := str(config.get(item[0], ""))
 		if not url.is_empty():
 			_button(tr_text(item[1], item[2]), func() -> void: OS.shell_open(url), box)
 	box.add_child(_label("v" + str(ProjectSettings.get_setting("application/config/version", "1.0.0")), 13))
+
+## 제품 크레딧(제작진, AI 생성 콘텐츠 고지)과 글꼴 라이선스. 설정에 늘 있는 항목이다.
+const CREDITS_COLUMN := 640.0
+
+func _credits_screen() -> void:
+	_clear(tr_text("Credits", "크레딧"))
+	var box := _scroll()
+	# 넓은 창에서도 읽기 좋은 폭의 가운데 칸에 두고, 프레임 띠에서 한 번 더 띄운다.
+	var pad := MarginContainer.new()
+	pad.name = "CreditsColumn"
+	pad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(pad)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", roundi(10 * _ui_scale()))
+	pad.add_child(column)
+	var fit := func() -> void:
+		var side := maxf(12.0 * _ui_scale(), (pad.size.x - CREDITS_COLUMN * _ui_scale()) / 2.0)
+		pad.add_theme_constant_override("margin_left", roundi(side))
+		pad.add_theme_constant_override("margin_right", roundi(side))
+	pad.resized.connect(fit)
+	fit.call()
+	var title_font: Font = _font_title if _font_title != null else _font_body
+	for section in credit_sections():
+		var head := _label(_pair_text(section[0]), 19)
+		head.add_theme_font_override("font", title_font)
+		column.add_child(head)
+		# 여러 줄 묶음(글꼴 라이선스 등)은 첫 줄을 이름으로 굵게 보여 줘 묶음의 시작이 보이게 한다.
+		for paragraph in _pair_text(section[1]).split("\n\n", false):
+			var lines := paragraph.split("\n", false)
+			if lines.size() > 1:
+				# 묶음 사이를 띄워 이름 줄이 아래 줄들의 머리임을 보이게 한다.
+				if column.get_child_count() > 0 and not column.get_child(column.get_child_count() - 1) == head:
+					var gap := Control.new()
+					gap.custom_minimum_size.y = roundi(6 * _ui_scale())
+					gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					column.add_child(gap)
+				var name_label := _label(lines[0], 16)
+				name_label.add_theme_font_override("font", title_font)
+				column.add_child(name_label)
+				lines.remove_at(0)
+			column.add_child(_label("\n".join(lines), 14))
 
 func _settings_toggles(box: VBoxContainer, pairs: Array) -> void:
 	for pair in pairs:
