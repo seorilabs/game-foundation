@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "594c0180e29105e1926a4e3a7af746785d304f96"
+    "commit": "38df5036872094775d6cbac19fbb4e4bb84b978a"
   },
   "sdk": {
     "version": "1.1.1",
@@ -17,7 +17,7 @@
   },
   "files": {
     "godot/addons/seorilabs_game/README.md": "00b560cf04048ea7dcb99713555eb70ae2fb6aa863bb1e8d446f7dd575029dd1",
-    "godot/addons/seorilabs_game/dev/test_room.gd": "36b6a1844bc93762f7dbd84d938021b9a833d1df5859b3dbeef7bac54d9b484a",
+    "godot/addons/seorilabs_game/dev/test_room.gd": "6cd6b850cdf88d6855f0defe7776ed478a37229625711f772c17ef00665c8dac",
     "godot/addons/seorilabs_game/dev/test_room.tscn": "2df7f9d0f2cfe0aa71961cc3b9efbcd27e0592720694e803ed81c5c8c89f0e64",
     "godot/addons/seorilabs_game/flow/outgame_main.gd": "bcb3810eff4a303dd28e9fff00ad8b9e5366354c9d353927b5e544f4e90a09da",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
