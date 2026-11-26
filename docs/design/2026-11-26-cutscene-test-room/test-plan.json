@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "level": "L3",
+  "baseline": "e7e905df9aefe8f50f917ba103f6bcdcf240f60e",
+  "changedFeatures": ["cutscene", "credits", "test_room", "ui_kit", "startup", "tutorial", "account_save", "settings_support", "ui_navigation"],
+  "environments": ["dev"],
+  "redesign": true,
+  "foundationRerun": false,
+  "floorOverrides": [],
+  "release": null
+}
