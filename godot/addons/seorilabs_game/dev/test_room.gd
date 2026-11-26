@@ -148,11 +148,7 @@ func _rebuild() -> void:
 		child.queue_free()
 	list.add_theme_constant_override("separation", roundi(10.0 * s))
 	$Frame/Body/Header/Title.text = _say(["Test room", "테스트실"])
-	if not _notes.is_empty():
-		var notes := _section(["Check in this build", "이번 빌드에서 봐줄 점"])
-		for line in _notes:
-			var label := _label("• " + _say(line), 14)
-			notes.add_child(label)
+	# 순서는 행동, 플레이 시점, 다시 보기, 봐줄 점이다. 가로 화면처럼 낮은 화면에서도 첫 화면에 버튼이 보인다.
 	var groups: Array = []
 	for entry in _actions:
 		if not groups.has(entry.group): groups.append(entry.group)
@@ -172,6 +168,10 @@ func _rebuild() -> void:
 		for entry in _replays:
 			var item: Dictionary = entry
 			_button("test_replay_" + str(item.id), item.label, grid, func() -> void: _run_replay(item))
+	if not _notes.is_empty():
+		var notes := _section(["Check in this build", "이번 빌드에서 봐줄 점"])
+		for line in _notes:
+			notes.add_child(_label("• " + _say(line), 14))
 	_show_result()
 
 func _section(title: Variant) -> VBoxContainer:
