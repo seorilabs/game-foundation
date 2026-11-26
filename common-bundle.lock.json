@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "38df5036872094775d6cbac19fbb4e4bb84b978a"
+    "commit": "acebc53d5711d15accf46dd93a247f5878c5ecd6"
   },
   "sdk": {
     "version": "1.1.1",
@@ -19,7 +19,7 @@
     "godot/addons/seorilabs_game/README.md": "00b560cf04048ea7dcb99713555eb70ae2fb6aa863bb1e8d446f7dd575029dd1",
     "godot/addons/seorilabs_game/dev/test_room.gd": "6cd6b850cdf88d6855f0defe7776ed478a37229625711f772c17ef00665c8dac",
     "godot/addons/seorilabs_game/dev/test_room.tscn": "2df7f9d0f2cfe0aa71961cc3b9efbcd27e0592720694e803ed81c5c8c89f0e64",
-    "godot/addons/seorilabs_game/flow/outgame_main.gd": "bcb3810eff4a303dd28e9fff00ad8b9e5366354c9d353927b5e544f4e90a09da",
+    "godot/addons/seorilabs_game/flow/outgame_main.gd": "033657f4643f3a8cd8e956354b68e4d29faf8bcebd479e51c6d4f47728d0d119",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
     "godot/addons/seorilabs_game/flow/state.gd": "c12f54553e637c7e9a4a9d32c1c59130fc5a4e38e19e02da15d83cd78e9593b6",
     "godot/addons/seorilabs_game/fonts/Fredoka-OFL.txt": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab",
@@ -62,7 +62,7 @@
     "godot/addons/seorilabs_game/ui_kit/build_theme.gd": "ed4ca8e1a6ea0cb82e31c52b4bb2d7750f2ede316a2d07ed0639ec90088e0b6e",
     "godot/addons/seorilabs_game/ui_kit/currency_chip.gd": "77796f313069b572ce4d41f53d76519e5a64c9cfcab4dff0ef3f630671567963",
     "godot/addons/seorilabs_game/ui_kit/currency_chip.tscn": "c2d80c329518e7ebd39b2ae070063c21581e6977e4254ecb8e34478d10a3cf49",
-    "godot/addons/seorilabs_game/ui_kit/cutscene_player.gd": "0f209f3f8c0d79a27f4403e5da557327f63fbbbb6e85d9512824129b92f5bd5f",
+    "godot/addons/seorilabs_game/ui_kit/cutscene_player.gd": "76f1ff247c422c05ac275ac3727bcbf4a74eeef6f52acd057a3f83aa42b14139",
     "godot/addons/seorilabs_game/ui_kit/cutscene_player.tscn": "a89faf36f58c15daba4eda7c07265372f90135cfa545e54aa6f32eb48701cddf",
     "godot/addons/seorilabs_game/ui_kit/hud_layers.gd": "19bda38b82743b925205412f99e23d8ec9857c1a37c6b59dc32ab0333ffb60c6",
     "godot/addons/seorilabs_game/ui_kit/hud_layers.tscn": "0cc4d81f14714084119f14f5133a77e12d505b40176f874cfc871d7d65743764",
@@ -101,7 +101,7 @@
     "godot/tests/common/e2e_driver.gd": "4f64e861497e7243c7a57dff7958edf67528b7a084f532784a92ccaeaa278f41",
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
     "godot/tests/common/outgame_contract_probe.gd": "cbdfa89fd89426a363ff1c1928bdf4ffd9c47fbbf95c99f7bc6f4495c7ddbaeb",
-    "godot/tests/common/ui_kit_probe.gd": "d1c6feabf77ddbe4738463ab98f9d1467bc15c8d9283ad7a90ba6e4893dbcd7c",
+    "godot/tests/common/ui_kit_probe.gd": "1cac6d1b4a5be784ac6dd6c7973f424d053c52752f2d12a3adf39f06e128d3be",
     "godot/tests/common/ui_standard_contract_probe.gd": "119b131183484c5178d73771166c79bb9910a6bab334d16cee1a47c5be0d43ca"
   }
 }
