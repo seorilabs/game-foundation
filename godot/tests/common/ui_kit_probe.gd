@@ -211,6 +211,13 @@ func _check_layers() -> void:
 	check(toast.get_parent().get_parent() == layers.layer("Toast") and toast.mouse_filter == Control.MOUSE_FILTER_IGNORE, "layers: toast lives in Toast layer stack and ignores input")
 	await process_frame
 	check(absf(toast.get_global_rect().get_center().x - layers.layer("Toast").size.x / 2.0) < 2.0, "layers: toast is centered horizontally (%s)" % str(toast.get_global_rect()))
+	# 화면 폭보다 긴 문장은 칩이 화면 안(양옆 16px)에 머물고 줄을 바꾼다.
+	var long_toast = layers.toast("Finish the current round first, then try this action again from the test room. ".repeat(4).strip_edges(), 0.05)
+	await process_frame
+	await process_frame
+	var bounds: Rect2 = long_toast.get_global_rect()
+	var width: float = layers.layer("Toast").size.x
+	check(bounds.position.x >= 15.0 and bounds.end.x <= width - 15.0 and (long_toast.get_child(0) as Label).get_line_count() > 1, "layers: long toast wraps inside the screen (%s in %s)" % [str(bounds), str(width)])
 	for i in 40: await process_frame
 	check(not is_instance_valid(toast) or toast.is_queued_for_deletion() or toast.modulate.a < 0.05, "layers: toast leaves after its time")
 	layers.queue_free()

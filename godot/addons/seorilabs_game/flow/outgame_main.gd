@@ -817,6 +817,12 @@ func _credits_screen() -> void:
 		for paragraph in _pair_text(section[1]).split("\n\n", false):
 			var lines := paragraph.split("\n", false)
 			if lines.size() > 1:
+				# 묶음 사이를 띄워 이름 줄이 아래 줄들의 머리임을 보이게 한다.
+				if column.get_child_count() > 0 and not column.get_child(column.get_child_count() - 1) == head:
+					var gap := Control.new()
+					gap.custom_minimum_size.y = roundi(6 * _ui_scale())
+					gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					column.add_child(gap)
 				var name_label := _label(lines[0], 16)
 				name_label.add_theme_font_override("font", title_font)
 				column.add_child(name_label)

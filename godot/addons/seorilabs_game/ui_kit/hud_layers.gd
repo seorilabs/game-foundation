@@ -11,7 +11,10 @@ func apply_theme(theme: Theme) -> void:
 	for name in NAMES:
 		layer(name).theme = theme
 
+const TOAST_SIDE_MARGIN := 16.0
+
 ## 짧은 안내를 Toast 층 위쪽 중앙에 쌓는다. 입력을 가로채지 않고 지정 시간 뒤 사라진다.
+## 문장이 화면 폭(양옆 16px 제외)보다 길면 칩 폭을 화면에 맞추고 줄을 바꾼다. 짧은 안내의 모양은 그대로다.
 func toast(text: String, seconds := 2.0) -> PanelContainer:
 	var chip := PanelContainer.new()
 	chip.theme_type_variation = "ChipPanel"
@@ -21,8 +24,16 @@ func toast(text: String, seconds := 2.0) -> PanelContainer:
 	label.text = text
 	label.theme_type_variation = "NumberLabel"
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	chip.add_child(label)
 	_toast_stack().add_child(chip)
+	var frame := chip.get_theme_stylebox("panel")
+	var chrome := frame.get_content_margin(SIDE_LEFT) + frame.get_content_margin(SIDE_RIGHT) if frame != null else 0.0
+	var room := layer("Toast").size.x - TOAST_SIDE_MARGIN * 2.0 - chrome
+	var wide := label.get_theme_font("font").get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, label.get_theme_font_size("font_size")).x
+	if room > 0.0 and wide > room:
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.custom_minimum_size.x = room
 	Juice.pop_in(chip, 0.2)
 	chip.create_tween().tween_interval(seconds).finished.connect(func() -> void:
 		Juice.pop_out(chip, 0.14).finished.connect(chip.queue_free))
