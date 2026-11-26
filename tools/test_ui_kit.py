@@ -34,7 +34,7 @@ class UiKitTests(unittest.TestCase):
 
     def test_kit_has_fixed_inventory_and_no_product_dependency(self):
         expected = {'theme_builder.gd', 'build_theme.gd', 'juice.gd', 'ui_sfx.gd', 'hud_layers.gd', 'hud_layers.tscn', 'currency_chip.gd', 'currency_chip.tscn',
-                    'popup_base.gd', 'popup_base.tscn', 'reward_ceremony.gd', 'reward_ceremony.tscn'}
+                    'popup_base.gd', 'popup_base.tscn', 'reward_ceremony.gd', 'reward_ceremony.tscn', 'cutscene_player.gd', 'cutscene_player.tscn'}
         self.assertEqual(expected, {p.name for p in KIT.iterdir() if p.is_file() and p.suffix in ('.gd', '.tscn')})
         self.assertEqual({'burst.tscn', 'sparkle.tscn'}, {p.name for p in (KIT / 'particles').glob('*.tscn')})
         for p in KIT.rglob('*'):
