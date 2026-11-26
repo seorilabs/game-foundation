@@ -48,6 +48,7 @@ func _toast_stack() -> VBoxContainer:
 	return stack
 
 ## 가장 긴 줄이 화면 폭을 넘으면 먼저 본문 글꼴로 바꿔 보고, 그래도 넘으면 칩 폭을 화면에 맞추고 가운데 정렬로 줄을 바꾼다.
+## 칩 위 글자색과 외곽선은 NumberLabel 변형이 정하므로 변형은 그대로 두고 글꼴만 덮어쓴다.
 func _fit_toast(chip: PanelContainer, label: Label) -> void:
 	if not is_instance_valid(chip) or not is_instance_valid(label) or chip.is_queued_for_deletion():
 		return
@@ -56,8 +57,8 @@ func _fit_toast(chip: PanelContainer, label: Label) -> void:
 	var room := layer("Toast").size.x - TOAST_SIDE_MARGIN * 2.0 - chrome
 	if room <= 0.0 or _longest_line(label) <= room:
 		return
-	if label.theme_type_variation == &"NumberLabel":
-		label.theme_type_variation = &""
+	if label.theme_type_variation == &"NumberLabel" and not label.has_theme_font_override("font"):
+		label.add_theme_font_override("font", label.get_theme_font("font", &"Label"))
 		if _longest_line(label) <= room:
 			return
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

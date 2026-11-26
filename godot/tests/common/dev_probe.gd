@@ -168,6 +168,23 @@ func _check_room() -> void:
 	root.push_input(escape)
 	await process_frame
 	check(not room.is_open(), "Esc closes the room")
+	# 값을 돌려주지 않는 행동은 완료로 본다. 노드 이름 정리 뒤 같아지는 id(a.b, a_b)와 와일드카드 글자도 자기 버튼을 무장한다.
+	var ran := []
+	room.register_action("silent", ["Silent", "조용히"], func() -> void: ran.append(true), {"group": ["Edge", "경계"]})
+	room.register_action("a.b", ["Dot id", "점 id"], func() -> Dictionary: return {"ok": true, "message_pair": ["Dot applied", "점 적용"]}, {"confirm": "double_tap", "group": ["Edge", "경계"]})
+	room.register_action("a_b", ["Underscore id", "밑줄 id"], func() -> Dictionary: return {"ok": true, "message_pair": ["Underscore applied", "밑줄 적용"]}, {"confirm": "double_tap", "group": ["Edge", "경계"]})
+	room.register_action("w*?", ["Wildcard id", "와일드카드 id"], func() -> Dictionary: return {"ok": true, "message_pair": ["Wildcard applied", "와일드카드 적용"]}, {"confirm": "double_tap", "group": ["Edge", "경계"]})
+	room.open()
+	await process_frame
+	var buttons: Dictionary = room._buttons
+	check(await _press(buttons["test_action_silent"]) and ran == [true] and "Done" in result.text and not _toast_texts().has("Not available right now"), "action without a return value counts as done (%s)" % result.text)
+	var dot: Button = buttons["test_action_a.b"]
+	var under: Button = buttons["test_action_a_b"]
+	check(await _press(under) and under.text == "Tap again to apply" and dot.text != "Tap again to apply", "a_b arms its own button, not a.b")
+	check(await _press(under) and "Underscore applied" in result.text, "a_b applies on the second tap")
+	var wild: Button = buttons["test_action_w*?"]
+	check(await _press(wild) and wild.text == "Tap again to apply" and await _press(wild) and "Wildcard applied" in result.text, "ids with * and ? arm and apply")
+	room.close()
 	room.queue_free()
 	player.queue_free()
 	layers.queue_free()

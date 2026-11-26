@@ -23,6 +23,8 @@ var _apply_snapshot: Callable
 var _replays: Array[Dictionary] = []
 var _notes: Array = []
 var _armed := ""
+## id → 버튼. 노드 이름 정리 규칙이나 find_child 와일드카드(*, ?)와 무관하게 정확히 찾는다.
+var _buttons: Dictionary = {}
 var _result: Variant = ["Action results appear here.", "행동 결과가 여기에 나와요."]
 
 func _ready() -> void:
@@ -139,6 +141,7 @@ func _layout() -> void:
 		(grid as GridContainer).columns = columns
 
 func _rebuild() -> void:
+	_buttons.clear()
 	_armed = ""
 	_layout()
 	var s := _scale()
@@ -206,6 +209,7 @@ func _button(id: String, label_pair: Variant, parent: Control, action: Callable)
 	var s := _scale()
 	var button := Button.new()
 	button.name = _node_id(id)
+	_buttons[id] = button
 	button.text = _say(label_pair)
 	button.set_meta("label_pair", label_pair)
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -223,8 +227,8 @@ func _confirmed(id: String) -> bool:
 		_disarm()
 		return true
 	_disarm()
-	var button := find_child(_node_id(id), true, false) as Button
-	if button == null:
+	var button := _buttons.get(id) as Button
+	if button == null or not is_instance_valid(button):
 		return false
 	_armed = id
 	button.text = _say(CONFIRM)
@@ -234,9 +238,9 @@ func _confirmed(id: String) -> bool:
 func _disarm() -> void:
 	if _armed.is_empty():
 		return
-	var button := find_child(_node_id(_armed), true, false) as Button
+	var button := _buttons.get(_armed) as Button
 	_armed = ""
-	if button != null:
+	if button != null and is_instance_valid(button):
 		button.text = _say(button.get_meta("label_pair", ""))
 		button.theme_type_variation = &""
 

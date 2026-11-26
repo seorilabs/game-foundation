@@ -218,7 +218,9 @@ func _check_layers() -> void:
 	var bounds: Rect2 = long_toast.get_global_rect()
 	var width: float = layers.layer("Toast").size.x
 	check(bounds.position.x >= 15.0 and bounds.end.x <= width - 15.0 and (long_toast.get_child(0) as Label).get_line_count() > 1, "layers: long toast wraps inside the screen (%s in %s)" % [str(bounds), str(width)])
-	check((long_toast.get_child(0) as Label).theme_type_variation == &"", "layers: long toast switches to the body font before wrapping")
+	var long_label := long_toast.get_child(0) as Label
+	var chip_text_color := long_label.get_theme_color("font_color", &"NumberLabel")
+	check(long_label.theme_type_variation == &"NumberLabel" and long_label.has_theme_font_override("font") and long_label.get_theme_color("font_color") == chip_text_color and long_label.get_theme_constant("outline_size") == long_label.get_theme_constant("outline_size", &"NumberLabel"), "layers: long toast switches only the font and keeps the chip text color and outline")
 	# 화면 안에 드는 여러 줄 토스트는 1.1.0 모양(왼쪽 정렬, 폭 고정 없음, 숫자 글꼴) 그대로다.
 	var lines_toast = layers.toast("Could not save.\nTap again to retry.", 30.0)
 	await process_frame

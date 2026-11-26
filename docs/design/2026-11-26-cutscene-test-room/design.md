@@ -79,7 +79,7 @@ test_room
 outgame_main
   intro_script, credits, ending_script, test_room_setup: Callable(room)
   play_cutscene(script, options := {}) -> {ok, blocked_reason_pair}, set_ending_seen(seen), credit_sections() -> Array
-  open_test_room(), test_room(디버그·playtest 빌드가 아니면 null), cutscene
+  open_test_room(), test_room(test_room_setup이 없거나 디버그·playtest 빌드가 아니면 null), cutscene
 ```
 
 - 본 기록: `intro_seen`은 `SAVE_VERSION`을 올리지 않는 선택 키다. `valid()`는 필수 키만 검사하므로 1.1.0 저장이 그대로 열리고, 1.1.0 빌드도 이 키가 있는 저장을 연다. 엔딩 본 기록은 제품 저장 소관이고 제품은 `set_ending_seen`으로 알리기만 한다.
@@ -87,7 +87,7 @@ outgame_main
 - 시간: `_process`에서만 흐르고 한 프레임을 0.1초로 자른다. 웹에서 탭을 숨겼다 돌아올 때 긴 delta 한 번에 컷이 건너뛰지 않는다.
 - 입력 충돌: 재생 중 키 입력은 컷신이 `_input`에서 모두 처리해 아래 화면의 초점 버튼과 F9가 받지 않는다. 뒤로 가기 알림은 호스트가 `_back()`을 부르지 않고 컷신(스킵)과 테스트실(닫기)이 처리한다. 터치를 마우스로 흉내 내는 기본 설정에서 같은 탭이 두 번 넘어가지 않도록 터치 이벤트는 흉내가 꺼져 있을 때만 받는다.
 - 막힌 행동: 테스트실 행동이나 다시 보기가 막히면(예: 판 진행 중) 저장을 바꾸지 않고 이유를 토스트로 알린다. 호스트의 `play_cutscene`은 재생 중이거나 컷이 없으면 막는다.
-- 노출 게이트: `OS.is_debug_build()` 또는 `OS.has_feature("playtest")`이고 `ResourceLoader.exists("res://addons/seorilabs_game/dev/test_room.tscn")`일 때만 `load()`하고 F9와 설정 항목을 붙인다. 출시 export는 `exclude_filter`에 `addons/seorilabs_game/dev/**`를 넣어 파일 자체를 뺀다. 이 저장소의 웹 preset도 뺐다.
+- 노출 게이트: 제품이 `test_room_setup`을 정했고(bootstrap `_init()`), `OS.is_debug_build()` 또는 `OS.has_feature("playtest")`이며 `ResourceLoader.exists("res://addons/seorilabs_game/dev/test_room.tscn")`일 때만 `load()`하고 F9와 설정 항목을 붙인다(3회차 R3-5 반영). 출시 export는 `exclude_filter`에 `addons/seorilabs_game/dev/**`를 넣어 파일 자체를 뺀다. 이 저장소의 웹 preset도 뺐다.
 - 크레딧 글꼴 구역: `fonts/manifest.json`의 TTF마다 이름(파일 이름을 띄어 쓴 것), 같은 이름의 `-OFL.txt` 첫 줄(저작권), 라이선스 이름을 적는다. OFL 파일이 export에 없으면 저작권 줄만 빠진다.
 
 ## 품질 요구사항
