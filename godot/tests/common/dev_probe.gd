@@ -126,7 +126,9 @@ func _check_room() -> void:
 	check("Check the intro pacing" in notes and "Plain note line" in notes, "build notes are listed")
 	var result: Label = room.get_node("Frame/Body/Result")
 	var height := result.size.y
-	var anchor_y := _node("test_action_coins").get_global_rect().position.y
+	# 결과 줄 아래 목록 영역이 밀리지 않는지 본다. 버튼 자체는 누른 버튼으로 따라가는 스크롤 때문에 움직일 수 있다(글꼴·화면에 따라 다름).
+	var scroll_area: Control = room.get_node("Frame/Body/Scroll")
+	var anchor_y := scroll_area.get_global_rect().position.y
 	check(await _press(_node("test_action_coins")) and int(state.data.coins) == 100 and "Coins +100" in result.text, "plain action applies at once (%s)" % result.text)
 	# 시점 적용은 덮어쓰기라 첫 누름에서 무장만 하고 두 번째에 적용한다. 다른 버튼을 누르면 무장이 풀린다.
 	var snap: Button = _node("test_snapshot_m10")
@@ -140,7 +142,7 @@ func _check_room() -> void:
 	check(await _press(reset) and int(state.data.coins) == 1000, "double-tap action waits for the second tap")
 	check(await _press(reset) and int(state.data.coins) == 0, "double-tap action applies on the second tap")
 	check(await _press(_node("test_action_long")) and absf(result.size.y - height) < 0.5 and result.get_line_count() > 2 and result.get_visible_line_count() <= 2, "result line keeps a fixed two-line height (%.1f -> %.1f)" % [height, result.size.y])
-	check(absf(_node("test_action_coins").get_global_rect().position.y - anchor_y) < 0.5, "buttons do not move when the result changes")
+	check(absf(scroll_area.get_global_rect().position.y - anchor_y) < 0.5, "button list does not move when the result changes")
 	# 막힌 행동은 저장을 바꾸지 않고 이유를 토스트로 알린다.
 	before = _bytes()
 	var shown_result := result.text
