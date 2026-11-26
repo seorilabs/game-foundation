@@ -542,10 +542,13 @@ func _start() -> void:
 		_show_error(state.error)
 		return
 	# 프롤로그는 첫 시작에 한 번만 본다. 끝나거나 스킵하면 본 기록을 저장하고 원래 흐름으로 간다.
-	if not intro_script.get("cuts", []).is_empty() and not state.intro_seen():
+	if not intro_script.get("cuts", []).is_empty() and not state.intro_seen() and cutscene != null:
+		# 길이 0인 컷만 있으면 play() 안에서 바로 끝나므로 재생 전에 연결한다.
+		cutscene.finished.connect(_intro_finished, CONNECT_ONE_SHOT)
 		if play_cutscene(intro_script).get("ok", false):
-			cutscene.finished.connect(_intro_finished, CONNECT_ONE_SHOT)
 			return
+		if cutscene.finished.is_connected(_intro_finished):
+			cutscene.finished.disconnect(_intro_finished)
 	_enter_game()
 
 func _intro_finished(_skipped: bool) -> void:

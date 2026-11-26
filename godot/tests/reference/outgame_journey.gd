@@ -405,6 +405,14 @@ func _prologue() -> void:
 	await e2e.unmount(main)
 	main = await _map(path)
 	e2e.step("restart starts play without the prologue", await e2e.tap(_button(main, "start")) and main.screen == "play" and main.cutscene.state() == "idle")
+	await e2e.unmount(main)
+	# 길이 0인 컷만 있는 프롤로그도 시작 흐름이 끝나고 본 기록이 남아야 한다(재생 안에서 끝나는 신호를 놓치지 않는다).
+	var flash_path := dir + "/prologue-flash.json"
+	main = await _map(flash_path)
+	main.intro_script = {"id": "flash", "cuts": [{"art": "", "dur": 0}]}
+	e2e.step("zero-length prologue still enters the game", await e2e.tap(_button(main, "start")) and main.screen == "play" and main.cutscene.state() == "idle")
+	var flash_saved := State.new(flash_path)
+	e2e.step("zero-length prologue is recorded as seen", flash_saved.load_state() and flash_saved.intro_seen())
 	e2e.end()
 	await e2e.unmount(main)
 

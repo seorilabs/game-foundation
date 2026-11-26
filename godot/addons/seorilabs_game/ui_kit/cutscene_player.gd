@@ -134,7 +134,15 @@ func request_next() -> void:
 		"end":
 			_finish(_skipped)
 
-## 스킵 버튼·Esc·뒤로 가기: 크레딧이 없으면 바로 끝내고, 있으면 끝 화면(계속하기)으로 간다.
+## Esc·뒤로 가기: 끝 화면에서는 계속하기와 같고, 그 밖에서는 스킵이다.
+func request_back() -> void:
+	if _state == "end":
+		paused = false
+		_finish(_skipped)
+	else:
+		request_skip()
+
+## 스킵 버튼: 크레딧이 없으면 바로 끝내고, 있으면 끝 화면(계속하기)으로 간다.
 func request_skip() -> void:
 	paused = false
 	if not can_skip():
@@ -155,7 +163,7 @@ func _input(event: InputEvent) -> void:
 		return
 	match key.keycode:
 		KEY_ESCAPE, KEY_BACK:
-			request_skip()
+			request_back()
 		KEY_SPACE, KEY_ENTER, KEY_KP_ENTER:
 			request_next()
 
@@ -183,7 +191,7 @@ func _notification(what: int) -> void:
 			paused = false
 		NOTIFICATION_WM_GO_BACK_REQUEST:
 			if _state != "idle":
-				request_skip()
+				request_back()
 
 func _process(delta: float) -> void:
 	if _state == "idle" or paused or not visible:

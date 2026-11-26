@@ -335,6 +335,17 @@ func _check_cutscene(reduced: bool) -> void:
 	await process_frame
 	await _press(proceed)
 	check(log.finished == [true] and player.state() == "idle", mode + ": continue finishes after skipped credits %s" % str(log.finished))
+	# 끝 화면에서 뒤로 가기·Esc는 계속하기와 같다. 아무 반응이 없으면 안 된다.
+	log.finished.clear()
+	player.play({"id": "back", "cuts": [{"art": ART, "dur": 30}], "credits": {"sections": [[["Made by", "만든 곳"], ["Example studio", "예제 스튜디오"]]], "dur": 30}})
+	player.request_skip()
+	check(player.state() == "end", mode + ": skip with credits reaches the end screen before back")
+	player.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	check(log.finished == [true] and player.state() == "idle", mode + ": back on the end screen continues %s" % str(log.finished))
+	# 길이 0인 컷만 있으면 play() 안에서 바로 끝난다. finished 는 그 안에서 한 번 나온다.
+	log.finished.clear()
+	player.play({"id": "flash", "cuts": [{"art": ART, "dur": 0}]})
+	check(log.finished == [false] and player.state() == "idle", mode + ": zero-length cut finishes inside play %s" % str(log.finished))
 	# 포커스를 잃으면 같은 컷에서 멈추고, 돌아오면 이어 간다. 한 프레임 시간은 0.1초로 자른다.
 	log.cuts.clear()
 	player.play({"id": "focus", "cuts": [{"art": ART, "dur": 0.35}, {"art": ART, "dur": 30}]})
