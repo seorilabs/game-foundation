@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "acebc53d5711d15accf46dd93a247f5878c5ecd6"
+    "commit": "db888b350d2552d9b0efd44c7990f86afe5cd915"
   },
   "sdk": {
     "version": "1.1.1",
@@ -19,7 +19,7 @@
     "godot/addons/seorilabs_game/README.md": "00b560cf04048ea7dcb99713555eb70ae2fb6aa863bb1e8d446f7dd575029dd1",
     "godot/addons/seorilabs_game/dev/test_room.gd": "6cd6b850cdf88d6855f0defe7776ed478a37229625711f772c17ef00665c8dac",
     "godot/addons/seorilabs_game/dev/test_room.tscn": "2df7f9d0f2cfe0aa71961cc3b9efbcd27e0592720694e803ed81c5c8c89f0e64",
-    "godot/addons/seorilabs_game/flow/outgame_main.gd": "033657f4643f3a8cd8e956354b68e4d29faf8bcebd479e51c6d4f47728d0d119",
+    "godot/addons/seorilabs_game/flow/outgame_main.gd": "3068bddfc1a8b73726eee383dc3bda525921fb27bceb903a8dd39ff47d7a6901",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
     "godot/addons/seorilabs_game/flow/state.gd": "c12f54553e637c7e9a4a9d32c1c59130fc5a4e38e19e02da15d83cd78e9593b6",
     "godot/addons/seorilabs_game/fonts/Fredoka-OFL.txt": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab",
