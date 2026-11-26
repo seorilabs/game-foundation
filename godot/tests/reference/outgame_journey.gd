@@ -32,6 +32,7 @@ func _run() -> void:
 	await _prologue()
 	await _credits_and_ending()
 	await _test_room()
+	await _korean_scenes()
 	quit(e2e.finish({"sourceSha": OS.get_environment("GITHUB_SHA")}))
 
 func _mount(path: String, sdk: Node = null, fixtures: bool = true, profile: String = "hero", hook: Dictionary = {}) -> Control:
@@ -524,5 +525,32 @@ func _test_room() -> void:
 	await e2e.shot("test-room-blocked")
 	await _f9(main)
 	e2e.step("F9 closes the test room", not main.test_room.is_open())
+	e2e.end()
+	await e2e.unmount(main)
+
+## 새 화면의 한국어 캡처: 프롤로그 자막, 테스트실, 크레딧(1회차 검수 F-5).
+func _korean_scenes() -> void:
+	e2e.begin("korean-cutscene-test-room-credits", ["cutscene", "test_room", "credits"])
+	# 튜토리얼을 마친 저장에서 시작해 프롤로그 뒤 홈(설정 버튼이 있는 화면)으로 간다. 프롤로그 본 기록은 비어 있다.
+	_seed(dir + "/korean.json")
+	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.apply_product("map")
+	main.state = State.new(dir + "/korean.json")
+	main.device_locale = "ko-KR"
+	await e2e.mount(main)
+	e2e.step("map ready in Korean", await e2e.wait_for(func(): return main.initialized) and main.language() == "ko")
+	e2e.step("first start opens the prologue", await e2e.tap(_button(main, "start")) and main.cutscene.state() == "cut")
+	await _play_for(main, 1.0)
+	e2e.step("Korean subtitle", _subtitle(main) != "" and _subtitle(main) != "Long ago, the wind charts of the sky isles were scattered.")
+	await e2e.shot("prologue-1-ko")
+	e2e.step("skip to home", await e2e.tap(main.cutscene.get_node("Skip")) and await e2e.wait_for(func(): return main.cutscene.state() == "idle" and main.screen == "home"))
+	await e2e.frames(30)
+	await _f9(main)
+	e2e.step("F9 opens the Korean test room", main.test_room.is_open())
+	await e2e.shot("test-room-ko")
+	await _f9(main)
+	e2e.step("settings", await e2e.tap(_button(main, "settings")))
+	e2e.step("credits", await e2e.tap(_button(main, "credits")) and main.screen == "credits" and _has_text(main.content, "글꼴 라이선스"))
+	await e2e.shot("credits-ko")
 	e2e.end()
 	await e2e.unmount(main)

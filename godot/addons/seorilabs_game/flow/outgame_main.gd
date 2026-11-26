@@ -789,14 +789,39 @@ func _settings() -> void:
 	box.add_child(_label("v" + str(ProjectSettings.get_setting("application/config/version", "1.0.0")), 13))
 
 ## 제품 크레딧(제작진, AI 생성 콘텐츠 고지)과 글꼴 라이선스. 설정에 늘 있는 항목이다.
+const CREDITS_COLUMN := 640.0
+
 func _credits_screen() -> void:
 	_clear(tr_text("Credits", "크레딧"))
 	var box := _scroll()
+	# 넓은 창에서도 읽기 좋은 폭의 가운데 칸에 두고, 프레임 띠에서 한 번 더 띄운다.
+	var pad := MarginContainer.new()
+	pad.name = "CreditsColumn"
+	pad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(pad)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", roundi(10 * _ui_scale()))
+	pad.add_child(column)
+	var fit := func() -> void:
+		var side := maxf(12.0 * _ui_scale(), (pad.size.x - CREDITS_COLUMN * _ui_scale()) / 2.0)
+		pad.add_theme_constant_override("margin_left", roundi(side))
+		pad.add_theme_constant_override("margin_right", roundi(side))
+	pad.resized.connect(fit)
+	fit.call()
+	var title_font: Font = _font_title if _font_title != null else _font_body
 	for section in credit_sections():
 		var head := _label(_pair_text(section[0]), 19)
-		head.add_theme_font_override("font", _font_title if _font_title != null else _font_body)
-		box.add_child(head)
-		box.add_child(_label(_pair_text(section[1]), 14))
+		head.add_theme_font_override("font", title_font)
+		column.add_child(head)
+		# 여러 줄 묶음(글꼴 라이선스 등)은 첫 줄을 이름으로 굵게 보여 줘 묶음의 시작이 보이게 한다.
+		for paragraph in _pair_text(section[1]).split("\n\n", false):
+			var lines := paragraph.split("\n", false)
+			if lines.size() > 1:
+				var name_label := _label(lines[0], 16)
+				name_label.add_theme_font_override("font", title_font)
+				column.add_child(name_label)
+				lines.remove_at(0)
+			column.add_child(_label("\n".join(lines), 14))
 
 func _settings_toggles(box: VBoxContainer, pairs: Array) -> void:
 	for pair in pairs:
