@@ -37,6 +37,7 @@ func _run() -> void:
 
 func _mount(path: String, sdk: Node = null, fixtures: bool = true, profile: String = "hero", hook: Dictionary = {}) -> Control:
 	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.show_studio_splash = false
 	main.state = State.new(path)
 	main.device_locale = "en-US"
 	main.home_profile = profile
@@ -363,6 +364,7 @@ func _late_response() -> void:
 ## map 제품(프롤로그·엔딩·크레딧이 있는 레퍼런스)을 격리 저장으로 띄운다. 다른 제품과 기존 여정은 프롤로그가 없다.
 func _map(path: String) -> Control:
 	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.show_studio_splash = false
 	main.apply_product("map")
 	main.state = State.new(path)
 	main.device_locale = "en-US"
@@ -534,6 +536,7 @@ func _korean_scenes() -> void:
 	# 튜토리얼을 마친 저장에서 시작해 프롤로그 뒤 홈(설정 버튼이 있는 화면)으로 간다. 프롤로그 본 기록은 비어 있다.
 	_seed(dir + "/korean.json")
 	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.show_studio_splash = false
 	main.apply_product("map")
 	main.state = State.new(dir + "/korean.json")
 	main.device_locale = "ko-KR"

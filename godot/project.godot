@@ -4,6 +4,8 @@ config_version=5
 config/name="Game Foundation Reference"
 config/version="1.0.0"
 run/main_scene="res://reference/bootstrap/main.tscn"
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0.00784314, 0.0431373, 0.0862745, 1)
 
 [display]
 window/size/viewport_width=390

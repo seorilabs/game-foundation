@@ -24,6 +24,7 @@ func node(main: Node, id: String) -> Control: return main.find_child(id, true, f
 ## 상점이 열린 캠프에서 긴 재화 문자열과 두 줄 헤드라인이 함께 와도 칩이 헤드라인과 겹치지 않고 (+)가 터치 기준을 지킨다.
 func _chip_with_shop(dimensions: PackedStringArray) -> void:
 	var main: Control = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
+	main.show_studio_splash = false
 	main.landscape = true
 	main.game_title = "Game Starter"
 	main.device_locale = "en-US"
@@ -116,6 +117,7 @@ func run() -> void:
 	var dimensions := arg(args, "--size", "1280x720").split("x")
 	d = Driver.new(self, Vector2i(int(dimensions[0]), int(dimensions[1])), arg(args, "--out", "user://camp-probe"), args.has("--capture"))
 	var main: Control = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
+	main.show_studio_splash = false
 	main.landscape = true
 	main.game_title = "Game Starter"
 	main.device_locale = arg(args, "--locale", "ko-KR")

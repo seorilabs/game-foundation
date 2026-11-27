@@ -19,6 +19,7 @@ func _initialize():call_deferred("run")
 func b(m:Node,name:String)->Control:return m.find_child(name,true,false) as Control
 func mount_case(name:String,native:bool=false)->Control:
  var m:Control=load("res://reference/bootstrap/main.tscn").instantiate()
+ m.show_studio_splash = false
  var path:="user://e2e-review-1-%s-%d.json" % [name,Time.get_ticks_usec()]
  m.state=S.new(path);m.state.load_state();m.state.skip_tutorial();m.device_locale="en-US"
  m.identity_provider=func()->String:return "review:alice"
