@@ -3,7 +3,6 @@ extends SceneTree
 const State = preload("res://addons/seorilabs_game/flow/state.gd")
 const Driver = preload("res://tests/common/e2e_driver.gd")
 
-var failed := false
 var driver: RefCounted
 var save_dir := "user://first-light-e2e-%d" % Time.get_ticks_usec()
 
@@ -16,17 +15,20 @@ func _run() -> void:
 	var args := OS.get_cmdline_user_args()
 	var out := args[args.find("--out") + 1] if args.has("--out") else save_dir
 	driver = Driver.new(self, Vector2i(1280, 720), out, args.has("--capture"))
+	driver.begin("first-light-startup", ["startup"])
 	var main := await _mount("regular")
 	var splash := main.find_child("StudioSplash", true, false)
 	if splash == null:
-		push_error("The default game startup did not create the First Light splash")
-		await _unmount(main)
-		quit(1)
+		_check(false, "The default game startup did not create the First Light splash")
+		await driver.unmount(main)
+		driver.end()
+		quit(driver.finish())
 		return
 	await _exercise_regular(main, splash)
-	await _unmount(main)
+	await driver.unmount(main)
 	await _exercise_motion_and_error()
-	quit(int(failed))
+	driver.end()
+	quit(driver.finish({"sourceSha": OS.get_environment("GITHUB_SHA")}))
 
 
 func _exercise_regular(main: Control, splash: Node) -> void:
@@ -55,7 +57,7 @@ func _exercise_motion_and_error() -> void:
 	var splash := main.find_child("StudioSplash", true, false)
 	_check(splash != null and splash.reduced_motion, "Splash reads saved reduced motion")
 	_check(await _closed(main, 0.45), "Reduced-motion splash is a short still")
-	await _unmount(main)
+	await driver.unmount(main)
 
 	for kind in ["keyboard", "mouse", "touch"]:
 		main = await _mount(kind)
@@ -82,12 +84,12 @@ func _exercise_motion_and_error() -> void:
 		await driver.frames()
 		_check(main.find_child("StudioSplash", true, false) == null and main.screen == "title",
 			"%s dismisses the splash without starting the game" % kind)
-		await _unmount(main)
+		await driver.unmount(main)
 
 	main = await _mount("corrupt", false, true)
 	_check(await _closed(main, 1.25) and not main.startup_error.is_empty() and not main.initialized,
 		"Corrupt saves still show the title error after the splash")
-	await _unmount(main)
+	await driver.unmount(main)
 
 
 func _mount(name: String, reduced := false, corrupt := false) -> Control:
@@ -112,10 +114,6 @@ func _mount(name: String, reduced := false, corrupt := false) -> Control:
 	return main
 
 
-func _unmount(main: Control) -> void:
-	await driver.unmount(main)
-
-
 func _closed(main: Control, budget: float) -> bool:
 	var start := Time.get_ticks_msec()
 	while main.find_child("StudioSplash", true, false) != null and Time.get_ticks_msec() - start < budget * 1000:
@@ -124,6 +122,4 @@ func _closed(main: Control, budget: float) -> bool:
 
 
 func _check(result: bool, label: String) -> void:
-	if not result:
-		failed = true
-		push_error(label)
+	driver.step(label, result)
