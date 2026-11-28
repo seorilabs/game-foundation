@@ -9,6 +9,11 @@ class LayoutDriver extends Driver:
 		if resize_during_drag: scroll.size.y = 400
 		await frames(3)
 
+class PulsingButton extends Button:
+	## 공용 Juice.idle_pulse처럼 끝없이 크기가 바뀌는 대상. 배치는 끝내 안정되지 않는다.
+	func _process(_delta: float) -> void:
+		scale = Vector2.ONE * (1.0 + 0.02 * sin(Time.get_ticks_msec() / 90.0))
+
 class MovingScroll extends ScrollContainer:
 	var layout_steps := 0
 	func _process(_delta: float) -> void:
@@ -46,6 +51,17 @@ func run() -> void:
 	scroll.layout_steps = 12
 	await d._settle(scroll)
 	d.step("settle waits for changing viewport geometry", scroll.layout_steps == 0)
+	# 끝없이 움직이는 대상은 안정 대기가 시간 초과로 끝나도 보임 조건으로 판정한다.
+	scroll.size.y = 100
+	var pulsing := PulsingButton.new()
+	pulsing.position = Vector2(0, 200)
+	pulsing.size = Vector2(280, 48)
+	body.add_child(pulsing)
+	await d.frames(3)
+	d.step("pulsing fixture is clipped", pulsing.get_global_rect().end.y > scroll.get_global_rect().end.y)
+	d.resize_during_drag = true
+	d.step("revealed target that never stops moving is accepted", await d.scroll_into_view(pulsing))
+	d.resize_during_drag = false
 	d.end()
 	var result := d.finish({"role": "component; drag is controlled, not a production UI journey"})
 	d.scroll = null

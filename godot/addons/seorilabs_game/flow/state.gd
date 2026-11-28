@@ -154,6 +154,10 @@ func mark_intro_seen() -> bool:
 ## 구매 진행 기록(ui.commerce)은 남긴다. 제품은 product(previous, next)로 자기 저장 키를 정리하고 남길 값을 옮겨 next를 돌려준다.
 ## 제품이 사전이 아니거나 빈 사전을 돌려주면 reset_refused로 거부한다. 쓰기는 한 번에 확정하고 실패하면 기존 저장을 그대로 둔다.
 func reset_progress(product: Callable = Callable()) -> bool:
+	# 읽지 못한 저장(손상, 새 버전)은 초기화로 덮어쓰지 않는다. 기존 바이트를 보존하는 규칙과 같다.
+	if not valid(data):
+		error = "save_corrupt"
+		return false
 	var previous: Dictionary = data.duplicate(true)
 	var next := defaults()
 	next.settings = previous.settings.duplicate(true)

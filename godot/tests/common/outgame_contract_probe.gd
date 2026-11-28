@@ -91,6 +91,8 @@ func _run() -> void:
 		return n) and state.error == "save_schema_invalid", "invalid reset state accepted")
 	check(FileAccess.get_file_as_bytes(dir + "/state.json") == before and state.data.coins == 7, "refused reset changed the save")
 	check(state.reset_progress() and state.data.coins == 0 and state.intro_seen() and not state.data.has("product"), "reset without a product hook")
+	var unread = State.new(dir + "/unread.json")
+	check(not unread.reset_progress() and unread.error == "save_corrupt" and not FileAccess.file_exists(dir + "/unread.json"), "reset before a valid load wrote a save")
 
 	if failures.is_empty():
 		print("Outgame contract probe passed: popups, commerce states, restore, conflict, invalid setting, progress reset")

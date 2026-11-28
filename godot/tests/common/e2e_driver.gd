@@ -150,7 +150,8 @@ func scroll_into_view(control: Control, max_drags := 30) -> bool:
 		var center := view.get_center()
 		await drag(center, center - move, 10, 0.25)
 		if not await _settle(scroll, 120, control):
-			return false
+			# 끝없이 움직이는 대상(유휴 맥동 등)은 안정되지 않는다. 시간 초과면 지금의 보임 조건으로 판정한다.
+			return _in_scroll_view(control, scroll)
 		if Vector2(scroll.scroll_horizontal, scroll.scroll_vertical) == before:
 			# 안내문이나 컨테이너 크기가 바뀌면 스크롤 위치가 같아도 대상이 보일 수 있다.
 			# 배치가 안정된 뒤에도 기존의 보임 조건으로 판정한다.
