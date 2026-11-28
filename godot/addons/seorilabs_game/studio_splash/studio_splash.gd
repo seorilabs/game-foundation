@@ -7,9 +7,13 @@ const FADE_SECONDS := 0.15
 
 var reduced_motion := false
 var _hold_until: int
+var _original_quit_on_back: Variant
 
 
 func _ready() -> void:
+	if get_viewport() == get_tree().root:
+		_original_quit_on_back = get_tree().is_quit_on_go_back()
+		get_tree().set_quit_on_go_back(false)
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	resized.connect(queue_redraw)
 	set_process(false)
@@ -19,6 +23,11 @@ func _ready() -> void:
 		await RenderingServer.frame_post_draw
 	_hold_until = Time.get_ticks_msec() + HOLD_MSEC
 	set_process(true)
+
+
+func _exit_tree() -> void:
+	if _original_quit_on_back != null:
+		get_tree().set_quit_on_go_back(_original_quit_on_back)
 
 
 func _process(_delta: float) -> void:
