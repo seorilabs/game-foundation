@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "level": "L3",
+  "baseline": "9787b318cdb5f16ece3a9b44073e227f79eede83",
+  "changedFeatures": [
+    "startup"
+  ],
+  "environments": [
+    "dev"
+  ],
+  "redesign": true,
+  "foundationRerun": false,
+  "floorOverrides": [],
+  "release": null
+}
