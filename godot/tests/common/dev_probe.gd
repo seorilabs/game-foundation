@@ -69,6 +69,17 @@ func _press(target: Control) -> bool:
 		await process_frame
 	return true
 
+## 열림 연출(크기·투명도)이 끝날 때까지 기다린다. 실제 시간 5초 안에 끝나지 않으면 거짓을 돌려 원인을 따로 알린다.
+func _opened(frame: Control) -> bool:
+	var deadline := Time.get_ticks_msec() + 5000
+	var frames := 0
+	while Time.get_ticks_msec() < deadline:
+		await process_frame
+		frames += 1
+		if frames >= 4 and frame.scale.is_equal_approx(Vector2.ONE) and frame.modulate.a >= 1.0:
+			return true
+	return false
+
 func _node(name: String) -> Control:
 	return room.find_child(name, true, false) as Control
 
@@ -118,7 +129,9 @@ func _check_room() -> void:
 	room.set_notes([["Check the intro pacing", "프롤로그 속도를 봐 주세요"], "Plain note line"])
 	check(not room.is_open() and not room.visible, "room starts closed")
 	room.open()
-	for i in 4: await process_frame
+	# 창은 Juice.pop_in(0.18초, 끝에서 살짝 되튐)으로 열린다. 아래 배치 검사의 기준 위치는 열림이 끝난 뒤에 잰다.
+	# 프레임이 빠른 실행(빠른 러너, --fixed-fps)에서는 4프레임이 열림 도중이라 기준이 1px쯤 어긋났다.
+	check(await _opened(room.get_node("Frame")), "open animation finishes before the layout checks")
 	check(room.is_open() and room.visible, "open shows the room")
 	check(_node("test_action_coins") != null and _node("test_snapshot_m10") != null and _node("test_replay_intro") != null, "registered actions, presets and replays have buttons")
 	var notes := ""

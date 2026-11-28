@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "level": "L1",
+  "baseline": "7cf1fc02a3d4c84b0b695ee9f024067f3a457696",
+  "changedFeatures": [
+    "test_room"
+  ],
+  "environments": [
+    "dev"
+  ],
+  "redesign": false,
+  "foundationRerun": false,
+  "floorOverrides": [],
+  "release": null
+}
