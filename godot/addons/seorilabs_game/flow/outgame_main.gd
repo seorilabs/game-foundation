@@ -97,6 +97,7 @@ var _font_title: Font
 var _font_body: Font
 var sfx: Node
 var layers: Node
+var _studio_splash: StudioSplash
 var ceremony: Control
 var _reward_serial := 0
 var _reward_presented := 0
@@ -219,10 +220,10 @@ func _ready() -> void:
 			return DisplayServer.clipboard_get() == value
 	_initialize()
 	if show_studio_splash:
-		var splash := StudioSplash.new()
-		splash.name = "StudioSplash"
-		splash.reduced_motion = bool(state.data.get("settings", {}).get("reduced_motion", false))
-		layers.layer("System").add_child(splash)
+		_studio_splash = StudioSplash.new()
+		_studio_splash.name = "StudioSplash"
+		_studio_splash.reduced_motion = bool(state.data.get("settings", {}).get("reduced_motion", false))
+		layers.layer("System").add_child(_studio_splash)
 
 func language() -> String:
 	return Locale.resolve(str(state.data.get("settings", {}).get("language", "system")), device_locale)
@@ -299,6 +300,8 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_RESUMED and initialized and services.sdk != null:
 		services.sdk.resume_presence()
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		if is_instance_valid(_studio_splash):
+			return
 		# 컷신(스킵)과 테스트실(닫기)은 자기 뒤로 가기를 처리한다. 그 아래 화면은 움직이지 않는다.
 		if (cutscene != null and cutscene.state() != "idle") or (test_room != null and test_room.is_open()):
 			return

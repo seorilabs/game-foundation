@@ -84,6 +84,9 @@ func _exercise_motion_and_error() -> void:
 		await driver.frames()
 		_check(main.find_child("StudioSplash", true, false) != null and main.screen == "title",
 			"%s is blocked without skipping the logo or starting the game" % kind)
+	main.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	_check(main.find_child("StudioSplash", true, false) != null and main.screen == "title",
+		"Android back does not navigate under the splash")
 	_check(await _closed(main, 1.3) and main.screen == "title", "Input does not interfere with the transition")
 	await driver.unmount(main)
 
