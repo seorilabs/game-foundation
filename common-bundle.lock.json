@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "d8390655e7d592150eee266421c388db148c731b"
+    "commit": "f325ee91f3ec708afae08dd56344e5b94800c5fd"
   },
   "sdk": {
     "version": "1.1.1",
@@ -16,10 +16,10 @@
     "source": "https://github.com/seorilabs/platform/tree/245427be79729915113e876cacbaa8a772f032bd/sdk-gdscript"
   },
   "files": {
-    "godot/addons/seorilabs_game/README.md": "ba2564c185f817fd550da4047a7239c7ced375cea5b1fc4d31ae96559d4d9a81",
+    "godot/addons/seorilabs_game/README.md": "de96ffeb9611d4cd9e5b81788287847aa32f81e56f613a95b5d7d8467f574404",
     "godot/addons/seorilabs_game/dev/test_room.gd": "fee4197e046f42f030c426e37684aa4637252c31213f43d72a5b0b89dd43eee0",
     "godot/addons/seorilabs_game/dev/test_room.tscn": "2df7f9d0f2cfe0aa71961cc3b9efbcd27e0592720694e803ed81c5c8c89f0e64",
-    "godot/addons/seorilabs_game/flow/outgame_main.gd": "fbfba36b6de19a8cdf3dc4807080bdecf906e42f955c467856cc29d5d47efa86",
+    "godot/addons/seorilabs_game/flow/outgame_main.gd": "725bb2cdfd1053e039bc7f45207d46f758a2d34edaf070f2ede710669a14f0ea",
     "godot/addons/seorilabs_game/flow/popup_queue.gd": "b3469b799ce654c4a489346dc2dd329cb91aff2213bad8a892dbbda6ba558bf3",
     "godot/addons/seorilabs_game/flow/state.gd": "4e5babe0751b2ceaa60e567ea8966bccd5db4c81ec220e24baf935fb859cb128",
     "godot/addons/seorilabs_game/fonts/Fredoka-OFL.txt": "5c9e7eee5c6b25f4b05b8d53b2e470ea4962f9ced742d044a98f7d95d1375bab",
@@ -57,12 +57,8 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_panel.png": "edbaee32fd650aba8c3e86593c96872f142795234ebe6a2391a54095857c48c5",
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_popup_frame.png": "95dfd2d47c17c899ad48f3641d9377fc93c6a7c2d78127abb0a55c4781019bc8",
     "godot/addons/seorilabs_game/studio_splash/Inter-OFL.txt": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
-    "godot/addons/seorilabs_game/studio_splash/first-light-background-landscape.webp": "93a072e2a381ea3bd0f51ea591b1e9718812ab603bfc9adb7d2e6b399ba73e36",
-    "godot/addons/seorilabs_game/studio_splash/first-light-background-portrait.webp": "e4584146d65f5d5d672d7fc58d5b1e37444ad2bf5cc378876ec470dfbc395706",
-    "godot/addons/seorilabs_game/studio_splash/first-light-lower.svg": "63f0796e0ea25f9ea569e4a28beb4325dc935187b5ff6f3d2d526e266e9cb4a8",
-    "godot/addons/seorilabs_game/studio_splash/first-light-upper.svg": "709af86c7dcb798c726632af8343f98fe627f3fe77fb2fb89f0b962650a4f916",
-    "godot/addons/seorilabs_game/studio_splash/first-light-wordmark.svg": "e30dc8c8df7b98c3b600365f8728c0eb3ec285b559ddb319b7a27051845ddc3f",
-    "godot/addons/seorilabs_game/studio_splash/studio_splash.gd": "4c5ae91080d4b8574d88bd3f549dd7a641ce5c29a21213c1b74177c01ad3e488",
+    "godot/addons/seorilabs_game/studio_splash/seori-labs-logo-stacked-reverse.svg": "b55486b2aa48ce6100602445712f063b1e71da5d72eeec202eeb25f124c5690c",
+    "godot/addons/seorilabs_game/studio_splash/studio_splash.gd": "b1316d94c2df9f014f1a87ff42b22370f44b1928873a587a0156eb9af958fc14",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
     "godot/addons/seorilabs_game/ui/camp_home.gd": "3e9d187d0f66b746446fcc3e67157f35819b88f00ae066c130f4cee3cb012a52",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
@@ -109,7 +105,7 @@
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
     "godot/tests/common/input_layout_probe.gd": "4cd9c6bd1a60dea78f7e7ae58c4c65bf4dbe157a7783a7d2ae08d15843d171ed",
     "godot/tests/common/outgame_contract_probe.gd": "2a10bf727bbc67d7db34a48f7accf234df65d0f08c10dbbf01fa71f8487413e0",
-    "godot/tests/common/studio_splash_probe.gd": "df608ab200b5c5b5ca061d70576beaeac01528870c626b4a5ba9faae7b38155f",
+    "godot/tests/common/studio_splash_probe.gd": "db96ac1cb1f955f8736ce9727664caeb8a9fba6148e90872895bf81af35881b0",
     "godot/tests/common/ui_kit_probe.gd": "857b45a3cdfe51c23746f184b418fa44f5747679ff3e0b73965130d57ff3712a",
     "godot/tests/common/ui_standard_contract_probe.gd": "119b131183484c5178d73771166c79bb9910a6bab334d16cee1a47c5be0d43ca"
   }
