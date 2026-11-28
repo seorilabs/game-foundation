@@ -33,6 +33,7 @@ func _run() -> void:
 	await _credits_and_ending()
 	await _test_room()
 	await _reset_progress()
+	await _reset_progress_landscape()
 	await _korean_scenes()
 	quit(e2e.finish({"sourceSha": OS.get_environment("GITHUB_SHA")}))
 
@@ -562,7 +563,9 @@ func _reset_progress() -> void:
 	await e2e.shot("reset-progress")
 	var before := FileAccess.get_file_as_bytes(path)
 	var confirm: Button = _button(main, "reset_progress_confirm")
-	e2e.step("first tap only arms", await e2e.tap(confirm) and confirm.text == "Tap again to reset" and FileAccess.get_file_as_bytes(path) == before)
+	e2e.step("first tap only arms", await e2e.tap(confirm) and confirm.text == "Tap again to reset" and confirm.theme_type_variation == &"PrimaryButton" and FileAccess.get_file_as_bytes(path) == before)
+	# A habitual double tap must not confirm before the player can read the armed label (round 1 R1-2).
+	e2e.step("a quick second tap is ignored", await e2e.tap(confirm) and main.screen == "reset_progress" and FileAccess.get_file_as_bytes(path) == before)
 	await e2e.shot("reset-progress-armed")
 	e2e.step("cancel returns to settings", await e2e.tap(_button(main, "reset_progress_cancel")) and main.screen == "settings")
 	e2e.step("cancel leaves the save bytes identical", FileAccess.get_file_as_bytes(path) == before)
@@ -571,8 +574,11 @@ func _reset_progress() -> void:
 	e2e.step("reopened screen starts disarmed", confirm.text == "Reset progress")
 	var product_hook: Callable = main.progress_reset
 	main.progress_reset = func(_previous: Dictionary, _next: Dictionary) -> Dictionary: return {}
-	e2e.step("refused reset", await e2e.tap(confirm) and await e2e.tap(_button(main, "reset_progress_confirm")))
-	e2e.step("refusal keeps the screen and explains", main.screen == "reset_progress" and _has_text(main.content, "Nothing was changed"))
+	e2e.step("refused reset", await e2e.tap(confirm) and await _confirm_after_delay(main))
+	e2e.step("refusal keeps the screen and explains", main.screen == "reset_progress" and _has_text(main.content, "Nothing was changed") and _toasts(main).has("Progress could not be reset. Nothing was changed."))
+	var reason: Label = _button(main, "reset_progress_notice")
+	var viewport_rect := Rect2(Vector2.ZERO, Vector2(e2e.viewport.size))
+	e2e.step("the reason sits above the buttons on screen", reason != null and viewport_rect.encloses(reason.get_global_rect()) and reason.get_global_rect().end.y <= _button(main, "reset_progress_confirm").get_global_rect().position.y)
 	e2e.step("refusal leaves the save bytes identical", FileAccess.get_file_as_bytes(path) == before and signals[0] == 0)
 	e2e.step("refusal disarms the button", _button(main, "reset_progress_confirm").text == "Reset progress")
 	await e2e.shot("reset-progress-refused")
@@ -580,7 +586,7 @@ func _reset_progress() -> void:
 		next.product_seen = previous.get("product_seen", false)
 		return product_hook.call(previous, next)
 	e2e.step("arm again", await e2e.tap(_button(main, "reset_progress_confirm")))
-	e2e.step("second tap resets", await e2e.tap(_button(main, "reset_progress_confirm")) and await e2e.wait_for(func(): return main.screen == "title"))
+	e2e.step("second tap resets", await _confirm_after_delay(main) and await e2e.wait_for(func(): return main.screen == "title"))
 	e2e.step("reset notifies the product once", signals[0] == 1 and _toasts(main).has("Progress reset. Start again from the title."))
 	await e2e.shot("reset-progress-done")
 	var saved := State.new(path)
@@ -605,6 +611,38 @@ func _reset_progress() -> void:
 	main = await _home(dir + "/reset-none.json")
 	main.progress_reset = Callable()
 	e2e.step("settings without a product hook", await e2e.tap(_button(main, "settings")) and _button(main, "reset_progress") == null)
+	e2e.end()
+	await e2e.unmount(main)
+
+## 무장한 확인 버튼은 0.6초 뒤부터 둘째 누름을 받는다.
+func _confirm_after_delay(main: Control) -> bool:
+	await create_timer(0.7).timeout
+	return await e2e.tap(_button(main, "reset_progress_confirm"))
+
+## 가로 제품: 확인과 취소가 한 줄에 있어 낮은 화면의 첫 화면에 보이고, 거부 이유도 버튼 위에 보인다.
+func _reset_progress_landscape() -> void:
+	e2e.begin("landscape-reset-progress", ["progress_reset", "ui_landscape"])
+	var path := dir + "/reset-landscape.json"
+	_seed(path)
+	var main: Control = await _home(path)
+	main.landscape = true
+	# A hook that returns a state failing the schema is still a refusal, not an unreadable save (round 1 R1-6).
+	main.progress_reset = func(_previous: Dictionary, next: Dictionary) -> Dictionary:
+		next.coins = -1
+		return next
+	main._open("reset_progress")
+	await e2e.frames(3)
+	var viewport_rect := Rect2(Vector2.ZERO, Vector2(e2e.viewport.size))
+	var confirm: Button = _button(main, "reset_progress_confirm")
+	var cancel: Button = _button(main, "reset_progress_cancel")
+	e2e.step("confirm and cancel share one row", confirm != null and cancel != null and absf(confirm.get_global_rect().position.y - cancel.get_global_rect().position.y) < 1.0)
+	e2e.step("both buttons are on the first screen", viewport_rect.encloses(confirm.get_global_rect()) and viewport_rect.encloses(cancel.get_global_rect()))
+	await e2e.shot("reset-progress-landscape")
+	e2e.step("refuse in landscape", await e2e.tap(confirm) and await _confirm_after_delay(main))
+	var reason: Label = _button(main, "reset_progress_notice")
+	e2e.step("landscape reason is on screen", reason != null and viewport_rect.encloses(reason.get_global_rect()))
+	e2e.step("an invalid product result reads as a refusal", reason != null and reason.text == "Progress could not be reset. Nothing was changed.")
+	await e2e.shot("reset-progress-landscape-refused")
 	e2e.end()
 	await e2e.unmount(main)
 

@@ -854,35 +854,51 @@ func _credits_screen() -> void:
 func _progress_reset_available() -> bool:
 	return progress_reset.is_valid() and services.mode == "local"
 
-## 첫 누름은 무장만 하고 두 번째 누름에 초기화한다. 화면을 다시 그리면 무장이 풀린다.
+## 첫 누름은 무장만 하고(판이 주 버튼으로 바뀐다), RESET_CONFIRM_DELAY_MS가 지난 뒤의 둘째 누름에 초기화한다.
+## 습관적인 두 번 누름이 확인 문구를 보기 전에 확정되지 않게 한다. 화면을 다시 그리면 무장이 풀린다.
+## 거부 이유는 경고 문장 바로 아래, 버튼 위에 두고 토스트로도 알린다. 가로에서는 확인과 취소를 한 줄에 둔다.
+const RESET_CONFIRM_DELAY_MS := 600
+
 func _reset_progress_screen(notice: String = "") -> void:
 	_clear(tr_text("Reset progress", "진행 초기화"))
 	var box := _scroll()
 	box.add_child(_label(tr_text("Start over from the beginning on this device. This cannot be undone.", "이 기기에서 처음부터 다시 시작해요. 되돌릴 수 없어요."), 16))
-	box.add_child(_label(tr_text("Kept: settings, language, scenes you have seen and purchases you can restore.", "남는 것: 설정, 언어, 이미 본 장면, 복원할 수 있는 구매"), 14))
-	for note in progress_reset_notes:
-		box.add_child(_label(_pair_text(note), 14))
-	# 람다는 지역 변수를 값으로 잡으므로 무장 여부와 버튼은 배열로 함께 쓴다.
-	var armed: Array = [false, null]
+	if not notice.is_empty():
+		var reason := _label(notice, 14)
+		reason.name = "reset_progress_notice"
+		box.add_child(reason)
+	var row: BoxContainer = HBoxContainer.new() if landscape else VBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	box.add_child(row)
+	# 람다는 지역 변수를 값으로 잡으므로 무장 시각과 버튼은 배열로 함께 쓴다. 0이면 무장 전이다.
+	var armed: Array = [0, null]
 	var confirm := _button(tr_text("Reset progress", "진행 초기화"), func() -> void:
-		if not armed[0]:
-			armed[0] = true
+		var now := Time.get_ticks_msec()
+		if armed[0] == 0:
+			armed[0] = now
 			armed[1].text = tr_text("Tap again to reset", "한 번 더 누르면 초기화해요")
+			armed[1].theme_type_variation = "PrimaryButton"
+			return
+		if now - int(armed[0]) < RESET_CONFIRM_DELAY_MS:
 			return
 		_apply_progress_reset()
-	, box)
+	, row)
 	armed[1] = confirm
 	confirm.name = "reset_progress_confirm"
-	_button(tr_text("Cancel", "취소"), _back, box).name = "reset_progress_cancel"
-	if not notice.is_empty():
-		box.add_child(_label(notice, 14))
+	_button(tr_text("Cancel", "취소"), _back, row).name = "reset_progress_cancel"
+	box.add_child(_label(tr_text("Kept: settings, language, the opening scene you have seen and purchases you can restore.", "남는 것: 설정, 언어, 이미 본 시작 장면, 복원할 수 있는 구매"), 14))
+	for note in progress_reset_notes:
+		box.add_child(_label(_pair_text(note), 14))
 
 func _apply_progress_reset() -> void:
 	if not _progress_reset_available():
 		_back()
 		return
 	if not state.reset_progress(progress_reset):
-		_reset_progress_screen(_error_text(state.error))
+		# 제품 결과가 저장 검사에 맞지 않아도 저장은 읽혔고 바뀌지 않았다. 손상 문구 대신 거부 문구를 쓴다.
+		var code: String = "reset_refused" if state.error == "save_schema_invalid" else state.error
+		layers.toast(_error_text(code))
+		_reset_progress_screen(_error_text(code))
 		return
 	navigation.clear()
 	_focus_stack.clear()
