@@ -856,13 +856,17 @@ func _progress_reset_available() -> bool:
 
 ## 첫 누름은 무장만 하고(판이 주 버튼으로 바뀐다), RESET_CONFIRM_DELAY_MS가 지난 뒤의 둘째 누름에 초기화한다.
 ## 습관적인 두 번 누름이 확인 문구를 보기 전에 확정되지 않게 한다. 화면을 다시 그리면 무장이 풀린다.
-## 거부 이유는 경고 문장 바로 아래, 버튼 위에 두고 토스트로도 알린다. 가로에서는 확인과 취소를 한 줄에 둔다.
+## 위에서부터 경고와 남는 것, 제품 안내(지워지는 것), 거부 이유, 버튼이다. 가로에서는 확인과 취소를 한 줄에 두어
+## 568x320에서도 첫 화면에 모두 보인다. 거부 이유는 토스트로도 알리고, 성공하면 그 토스트를 지운다.
 const RESET_CONFIRM_DELAY_MS := 600
+var _reset_toast: Control
 
 func _reset_progress_screen(notice: String = "") -> void:
 	_clear(tr_text("Reset progress", "진행 초기화"))
 	var box := _scroll()
-	box.add_child(_label(tr_text("Start over from the beginning on this device. This cannot be undone.", "이 기기에서 처음부터 다시 시작해요. 되돌릴 수 없어요."), 16))
+	box.add_child(_label(tr_text("Start over on this device. Settings, the opening scene and restorable purchases stay. This cannot be undone.", "이 기기에서 처음부터 다시 시작해요. 설정, 본 시작 장면, 복원할 수 있는 구매는 남아요. 되돌릴 수 없어요."), 16))
+	for note in progress_reset_notes:
+		box.add_child(_label(_pair_text(note), 14))
 	if not notice.is_empty():
 		var reason := _label(notice, 14)
 		reason.name = "reset_progress_notice"
@@ -876,8 +880,12 @@ func _reset_progress_screen(notice: String = "") -> void:
 		var now := Time.get_ticks_msec()
 		if armed[0] == 0:
 			armed[0] = now
-			armed[1].text = tr_text("Tap again to reset", "한 번 더 누르면 초기화해요")
-			armed[1].theme_type_variation = "PrimaryButton"
+			# 주 버튼 판으로 바꿔도 높이와 글자 크기는 그대로 둬서 아래 버튼이 밀리지 않게 한다.
+			var button: Button = armed[1]
+			button.custom_minimum_size.y = button.size.y
+			button.add_theme_font_size_override("font_size", button.get_theme_font_size("font_size"))
+			button.text = tr_text("Tap again to reset", "한 번 더 눌러 초기화")
+			button.theme_type_variation = "PrimaryButton"
 			return
 		if now - int(armed[0]) < RESET_CONFIRM_DELAY_MS:
 			return
@@ -886,9 +894,6 @@ func _reset_progress_screen(notice: String = "") -> void:
 	armed[1] = confirm
 	confirm.name = "reset_progress_confirm"
 	_button(tr_text("Cancel", "취소"), _back, row).name = "reset_progress_cancel"
-	box.add_child(_label(tr_text("Kept: settings, language, the opening scene you have seen and purchases you can restore.", "남는 것: 설정, 언어, 이미 본 시작 장면, 복원할 수 있는 구매"), 14))
-	for note in progress_reset_notes:
-		box.add_child(_label(_pair_text(note), 14))
 
 func _apply_progress_reset() -> void:
 	if not _progress_reset_available():
@@ -896,10 +901,12 @@ func _apply_progress_reset() -> void:
 		return
 	if not state.reset_progress(progress_reset):
 		# 제품 결과가 저장 검사에 맞지 않아도 저장은 읽혔고 바뀌지 않았다. 손상 문구 대신 거부 문구를 쓴다.
-		var code: String = "reset_refused" if state.error == "save_schema_invalid" else state.error
-		layers.toast(_error_text(code))
+		var code: String = {"save_schema_invalid": "reset_refused", "save_failed": "reset_save_failed"}.get(state.error, state.error)
+		if is_instance_valid(_reset_toast): _reset_toast.queue_free()
+		_reset_toast = layers.toast(_error_text(code))
 		_reset_progress_screen(_error_text(code))
 		return
+	if is_instance_valid(_reset_toast): _reset_toast.queue_free()
 	navigation.clear()
 	_focus_stack.clear()
 	progress_was_reset.emit()
@@ -1226,6 +1233,7 @@ func _error_text(code: String) -> String:
 		"copy_failed": return tr_text("Copy failed. Please try the Copy button again.", "복사하지 못했습니다. 복사 버튼을 다시 눌러 주세요.")
 		"save_failed": return tr_text("Could not save. Try again.", "저장하지 못했습니다. 다시 시도해 주세요.")
 		"reset_refused": return tr_text("Progress could not be reset. Nothing was changed.", "진행을 초기화하지 못했어요. 바뀐 것은 없어요.")
+		"reset_save_failed": return tr_text("Could not save the reset. Nothing was changed. Try again.", "초기화를 저장하지 못했어요. 바뀐 것은 없어요. 다시 해 주세요.")
 		"save_corrupt", "save_schema_invalid": return tr_text("The save could not be read. Your data was preserved.", "저장을 읽지 못했습니다. 기존 데이터는 보존했습니다.")
 		"save_newer_version": return tr_text("Update the game to open this save.", "이 저장을 열려면 게임을 업데이트해 주세요.")
 		"maintenance": return tr_text("Service maintenance, try again later.", "서비스 점검 중입니다. 잠시 후 다시 확인해 주세요.")

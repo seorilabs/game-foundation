@@ -559,12 +559,15 @@ func _reset_progress() -> void:
 	var entry := _button(main, "reset_progress")
 	e2e.step("local save offers Reset progress", entry != null and await e2e.scroll_into_view(entry))
 	e2e.step("open reset screen", await e2e.tap(entry) and main.screen == "reset_progress")
-	e2e.step("screen says what is kept", _has_text(main.content, "cannot be undone") and _has_text(main.content, "Kept:"))
+	e2e.step("screen says what is kept", _has_text(main.content, "cannot be undone") and _has_text(main.content, "restorable purchases stay"))
 	await e2e.shot("reset-progress")
 	var before := FileAccess.get_file_as_bytes(path)
 	var confirm: Button = _button(main, "reset_progress_confirm")
+	var unarmed_height := confirm.size.y
 	e2e.step("first tap only arms", await e2e.tap(confirm) and confirm.text == "Tap again to reset" and confirm.theme_type_variation == &"PrimaryButton" and FileAccess.get_file_as_bytes(path) == before)
 	# A habitual double tap must not confirm before the player can read the armed label (round 1 R1-2).
+	await e2e.frames(2)
+	e2e.step("arming keeps the button height", absf(confirm.size.y - unarmed_height) < 0.5)
 	e2e.step("a quick second tap is ignored", await e2e.tap(confirm) and main.screen == "reset_progress" and FileAccess.get_file_as_bytes(path) == before)
 	await e2e.shot("reset-progress-armed")
 	e2e.step("cancel returns to settings", await e2e.tap(_button(main, "reset_progress_cancel")) and main.screen == "settings")
@@ -588,6 +591,7 @@ func _reset_progress() -> void:
 	e2e.step("arm again", await e2e.tap(_button(main, "reset_progress_confirm")))
 	e2e.step("second tap resets", await _confirm_after_delay(main) and await e2e.wait_for(func(): return main.screen == "title"))
 	e2e.step("reset notifies the product once", signals[0] == 1 and _toasts(main).has("Progress reset. Start again from the title."))
+	e2e.step("the earlier refusal toast is gone", not _toasts(main).has("Progress could not be reset. Nothing was changed."))
 	await e2e.shot("reset-progress-done")
 	var saved := State.new(path)
 	e2e.step("reset save loads", saved.load_state())
@@ -619,13 +623,20 @@ func _confirm_after_delay(main: Control) -> bool:
 	await create_timer(0.7).timeout
 	return await e2e.tap(_button(main, "reset_progress_confirm"))
 
-## 가로 제품: 확인과 취소가 한 줄에 있어 낮은 화면의 첫 화면에 보이고, 거부 이유도 버튼 위에 보인다.
+## 가로 제품을 가장 낮은 568x320에서 띄운다: 확인과 취소가 한 줄이고, 지워지는 것과 남는 것, 거부 이유가 첫 화면에 보인다.
 func _reset_progress_landscape() -> void:
 	e2e.begin("landscape-reset-progress", ["progress_reset", "ui_landscape"])
 	var path := dir + "/reset-landscape.json"
 	_seed(path)
-	var main: Control = await _home(path)
+	var saved_size: Vector2i = e2e.viewport.size
+	e2e.viewport.size = Vector2i(568, 320)
+	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
+	main.show_studio_splash = false
 	main.landscape = true
+	main.state = State.new(path)
+	main.device_locale = "en-US"
+	await e2e.mount(main)
+	e2e.step("landscape product ready", await e2e.wait_for(func(): return main.initialized))
 	# A hook that returns a state failing the schema is still a refusal, not an unreadable save (round 1 R1-6).
 	main.progress_reset = func(_previous: Dictionary, next: Dictionary) -> Dictionary:
 		next.coins = -1
@@ -633,18 +644,32 @@ func _reset_progress_landscape() -> void:
 	main._open("reset_progress")
 	await e2e.frames(3)
 	var viewport_rect := Rect2(Vector2.ZERO, Vector2(e2e.viewport.size))
+	var visible_text := func(text: String) -> bool:
+		for label in main.content.find_children("*", "Label", true, false):
+			if text in label.text and viewport_rect.encloses(label.get_global_rect()): return true
+		return false
 	var confirm: Button = _button(main, "reset_progress_confirm")
 	var cancel: Button = _button(main, "reset_progress_cancel")
 	e2e.step("confirm and cancel share one row", confirm != null and cancel != null and absf(confirm.get_global_rect().position.y - cancel.get_global_rect().position.y) < 1.0)
-	e2e.step("both buttons are on the first screen", viewport_rect.encloses(confirm.get_global_rect()) and viewport_rect.encloses(cancel.get_global_rect()))
+	e2e.step("both buttons are on the first screen at 568x320", viewport_rect.encloses(confirm.get_global_rect()) and viewport_rect.encloses(cancel.get_global_rect()))
+	e2e.step("what stays and what starts over are on the first screen", visible_text.call("restorable purchases stay") and visible_text.call("start over"))
 	await e2e.shot("reset-progress-landscape")
 	e2e.step("refuse in landscape", await e2e.tap(confirm) and await _confirm_after_delay(main))
 	var reason: Label = _button(main, "reset_progress_notice")
 	e2e.step("landscape reason is on screen", reason != null and viewport_rect.encloses(reason.get_global_rect()))
 	e2e.step("an invalid product result reads as a refusal", reason != null and reason.text == "Progress could not be reset. Nothing was changed.")
 	await e2e.shot("reset-progress-landscape-refused")
+	# A failed write says the reset was not saved, not that the save is unreadable (round 2 R2-5).
+	main.progress_reset = func(_previous: Dictionary, next: Dictionary) -> Dictionary: return next
+	var before := FileAccess.get_file_as_bytes(path)
+	main.state.path = dir + "/missing-folder/reset.json"
+	e2e.step("arm with a failing disk", await e2e.tap(_button(main, "reset_progress_confirm")) and await _confirm_after_delay(main))
+	reason = _button(main, "reset_progress_notice")
+	e2e.step("a failed write keeps the save and explains", reason != null and reason.text == "Could not save the reset. Nothing was changed. Try again." and FileAccess.get_file_as_bytes(path) == before and main.screen == "reset_progress")
+	main.state.path = path
 	e2e.end()
 	await e2e.unmount(main)
+	e2e.viewport.size = saved_size
 
 ## 새 화면의 한국어 캡처: 프롤로그 자막, 테스트실, 크레딧(1회차 검수 F-5).
 func _korean_scenes() -> void:
