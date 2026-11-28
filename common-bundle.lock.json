@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "3c9700382f180bcdd49474b51a87a6bae36352e7"
+    "commit": "3575bf3f855b4ac1a0bc46f599aaad3413f960ce"
   },
   "sdk": {
     "version": "1.1.1",
@@ -58,7 +58,7 @@
     "godot/addons/seorilabs_game/skins/soft_adventure/ui_popup_frame.png": "95dfd2d47c17c899ad48f3641d9377fc93c6a7c2d78127abb0a55c4781019bc8",
     "godot/addons/seorilabs_game/studio_splash/Inter-OFL.txt": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
     "godot/addons/seorilabs_game/studio_splash/seori-labs-logo-stacked-reverse.svg": "b55486b2aa48ce6100602445712f063b1e71da5d72eeec202eeb25f124c5690c",
-    "godot/addons/seorilabs_game/studio_splash/studio_splash.gd": "b1316d94c2df9f014f1a87ff42b22370f44b1928873a587a0156eb9af958fc14",
+    "godot/addons/seorilabs_game/studio_splash/studio_splash.gd": "3f6c00ab13bb1cc6ac8ab1ebe6b9901f71d695cfd7e772630182dd35ea9df4ad",
     "godot/addons/seorilabs_game/ui/account_panel.gd": "8a2c73e1c14b48038b89d20b49f86502241b43ff1d2f0e2fca61aa5f819aa9f5",
     "godot/addons/seorilabs_game/ui/camp_home.gd": "3e9d187d0f66b746446fcc3e67157f35819b88f00ae066c130f4cee3cb012a52",
     "godot/addons/seorilabs_game/ui/outgame.tscn": "6771cb0233df28534c27f9f712f49dfb7e519f276455d3ac05d319569989727f",
