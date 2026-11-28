@@ -52,6 +52,7 @@ def main():
                     [godot, '--headless', '--path', str(project), '--script', 'res://tests/common/ui_standard_contract_probe.gd', '--', '--out', str(out / 'ui-contract.json')],
                     [godot, '--headless', '--path', str(project), '--script', 'res://tests/common/ui_kit_probe.gd', '--', '--out', str(out / 'ui-kit.json')],
                     [godot, '--headless', '--path', str(project), '--script', 'res://tests/common/dev_probe.gd', '--', '--out', str(out / 'dev.json')],
+                    [godot, '--headless', '--path', str(project), '--script', 'res://tests/common/input_layout_probe.gd', '--', '--out', str(out / 'input-layout')],
                     [godot, *([] if a.capture else ['--headless']), '--path', str(project), '--script', script, '--', '--out', str(out), '--size', a.size, *(['--capture'] if a.capture else [])]]
         commands.append([godot, *(['--audio-driver', 'Dummy'] if a.capture else ['--headless']),
                          '--path', str(project), '--script', 'res://tests/common/studio_splash_probe.gd', '--',

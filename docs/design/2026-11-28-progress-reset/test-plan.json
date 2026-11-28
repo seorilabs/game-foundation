@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "level": "L3",
+  "baseline": "4071d7be7ff6d4f11e3fd043bd6e4b05146fff05",
+  "changedFeatures": ["progress_reset", "account_save", "settings_support", "inbox", "ui_kit", "ui_navigation"],
+  "environments": ["dev"],
+  "redesign": true,
+  "foundationRerun": false,
+  "floorOverrides": [],
+  "release": null
+}
