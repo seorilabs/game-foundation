@@ -120,6 +120,10 @@ func _check_room() -> void:
 	room.open()
 	for i in 4: await process_frame
 	check(room.is_open() and room.visible, "open shows the room")
+	# 여는 연출(Juice.pop_in 0.18초, 되돌아오는 곡선)이 끝난 뒤 배치를 잰다. 프레임이 빠른 실행기에서는 4프레임 안에
+	# 끝나지만 느린 CI에서는 배율 1.0037 같은 중간값에서 기준을 잡아 목록이 움직인 것처럼 보였다(betta-raising CI).
+	await create_timer(0.35).timeout
+	check(room.get_node("Frame").scale.is_equal_approx(Vector2.ONE), "the open animation settles before the layout is measured")
 	check(_node("test_action_coins") != null and _node("test_snapshot_m10") != null and _node("test_replay_intro") != null, "registered actions, presets and replays have buttons")
 	var notes := ""
 	for label in room.find_children("*", "Label", true, false): notes += (label as Label).text + "\n"
