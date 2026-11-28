@@ -166,6 +166,17 @@
         "godot/tests/common/dev_probe.gd",
         "godot/export_presets.cfg"
       ]
+    },
+    {
+      "id": "progress_reset",
+      "core": false,
+      "foundation": false,
+      "paths": [
+        "godot/addons/seorilabs_game/flow/outgame_main.gd",
+        "godot/addons/seorilabs_game/flow/state.gd",
+        "godot/reference/bootstrap/**",
+        "godot/tests/common/outgame_contract_probe.gd"
+      ]
     }
   ]
 }

@@ -46,6 +46,13 @@ var ending_script: Dictionary = {}
 ## 테스트실이 생기면 부른다. 제품은 여기서 행동, 플레이 시점 프리셋, 연출 다시 보기, 봐줄 점을 등록한다.
 ## _ready() 전에(bootstrap의 _init()에서) 정한다. 정하지 않으면 테스트실, F9, 설정 항목이 생기지 않는다.
 var test_room_setup: Callable
+## 진행 초기화(설정 > 진행 초기화). 제품이 정했고 이 기기 저장(로컬 모드)일 때만 보인다.
+## progress_reset(previous, next) -> Dictionary: 공용 초기화 결과 next에서 제품 저장 키를 정리하고 남길 값을 옮겨 돌려준다. 빈 사전이면 거부한다.
+var progress_reset: Callable
+## 초기화 화면에 덧붙이는 제품 안내 [[en, ko], ...]. 지워지는 것과 남는 것을 제품 말로 적는다.
+var progress_reset_notes: Array = []
+## 초기화를 저장한 뒤 한 번 온다. 제품은 메모리의 진행과 엔딩 본 기록(set_ending_seen)을 새 저장으로 다시 맞춘다.
+signal progress_was_reset
 ## test_room_setup이 있고 디버그·playtest 빌드일 때만 생기는 테스트실. 그 밖에는 null이다.
 var test_room: Control
 var cutscene: Control
@@ -604,6 +611,7 @@ func _route(target: String) -> void:
 		"purchase": _draw_purchase()
 		"result": _draw_result()
 		"credits": _credits_screen()
+		"reset_progress": _reset_progress_screen()
 		"leaderboard":
 			if ranking.capabilities().get("list", false):
 				_draw_ranking()
@@ -794,6 +802,8 @@ func _settings() -> void:
 	_button(tr_text("Credits", "크레딧"), func() -> void: _open("credits"), box).name = "credits"
 	if test_room != null:
 		_button(tr_text("Test room", "테스트실"), open_test_room, box).name = "test_room"
+	if _progress_reset_available():
+		_button(tr_text("Reset progress", "진행 초기화"), func() -> void: _open("reset_progress"), box).name = "reset_progress"
 	for item in [["terms_url", "Terms", "약관"], ["privacy_url", "Privacy", "개인정보 처리방침"]]:
 		var url := str(config.get(item[0], ""))
 		if not url.is_empty():
@@ -840,6 +850,45 @@ func _credits_screen() -> void:
 				column.add_child(name_label)
 				lines.remove_at(0)
 			column.add_child(_label("\n".join(lines), 14))
+
+func _progress_reset_available() -> bool:
+	return progress_reset.is_valid() and services.mode == "local"
+
+## 첫 누름은 무장만 하고 두 번째 누름에 초기화한다. 화면을 다시 그리면 무장이 풀린다.
+func _reset_progress_screen(notice: String = "") -> void:
+	_clear(tr_text("Reset progress", "진행 초기화"))
+	var box := _scroll()
+	box.add_child(_label(tr_text("Start over from the beginning on this device. This cannot be undone.", "이 기기에서 처음부터 다시 시작해요. 되돌릴 수 없어요."), 16))
+	box.add_child(_label(tr_text("Kept: settings, language, scenes you have seen and purchases you can restore.", "남는 것: 설정, 언어, 이미 본 장면, 복원할 수 있는 구매"), 14))
+	for note in progress_reset_notes:
+		box.add_child(_label(_pair_text(note), 14))
+	# 람다는 지역 변수를 값으로 잡으므로 무장 여부와 버튼은 배열로 함께 쓴다.
+	var armed: Array = [false, null]
+	var confirm := _button(tr_text("Reset progress", "진행 초기화"), func() -> void:
+		if not armed[0]:
+			armed[0] = true
+			armed[1].text = tr_text("Tap again to reset", "한 번 더 누르면 초기화해요")
+			return
+		_apply_progress_reset()
+	, box)
+	armed[1] = confirm
+	confirm.name = "reset_progress_confirm"
+	_button(tr_text("Cancel", "취소"), _back, box).name = "reset_progress_cancel"
+	if not notice.is_empty():
+		box.add_child(_label(notice, 14))
+
+func _apply_progress_reset() -> void:
+	if not _progress_reset_available():
+		_back()
+		return
+	if not state.reset_progress(progress_reset):
+		_reset_progress_screen(_error_text(state.error))
+		return
+	navigation.clear()
+	_focus_stack.clear()
+	progress_was_reset.emit()
+	layers.toast(tr_text("Progress reset. Start again from the title.", "진행을 초기화했어요. 타이틀에서 다시 시작해요."))
+	_route("title")
 
 func _settings_toggles(box: VBoxContainer, pairs: Array) -> void:
 	for pair in pairs:
@@ -1160,6 +1209,7 @@ func _error_text(code: String) -> String:
 		"copied": return tr_text("Code copied", "코드를 복사했어요")
 		"copy_failed": return tr_text("Copy failed. Please try the Copy button again.", "복사하지 못했습니다. 복사 버튼을 다시 눌러 주세요.")
 		"save_failed": return tr_text("Could not save. Try again.", "저장하지 못했습니다. 다시 시도해 주세요.")
+		"reset_refused": return tr_text("Progress could not be reset. Nothing was changed.", "진행을 초기화하지 못했어요. 바뀐 것은 없어요.")
 		"save_corrupt", "save_schema_invalid": return tr_text("The save could not be read. Your data was preserved.", "저장을 읽지 못했습니다. 기존 데이터는 보존했습니다.")
 		"save_newer_version": return tr_text("Update the game to open this save.", "이 저장을 열려면 게임을 업데이트해 주세요.")
 		"maintenance": return tr_text("Service maintenance, try again later.", "서비스 점검 중입니다. 잠시 후 다시 확인해 주세요.")

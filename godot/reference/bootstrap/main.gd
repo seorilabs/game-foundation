@@ -12,6 +12,10 @@ func _init() -> void:
  feature_routes.building = _building
  launch_game = _launch_round
  test_room_setup = _setup_test_room
+ # 이 예제의 진행은 모두 공용 저장에 있어 공용 초기화 결과를 그대로 쓴다. 엔딩 본 기록은 메모리에만 있어 함께 지운다.
+ progress_reset = func(_previous: Dictionary, next: Dictionary) -> Dictionary: return next
+ progress_reset_notes = [["Coins, the guide and the lighthouse level start over.", "코인, 안내, 등대 레벨이 처음으로 돌아가요."]]
+ progress_was_reset.connect(func() -> void: set_ending_seen(false))
  var runtime: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://config/runtime.json"))
  var product := str(runtime.get("product", "skyway"))
  var args := OS.get_cmdline_user_args()

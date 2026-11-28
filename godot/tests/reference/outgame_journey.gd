@@ -32,6 +32,7 @@ func _run() -> void:
 	await _prologue()
 	await _credits_and_ending()
 	await _test_room()
+	await _reset_progress()
 	await _korean_scenes()
 	quit(e2e.finish({"sourceSha": OS.get_environment("GITHUB_SHA")}))
 
@@ -292,7 +293,7 @@ func _homes() -> void:
 		var hook: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://reference/config/" + product + ".json"))
 		var main: Control = await _mount(dir + "/hook-" + product + ".json", null, true, hook.homeProfile, hook)
 		e2e.step("own product title", _has_text(main, hook.title))
-		e2e.step("same common version for " + product, hook.commonVersion == "1.2.0" and hook.runtime == "res://addons/seorilabs_game/flow/outgame_main.gd")
+		e2e.step("same common version for " + product, hook.commonVersion == "1.3.0" and hook.runtime == "res://addons/seorilabs_game/flow/outgame_main.gd")
 		await e2e.wait_for(func(): return main.initialized)
 		e2e.step("product title settings", await e2e.tap(_button(main, "settings")))
 		e2e.step("product support", await e2e.tap(_button(main, "support")) and main.support.status == "ready")
@@ -349,9 +350,13 @@ func _server_inbox() -> void:
 func _late_response() -> void:
 	e2e.begin("late-server-response-preserves-navigation", ["inbox", "ui_navigation"])
 	var sdk := SDK.FakeSDK.new()
-	sdk.messages = [{"id":"late","title":"Late message","body":"One reward","rewards":[],"readAt":0,"claimedAt":0,"expiresAt":0}]
+	sdk.messages = [{"id":"late","title":"Late message","body":"One reward","rewards":[],"readAt":0,"claimedAt":0,"expiresAt":0},
+		{"id":"named","title":"Named rewards","body":"Product names","rewards":[{"entitlementId":"pearl_pack","quantity":2},{"entitlementId":"unknown_item","quantity":1}],"readAt":0,"claimedAt":0,"expiresAt":0}]
 	var main: Control = await _home(dir + "/late.json", sdk)
+	# 제품이 보상 이름을 주면 우편 카드에 ID 대신 그 이름을 쓰고, 빈 이름이면 "보상"으로 쓴다.
+	main.mail_reward_name_provider = func(id: String) -> String: return "Pearl pack" if id == "pearl_pack" else ""
 	e2e.step("inbox", await e2e.tap(_button(main, "inbox")))
+	e2e.step("mail rewards use product names", _has_text(main.content, "Pearl pack ×2") and _has_text(main.content, "Reward ×1") and not _has_text(main.content, "pearl_pack"))
 	sdk.hold_claim = true
 	e2e.step("pending claim", await e2e.tap(_text_button(main, "Claim")))
 	e2e.step("close while pending", await e2e.tap(_button(main, "close")))
@@ -530,9 +535,82 @@ func _test_room() -> void:
 	e2e.end()
 	await e2e.unmount(main)
 
+## 진행 초기화: 두 번 눌러 확인, 취소와 거부는 저장을 바꾸지 않고, 적용하면 설정·프롤로그 본 기록·제품이 고른 값만 남는다.
+func _reset_progress() -> void:
+	e2e.begin("settings-reset-progress", ["progress_reset", "account_save", "settings_support", "ui_navigation"])
+	var path := dir + "/reset.json"
+	_seed(path)
+	var seeded := State.new(path)
+	seeded.load_state()
+	seeded.mark_intro_seen()
+	var progressed: Dictionary = seeded.data.duplicate(true)
+	progressed.coins = 340
+	progressed.settings.music = false
+	progressed.ui.home.level = 4
+	progressed.ui.commerce = {"pending": "example-receipt"}
+	progressed.product_progress = {"stage": 12}
+	progressed.product_seen = true
+	seeded.commit(progressed)
+	var main: Control = await _home(path)
+	var signals := [0]
+	main.progress_was_reset.connect(func() -> void: signals[0] += 1)
+	e2e.step("settings", await e2e.tap(_button(main, "settings")))
+	var entry := _button(main, "reset_progress")
+	e2e.step("local save offers Reset progress", entry != null and await e2e.scroll_into_view(entry))
+	e2e.step("open reset screen", await e2e.tap(entry) and main.screen == "reset_progress")
+	e2e.step("screen says what is kept", _has_text(main.content, "cannot be undone") and _has_text(main.content, "Kept:"))
+	await e2e.shot("reset-progress")
+	var before := FileAccess.get_file_as_bytes(path)
+	var confirm: Button = _button(main, "reset_progress_confirm")
+	e2e.step("first tap only arms", await e2e.tap(confirm) and confirm.text == "Tap again to reset" and FileAccess.get_file_as_bytes(path) == before)
+	await e2e.shot("reset-progress-armed")
+	e2e.step("cancel returns to settings", await e2e.tap(_button(main, "reset_progress_cancel")) and main.screen == "settings")
+	e2e.step("cancel leaves the save bytes identical", FileAccess.get_file_as_bytes(path) == before)
+	e2e.step("reopen", await e2e.tap(_button(main, "reset_progress")) and main.screen == "reset_progress")
+	confirm = _button(main, "reset_progress_confirm")
+	e2e.step("reopened screen starts disarmed", confirm.text == "Reset progress")
+	var product_hook: Callable = main.progress_reset
+	main.progress_reset = func(_previous: Dictionary, _next: Dictionary) -> Dictionary: return {}
+	e2e.step("refused reset", await e2e.tap(confirm) and await e2e.tap(_button(main, "reset_progress_confirm")))
+	e2e.step("refusal keeps the screen and explains", main.screen == "reset_progress" and _has_text(main.content, "Nothing was changed"))
+	e2e.step("refusal leaves the save bytes identical", FileAccess.get_file_as_bytes(path) == before and signals[0] == 0)
+	e2e.step("refusal disarms the button", _button(main, "reset_progress_confirm").text == "Reset progress")
+	await e2e.shot("reset-progress-refused")
+	main.progress_reset = func(previous: Dictionary, next: Dictionary) -> Dictionary:
+		next.product_seen = previous.get("product_seen", false)
+		return product_hook.call(previous, next)
+	e2e.step("arm again", await e2e.tap(_button(main, "reset_progress_confirm")))
+	e2e.step("second tap resets", await e2e.tap(_button(main, "reset_progress_confirm")) and await e2e.wait_for(func(): return main.screen == "title"))
+	e2e.step("reset notifies the product once", signals[0] == 1 and _toasts(main).has("Progress reset. Start again from the title."))
+	await e2e.shot("reset-progress-done")
+	var saved := State.new(path)
+	e2e.step("reset save loads", saved.load_state())
+	e2e.expect_equal("coins start over", int(saved.data.coins), 0)
+	e2e.expect_equal("guide starts over", saved.data.tutorial.status, "active")
+	e2e.expect_equal("home starts over", int(saved.data.ui.home.level), 2)
+	e2e.expect_equal("settings kept", saved.data.settings.music, false)
+	e2e.expect_equal("prologue seen kept", saved.intro_seen(), true)
+	e2e.expect_equal("purchase records kept", saved.data.ui.commerce, {"pending": "example-receipt"})
+	e2e.expect_equal("save version unchanged", int(saved.data.version), State.SAVE_VERSION)
+	e2e.step("product key cleared unless the product keeps it", not saved.data.has("product_progress") and saved.data.get("product_seen", false) == true)
+	e2e.step("start again opens the guide", await e2e.tap(_button(main, "start")) and main.screen == "play")
+	await e2e.unmount(main)
+	# 서버 계정 저장은 이 기기만 지울 수 없으므로 항목을 보여 주지 않는다.
+	var sdk := SDK.FakeSDK.new()
+	main = await _home(dir + "/reset-server.json", sdk)
+	e2e.step("server settings", main.services.mode == "server" and await e2e.tap(_button(main, "settings")))
+	e2e.step("server save has no Reset progress", _button(main, "reset_progress") == null)
+	await e2e.unmount(main)
+	# 제품이 정하지 않으면 항목이 없다.
+	main = await _home(dir + "/reset-none.json")
+	main.progress_reset = Callable()
+	e2e.step("settings without a product hook", await e2e.tap(_button(main, "settings")) and _button(main, "reset_progress") == null)
+	e2e.end()
+	await e2e.unmount(main)
+
 ## 새 화면의 한국어 캡처: 프롤로그 자막, 테스트실, 크레딧(1회차 검수 F-5).
 func _korean_scenes() -> void:
-	e2e.begin("korean-cutscene-test-room-credits", ["cutscene", "test_room", "credits"])
+	e2e.begin("korean-cutscene-test-room-credits", ["cutscene", "test_room", "credits", "progress_reset"])
 	# 튜토리얼을 마친 저장에서 시작해 프롤로그 뒤 홈(설정 버튼이 있는 화면)으로 간다. 프롤로그 본 기록은 비어 있다.
 	_seed(dir + "/korean.json")
 	var main: Control = load("res://reference/bootstrap/main.tscn").instantiate()
@@ -555,5 +633,9 @@ func _korean_scenes() -> void:
 	e2e.step("settings", await e2e.tap(_button(main, "settings")))
 	e2e.step("credits", await e2e.tap(_button(main, "credits")) and main.screen == "credits" and _has_text(main.content, "글꼴 라이선스"))
 	await e2e.shot("credits-ko")
+	e2e.step("back to settings", await e2e.tap(_button(main, "back")) and main.screen == "settings")
+	var reset := _button(main, "reset_progress")
+	e2e.step("Korean reset entry", reset != null and await e2e.scroll_into_view(reset) and await e2e.tap(reset) and _has_text(main.content, "되돌릴 수 없어요"))
+	await e2e.shot("reset-progress-ko")
 	e2e.end()
 	await e2e.unmount(main)
