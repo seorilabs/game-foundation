@@ -2,7 +2,7 @@
 
 2026-11-28에 GitHub의 보관·포크 제외 원격 기본 브랜치 47개를 조회했다. 아래 28개는 실제 Godot 게임 프로젝트가 확인된 저장소다. 공통 작업에는 seorilabs-official, game-foundation, starter-template-game과 agent-config를 사용한다.
 
-| 게임 | 주 프로젝트 | 조사 기준 커밋 |
+| 게임 | 주 프로젝트 | 조사 기준 Git 트리 |
 | --- | --- | --- |
 | alley-market-match | godot/project.godot | `4a2d40a4e66add3fea9d9a98ec85362988b008ba` |
 | bakehand | project.godot | `3e7f6b7c0e9908c39178a39891389f49eac8faa3` |
