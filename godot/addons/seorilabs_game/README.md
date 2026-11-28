@@ -8,6 +8,8 @@
 
 `dev/test_room`은 디버그 실행과 `playtest` 기능 태그 빌드에서만 열린다. 제품은 bootstrap의 `_init()`에서 `test_room_setup`(테스트실을 받는 Callable)을 정하고, 그 안에서 `register_action`, `register_snapshots`, `register_replay`, `set_notes`로 행동을 등록한다. `test_room_setup`이 없으면 테스트실, F9, 설정 항목이 생기지 않는다. 행동이 값을 돌려주지 않으면 완료로 본다. 출시 export preset은 `exclude_filter`에 `addons/seorilabs_game/dev/**`를 넣는다.
 
-## First Light studio splash
+## Seori Labs studio splash
 
-Enable `show_studio_splash` on the game bootstrap scene to show the bundled First Light opening once at startup. The reference project and new-game template enable it. The splash selects its own portrait or landscape artwork, respects reduced motion, and leaves title initialization running beneath it.
+Enable `show_studio_splash` on the game bootstrap scene. The splash shows the transparent Seori Labs lockup centered on Night Navy for one second per cold launch while the game title initializes. It blocks input until it closes and omits the closing fade if reduced motion is enabled.
+
+The lockup is copied unchanged from the [Seori Labs studio page](https://www.seorilabs.com/en/studio/). Keep native launch and engine boot screens image-free with the same Night Navy color `#020B16`.

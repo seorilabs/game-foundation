@@ -220,12 +220,9 @@ func _ready() -> void:
 	_initialize()
 	if show_studio_splash:
 		var splash := StudioSplash.new()
-		if splash.load_art():
-			splash.name = "StudioSplash"
-			splash.reduced_motion = bool(state.data.get("settings", {}).get("reduced_motion", false))
-			layers.layer("System").add_child(splash)
-		else:
-			splash.free()
+		splash.name = "StudioSplash"
+		splash.reduced_motion = bool(state.data.get("settings", {}).get("reduced_motion", false))
+		layers.layer("System").add_child(splash)
 
 func language() -> String:
 	return Locale.resolve(str(state.data.get("settings", {}).get("language", "system")), device_locale)
