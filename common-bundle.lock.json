@@ -8,7 +8,7 @@
   ],
   "source": {
     "repository": "https://github.com/seorilabs/game-foundation",
-    "commit": "7cf1fc02a3d4c84b0b695ee9f024067f3a457696"
+    "commit": "1ce5b32e64831c38e678ea11ba3c51b70f66c6e5"
   },
   "sdk": {
     "version": "1.1.1",
@@ -100,7 +100,7 @@
     "godot/addons/seorilabs_platform/platform_client.gd": "80f017d8e65421f7374c1de708b75cc3cd62746663ca779cf701429242706046",
     "godot/tests/common/account_services_probe.gd": "159cf4622f47226ef6321aeda9e5e5464fa7ad3994692d90f3b86042f9acd18f",
     "godot/tests/common/accounts_probe.gd": "1236852f716dfecccce68db13bb0637361c1efe264b5a91d3ff72de310b99a2a",
-    "godot/tests/common/dev_probe.gd": "c46b0a835fb09d9c670a5bd4f7d29cceaebccaca92dd7ded4d1483bb2e7c38be",
+    "godot/tests/common/dev_probe.gd": "aff9a9bfa98b407b54b01f8c6380d7b64838d1dca5c82cfcafea16b730b950b3",
     "godot/tests/common/e2e_driver.gd": "f29b430484e3d90bf4593acaa43d80add1f8fdaca3e9b3aba5d4b021858db1a1",
     "godot/tests/common/fakes/platform_sdk.gd": "ec5c3a37ebc4604cb4abd5430528e3bb4ef13351e0a51624769bdfc24e1cb857",
     "godot/tests/common/input_layout_probe.gd": "4cd9c6bd1a60dea78f7e7ae58c4c65bf4dbe157a7783a7d2ae08d15843d171ed",
